@@ -8,3 +8,7 @@ C:\Users\Koltay\source\repos\osuEscape\osuEscape\obj\Release\osuEscape.csproj.Co
 C:\Users\Koltay\source\repos\osuEscape\osuEscape\obj\Release\osuEscape.exe
 C:\Users\Koltay\source\repos\osuEscape\osuEscape\obj\Release\osuEscape.pdb
 C:\Users\Koltay\source\repos\osuEscape\osuEscape\obj\Release\osuEscape.csproj.AssemblyReference.cache
+C:\Users\Koltay\source\repos\osuEscape\osuEscape\bin\Release\WindowsInput.dll
+C:\Users\Koltay\source\repos\osuEscape\osuEscape\bin\Release\WindowsInput.pdb
+C:\Users\Koltay\source\repos\osuEscape\osuEscape\bin\Release\WindowsInput.xml
+C:\Users\Koltay\source\repos\osuEscape\osuEscape\obj\Release\osuEscape.csproj.CopyComplete

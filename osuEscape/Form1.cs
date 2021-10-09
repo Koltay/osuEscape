@@ -9,6 +9,8 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Runtime.InteropServices;
+using WindowsInput;
+using WindowsInput.Native;
 
 namespace osuEscape
 {
@@ -16,6 +18,7 @@ namespace osuEscape
 
 
     {
+        InputSimulator sim = new InputSimulator();
 
         private string osuLocation = null; //config needs to be used
 
@@ -35,12 +38,14 @@ namespace osuEscape
 
             ghk = new KeyHandler(Keys.F6, this);
             ghk.Register();
+
+            /*
             Process[] localByName = System.Diagnostics.Process.GetProcessesByName("osu!");
             if(localByName.Length == 1)
             {
                 Process osu = localByName[0];
                 BringProcessToFront(osu);
-            }
+            }*/
         }
         public static void BringProcessToFront(Process process)
         {
@@ -56,7 +61,8 @@ namespace osuEscape
                 "advfirewall firewall set rule name=\"osu block\" new enable=yes";
             cmd.StartInfo.Verb = "runas";
             cmd.Start();
-            textBox3.Text = "Status: Blocked";
+            textBox3.Text = "Blocked";
+            textBox3.ForeColor = Color.Red;
         }
         private void Button2_Click(object sender, EventArgs e)
         {
@@ -66,7 +72,8 @@ namespace osuEscape
                 "advfirewall firewall set rule name=\"osu block\" new enable=no";
             cmd.StartInfo.Verb = "runas";
             cmd.Start();
-            textBox3.Text = "Status: Connecting";
+            textBox3.Text = "Connecting";
+            textBox3.ForeColor = Color.Green;
         }
 
         private void Button3_Click(object sender, EventArgs e)
@@ -97,6 +104,7 @@ namespace osuEscape
 
         private void ToggleFirewall()
         {
+            //1: Block Firewall; -1: Allow Firewall
             if (toggle == 1)
             {
                 button1.PerformClick();
@@ -108,17 +116,6 @@ namespace osuEscape
                 toggle *= -1;
             }
         }
-
-        /*
-        private void Form1_KeyDown(object sender, KeyEventArgs e)
-        {
-            //if (e.Control && String.Equals(ghk.ToString(),Key))
-            if (e.Control && String.Equals("S", Key))
-            {                
-                ToggleFirewall();
-            }
-        }
-        */
 
         private void Form1_Load_1(object sender, EventArgs e)
         {
@@ -141,9 +138,15 @@ namespace osuEscape
 
         private void HandleHotkey()
         {
-            Process bProcess = Process.GetProcessesByName("osu").FirstOrDefault();
-            ToggleFirewall();                    
-            BringMainWindowToFront("1");
+            ToggleFirewall();
+
+            this.TopMost = true;
+
+            if (checkBox1.Checked)
+                AltTab(); 
+            else
+                BringMainWindowToFront();
+             
         }
 
         [System.Runtime.InteropServices.DllImport("user32.dll")]
@@ -162,32 +165,65 @@ namespace osuEscape
             Restore = 9, ShowDefault = 10, ForceMinimized = 11
         };
 
-        public void BringMainWindowToFront(string processName)
+        private void BringMainWindowToFront()
         {
             // get the process
-            Process[] localAll = Process.GetProcesses();
-            //Process bProcess = Process.GetProcessesByName("osu").FirstOrDefault();
-            Process bProcess = Process.GetProcessesByName("chrome").First();
-            textBox1.Text = bProcess.ProcessName;
+            Process bProcess = System.Diagnostics.Process.GetProcessesByName("osu!").FirstOrDefault();
 
             // check if the process is running
             if (bProcess != null)
-            {
+            { 
+                
                 // check if the window is hidden / minimized
                 if (bProcess.MainWindowHandle == IntPtr.Zero)
                 {
                     // the window is hidden so try to restore it before setting focus.
-                    ShowWindow(bProcess.Handle, ShowWindowEnum.ShowMaximized);
+                    ShowWindow(bProcess.Handle, ShowWindowEnum.ShowNormal);
                 }
 
                 // set user the focus to the window
                 SetForegroundWindow(bProcess.MainWindowHandle);
             }
-            else
-            {
-                // the process is not running, so start it
-                Process.Start(processName);
-            }
+        }
+
+        private void AltTab()
+        {
+            //reset keypress
+            sim.Keyboard.KeyPress(VirtualKeyCode.RMENU);
+            sim.Keyboard.Sleep(50);
+            sim.Keyboard.KeyPress(VirtualKeyCode.TAB);
+            sim.Keyboard.Sleep(50);
+
+            sim.Keyboard.Sleep(100);
+
+            sim.Keyboard.KeyDown(VirtualKeyCode.RMENU);
+            sim.Keyboard.KeyDown(VirtualKeyCode.TAB);
+            sim.Keyboard.Sleep(100);
+            sim.Keyboard.KeyUp(VirtualKeyCode.RMENU);
+            sim.Keyboard.KeyUp(VirtualKeyCode.TAB);
+            sim.Keyboard.Sleep(10);
+
+            sim.Keyboard.KeyDown(VirtualKeyCode.RMENU);
+            sim.Keyboard.KeyDown(VirtualKeyCode.TAB);
+            sim.Keyboard.Sleep(100);
+            sim.Keyboard.KeyUp(VirtualKeyCode.RMENU);
+            sim.Keyboard.KeyUp(VirtualKeyCode.TAB);
+            sim.Keyboard.Sleep(10);
+
+        }
+        private void textBox4_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void checkBox1_CheckedChanged(object sender, EventArgs e)
+        {        
+
+        }
+
+        private void textBox1_TextChanged(object sender, EventArgs e)
+        {
+
         }
     }
 
