@@ -1,0 +1,10 @@
+C:\Users\Koltay\source\repos\osuEscape\osuEscape\bin\Debug\osuEscape.exe.config
+C:\Users\Koltay\source\repos\osuEscape\osuEscape\bin\Debug\osuEscape.exe
+C:\Users\Koltay\source\repos\osuEscape\osuEscape\bin\Debug\osuEscape.pdb
+C:\Users\Koltay\source\repos\osuEscape\osuEscape\obj\Debug\osuEscape.csproj.AssemblyReference.cache
+C:\Users\Koltay\source\repos\osuEscape\osuEscape\obj\Debug\osuEscape.Form1.resources
+C:\Users\Koltay\source\repos\osuEscape\osuEscape\obj\Debug\osuEscape.Properties.Resources.resources
+C:\Users\Koltay\source\repos\osuEscape\osuEscape\obj\Debug\osuEscape.csproj.GenerateResource.cache
+C:\Users\Koltay\source\repos\osuEscape\osuEscape\obj\Debug\osuEscape.csproj.CoreCompileInputs.cache
+C:\Users\Koltay\source\repos\osuEscape\osuEscape\obj\Debug\osuEscape.exe
+C:\Users\Koltay\source\repos\osuEscape\osuEscape\obj\Debug\osuEscape.pdb
