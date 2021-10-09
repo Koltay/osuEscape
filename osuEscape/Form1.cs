@@ -81,15 +81,36 @@ namespace osuEscape
 
         private void Form1_Load_1(object sender, EventArgs e)
         {
-            if (!Properties.Settings.Default.osuLocation.Contains("osu!"))
+            checkBox1.Visible = false;
+            // check if user is playing osu!, then get the directory
+
+            string str = string.Empty;
+            if (Process.GetProcessesByName("osu!").Count() != 0)
+                str = Process.GetProcessesByName("osu!").FirstOrDefault().MainModule.FileName;
+
+            if (str.Contains("osu!"))
             {
-                // initialize the user settings 
-                button3.PerformClick();
+                Properties.Settings.Default.osuLocation = Process.GetProcessesByName("osu!").FirstOrDefault().MainModule.FileName;
+                Properties.Settings.Default.Save();
+
+                RuleResetAndSetUp(Properties.Settings.Default.osuLocation);
+
+                //textBox4.Text = "not normal";
             }
             else
-            {                
-                RuleResetAndSetUp(Properties.Settings.Default.osuLocation);
-            }
+            {
+                // if there is no user settings saved, initialize it
+                if (!Properties.Settings.Default.osuLocation.Contains("osu!"))
+                {
+                    button3.PerformClick();
+                }
+                else
+                {                
+                    RuleResetAndSetUp(Properties.Settings.Default.osuLocation);
+
+                    //textBox4.Text = "normal";
+                }
+            }            
         }
 
         private void TextBox3_TextChanged(object sender, EventArgs e)
@@ -257,6 +278,11 @@ namespace osuEscape
                 textBox3.Text = "Connecting";
                 textBox3.ForeColor = Color.Green;
             }
+        }
+
+        private void textBox5_TextChanged(object sender, EventArgs e)
+        {
+
         }
     }
 
