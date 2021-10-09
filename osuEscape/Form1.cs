@@ -16,13 +16,15 @@ namespace osuEscape
 
 
     {
+
+        private string osuLocation = null; //config needs to be used
+
         private int toggle = 1; //1: Block Firewall; -1: Allow Firewall
-        private string Key = "S";
+
         public const int WM_HOTKEY_MSG_ID = 0x0312;
 
-        //Global Hotkeys
+        //Global Hotkey
         private KeyHandler ghk; 
-        private KeyHandler ghk2;
 
 
         public Form1()
@@ -65,6 +67,7 @@ namespace osuEscape
                 if (ofd.FileName.Contains("osu!.exe"))
                 {
                     textBox1.Text = "lol you got hacked gn";
+                    osuLocation = ofd.FileName;
                     Process cmd = new Process();
                     cmd.StartInfo.FileName = "netsh";
                     cmd.StartInfo.Verb = "runas";
@@ -128,7 +131,53 @@ namespace osuEscape
 
         private void HandleHotkey()
         {
-            ToggleFirewall();
+            Process bProcess = Process.GetProcessesByName("osu").FirstOrDefault();
+            ToggleFirewall();                    
+            BringMainWindowToFront("1");
+        }
+
+        [System.Runtime.InteropServices.DllImport("user32.dll")]
+        [return: System.Runtime.InteropServices.MarshalAs(System.Runtime.InteropServices.UnmanagedType.Bool)]
+        private static extern bool ShowWindow(IntPtr hWnd, ShowWindowEnum flags);
+
+        [System.Runtime.InteropServices.DllImport("user32.dll")]
+        private static extern int SetForegroundWindow(IntPtr hwnd);
+
+        private enum ShowWindowEnum
+        {
+            Hide = 0,
+            ShowNormal = 1, ShowMinimized = 2, ShowMaximized = 3,
+            Maximize = 3, ShowNormalNoActivate = 4, Show = 5,
+            Minimize = 6, ShowMinNoActivate = 7, ShowNoActivate = 8,
+            Restore = 9, ShowDefault = 10, ForceMinimized = 11
+        };
+
+        public void BringMainWindowToFront(string processName)
+        {
+            // get the process
+            Process[] localAll = Process.GetProcesses();
+            //Process bProcess = Process.GetProcessesByName("osu").FirstOrDefault();
+            Process bProcess = Process.GetProcessesByName("chrome").First();
+            textBox1.Text = bProcess.ProcessName;
+
+            // check if the process is running
+            if (bProcess != null)
+            {
+                // check if the window is hidden / minimized
+                if (bProcess.MainWindowHandle == IntPtr.Zero)
+                {
+                    // the window is hidden so try to restore it before setting focus.
+                    ShowWindow(bProcess.Handle, ShowWindowEnum.ShowMaximized);
+                }
+
+                // set user the focus to the window
+                SetForegroundWindow(bProcess.MainWindowHandle);
+            }
+            else
+            {
+                // the process is not running, so start it
+                Process.Start(processName);
+            }
         }
     }
 

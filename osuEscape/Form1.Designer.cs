@@ -91,7 +91,7 @@ namespace osuEscape
             this.textBox2.ReadOnly = true;
             this.textBox2.Size = new System.Drawing.Size(145, 13);
             this.textBox2.TabIndex = 4;
-            this.textBox2.Text = "Hotkey Toggle: Ctrl+S";
+            this.textBox2.Text = "Global Toggle Hotkey: F6";
             // 
             // textBox3
             // 
