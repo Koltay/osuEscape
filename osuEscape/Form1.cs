@@ -24,7 +24,7 @@ namespace osuEscape
         public const int WM_HOTKEY_MSG_ID = 0x0312;
 
         //Global Hotkey
-        private KeyHandler ghk; 
+        private KeyHandler ghk;
 
 
         public Form1()
@@ -35,7 +35,17 @@ namespace osuEscape
 
             ghk = new KeyHandler(Keys.F6, this);
             ghk.Register();
-
+            Process[] localByName = System.Diagnostics.Process.GetProcessesByName("osu!");
+            if(localByName.Length == 1)
+            {
+                Process osu = localByName[0];
+                BringProcessToFront(osu);
+            }
+        }
+        public static void BringProcessToFront(Process process)
+        {
+            IntPtr handle = process.MainWindowHandle;
+            SetForegroundWindow(handle);
         }
 
         private void Button1_Click(object sender, EventArgs e)
