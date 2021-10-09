@@ -83,7 +83,7 @@ namespace osuEscape
             this.textBox1.Size = new System.Drawing.Size(267, 46);
             this.textBox1.TabIndex = 3;
             this.textBox1.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-            this.textBox1.TextChanged += new System.EventHandler(this.textBox1_TextChanged);
+            this.textBox1.TextChanged += new System.EventHandler(this.TextBox1_TextChanged);
             // 
             // textBox2
             // 
@@ -117,20 +117,19 @@ namespace osuEscape
             this.textBox4.Size = new System.Drawing.Size(37, 13);
             this.textBox4.TabIndex = 7;
             this.textBox4.Text = "Status:";
-            this.textBox4.TextChanged += new System.EventHandler(this.textBox4_TextChanged);
+            this.textBox4.TextChanged += new System.EventHandler(this.TextBox4_TextChanged);
             // 
             // checkBox1
             // 
             this.checkBox1.AutoSize = true;
-            this.checkBox1.Checked = true;
-            this.checkBox1.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.checkBox1.Enabled = false;
             this.checkBox1.Location = new System.Drawing.Point(4, 132);
             this.checkBox1.Name = "checkBox1";
             this.checkBox1.Size = new System.Drawing.Size(74, 17);
             this.checkBox1.TabIndex = 8;
             this.checkBox1.Text = "Fullscreen";
             this.checkBox1.UseVisualStyleBackColor = true;
-            this.checkBox1.CheckedChanged += new System.EventHandler(this.checkBox1_CheckedChanged);
+            this.checkBox1.CheckedChanged += new System.EventHandler(this.CheckBox1_CheckedChanged);
             // 
             // Form1
             // 

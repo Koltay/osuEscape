@@ -18,34 +18,23 @@ namespace osuEscape
 
 
     {
-        InputSimulator sim = new InputSimulator();
-
-        private string osuLocation = null; //config needs to be used
+        readonly InputSimulator sim = new InputSimulator();
 
         private int toggle = 1; //1: Block Firewall; -1: Allow Firewall
 
         public const int WM_HOTKEY_MSG_ID = 0x0312;
 
         //Global Hotkey
-        private KeyHandler ghk;
+        private readonly KeyHandler ghk;
 
 
         public Form1()
         {
             InitializeComponent();
 
-            //this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.Form1_KeyDown);
-
             ghk = new KeyHandler(Keys.F6, this);
             ghk.Register();
 
-            /*
-            Process[] localByName = System.Diagnostics.Process.GetProcessesByName("osu!");
-            if(localByName.Length == 1)
-            {
-                Process osu = localByName[0];
-                BringProcessToFront(osu);
-            }*/
         }
         public static void BringProcessToFront(Process process)
         {
@@ -55,25 +44,11 @@ namespace osuEscape
 
         private void Button1_Click(object sender, EventArgs e)
         {
-            Process cmd = new Process();
-            cmd.StartInfo.FileName = "netsh";
-            cmd.StartInfo.Arguments =
-                "advfirewall firewall set rule name=\"osu block\" new enable=yes";
-            cmd.StartInfo.Verb = "runas";
-            cmd.Start();
-            textBox3.Text = "Blocked";
-            textBox3.ForeColor = Color.Red;
+            BlockConnection();
         }
         private void Button2_Click(object sender, EventArgs e)
         {
-            Process cmd = new Process();
-            cmd.StartInfo.FileName = "netsh";
-            cmd.StartInfo.Arguments =
-                "advfirewall firewall set rule name=\"osu block\" new enable=no";
-            cmd.StartInfo.Verb = "runas";
-            cmd.Start();
-            textBox3.Text = "Connecting";
-            textBox3.ForeColor = Color.Green;
+            AllowConnection();            
         }
 
         private void Button3_Click(object sender, EventArgs e)
@@ -81,24 +56,11 @@ namespace osuEscape
             OpenFileDialog ofd = new OpenFileDialog();
             if (ofd.ShowDialog() == System.Windows.Forms.DialogResult.OK)
             {
-                if (ofd.FileName.Contains("osu!.exe"))
-                {
-                    textBox1.Text = "lol you got hacked gn";
-                    osuLocation = ofd.FileName;
-                    Process cmd = new Process();
-                    cmd.StartInfo.FileName = "netsh";
-                    cmd.StartInfo.Verb = "runas";
-                    cmd.StartInfo.Arguments =
-                        "advfirewall firewall delete rule name=\"osu block\"";
-                    cmd.Start();
-                    cmd.StartInfo.Arguments =
-                        "advfirewall firewall add rule name=\"osu block\" dir=out action=block program=" + ofd.FileName;
-                    cmd.Start();
-                }
-                else
-                {
-                    MessageBox.Show("This is not osu! dumbass");
-                }
+                RuleResetAndSetUp(ofd.FileName);
+            }
+            else
+            {
+                MessageBox.Show("This is not osu! dumbass");
             }
         }
 
@@ -107,25 +69,33 @@ namespace osuEscape
             //1: Block Firewall; -1: Allow Firewall
             if (toggle == 1)
             {
-                button1.PerformClick();
+                BlockConnection();
                 toggle *= -1;
             }
             else
             {
-                button2.PerformClick();
+                AllowConnection();
                 toggle *= -1;
             }
         }
 
         private void Form1_Load_1(object sender, EventArgs e)
         {
-
+            if (!Properties.Settings.Default.osuLocation.Contains("osu!"))
+            {
+                // initialize the user settings 
+                button3.PerformClick();
+            }
+            else
+            {                
+                RuleResetAndSetUp(Properties.Settings.Default.osuLocation);
+            }
         }
 
         private void TextBox3_TextChanged(object sender, EventArgs e)
         {
 
-        }
+        }       
 
         protected override void WndProc(ref Message m)
         {
@@ -140,13 +110,14 @@ namespace osuEscape
         {
             ToggleFirewall();
 
-            this.TopMost = true;
+            //this.TopMost = true;
 
+            /*
             if (checkBox1.Checked)
                 AltTab(); 
             else
-                BringMainWindowToFront();
-             
+                BringMainWindowToFront(); 
+            */
         }
 
         [System.Runtime.InteropServices.DllImport("user32.dll")]
@@ -164,7 +135,8 @@ namespace osuEscape
             Minimize = 6, ShowMinNoActivate = 7, ShowNoActivate = 8,
             Restore = 9, ShowDefault = 10, ForceMinimized = 11
         };
-
+       
+        /*
         private void BringMainWindowToFront()
         {
             // get the process
@@ -211,19 +183,80 @@ namespace osuEscape
             sim.Keyboard.Sleep(10);
 
         }
-        private void textBox4_TextChanged(object sender, EventArgs e)
+        */
+
+        private void TextBox4_TextChanged(object sender, EventArgs e)
         {
 
         }
 
-        private void checkBox1_CheckedChanged(object sender, EventArgs e)
+        private void CheckBox1_CheckedChanged(object sender, EventArgs e)
         {        
 
         }
 
-        private void textBox1_TextChanged(object sender, EventArgs e)
+        private void TextBox1_TextChanged(object sender, EventArgs e)
         {
 
+        }
+
+        private void BlockConnection()
+        {
+            Process cmd = new Process();
+            cmd.StartInfo.FileName = "netsh";
+            cmd.StartInfo.Arguments =
+                "advfirewall firewall set rule name=\"osu block\" new enable=yes";
+            cmd.StartInfo.Verb = "runas";
+            cmd.StartInfo.CreateNoWindow = true;
+            cmd.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
+            cmd.Start();
+            textBox3.Text = "Blocked";
+            textBox3.ForeColor = Color.Red;
+        }
+
+        private void AllowConnection()
+        {
+            Process cmd = new Process();
+            cmd.StartInfo.FileName = "netsh";
+            cmd.StartInfo.Arguments =
+                "advfirewall firewall set rule name=\"osu block\" new enable=no";
+            cmd.StartInfo.Verb = "runas";
+            cmd.StartInfo.CreateNoWindow = true;
+            cmd.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
+            cmd.Start();
+            textBox3.Text = "Connecting";
+            textBox3.ForeColor = Color.Green;
+        }
+
+        private void RuleResetAndSetUp(string filename)
+        {
+            if (filename.Contains("osu!.exe"))
+            {
+                textBox1.Text = "lol you got hacked gn";
+                Properties.Settings.Default.osuLocation = filename;
+                Properties.Settings.Default.Save();
+                Process cmd = new Process();
+                cmd.StartInfo.FileName = "netsh";
+                cmd.StartInfo.Verb = "runas";
+                cmd.StartInfo.CreateNoWindow = true;
+                cmd.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
+
+                // reset the rules if the users used this application before
+                cmd.StartInfo.Arguments =
+                    "advfirewall firewall delete rule name=\"osu block\"";
+                cmd.Start();
+                cmd.StartInfo.Arguments =
+                    "advfirewall firewall add rule name=\"osu block\" dir=out action=block program=" + filename;
+                cmd.Start();
+
+                // disable at first to avoid unneeded disconnection
+                cmd.StartInfo.Arguments =
+                    "advfirewall firewall set rule name=\"osu block\" new enable=no"; ;
+                cmd.Start();
+
+                textBox3.Text = "Connecting";
+                textBox3.ForeColor = Color.Green;
+            }
         }
     }
 

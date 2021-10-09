@@ -16,9 +16,9 @@ namespace osuEscape
         [DllImport("user32.dll")]
         private static extern bool UnregisterHotKey(IntPtr hWnd, int id);
 
-        private int key;
-        private IntPtr hWnd;
-        private int id;
+        private readonly int key;
+        private readonly IntPtr hWnd;
+        private readonly int id;
 
         public KeyHandler(Keys key, Form form)
         {

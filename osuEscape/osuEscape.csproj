@@ -52,7 +52,6 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Keyboard.cs" />
     <Compile Include="KeyHandler.cs" />
     <Compile Include="Form1.cs">
       <SubType>Form</SubType>
