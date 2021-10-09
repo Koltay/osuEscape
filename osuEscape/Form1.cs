@@ -8,6 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Runtime.InteropServices;
 
 namespace osuEscape
 {
@@ -15,14 +16,27 @@ namespace osuEscape
 
 
     {
-
         private int toggle = 1; //1: Block Firewall; -1: Allow Firewall
+        private string Key = "S";
+        public const int WM_HOTKEY_MSG_ID = 0x0312;
+
+        //Global Hotkeys
+        private KeyHandler ghk; 
+        private KeyHandler ghk2;
+
+
         public Form1()
         {
             InitializeComponent();
+
+            //this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.Form1_KeyDown);
+
+            ghk = new KeyHandler(Keys.F6, this);
+            ghk.Register();
+
         }
 
-        private void button1_Click(object sender, EventArgs e)
+        private void Button1_Click(object sender, EventArgs e)
         {
             Process cmd = new Process();
             cmd.StartInfo.FileName = "netsh";
@@ -30,9 +44,9 @@ namespace osuEscape
                 "advfirewall firewall set rule name=\"osu block\" new enable=yes";
             cmd.StartInfo.Verb = "runas";
             cmd.Start();
-            textBox1.Text = "Blocked! No more submission hehe";
+            textBox3.Text = "Status: Blocked";
         }
-        private void button2_Click(object sender, EventArgs e)
+        private void Button2_Click(object sender, EventArgs e)
         {
             Process cmd = new Process();
             cmd.StartInfo.FileName = "netsh";
@@ -40,10 +54,10 @@ namespace osuEscape
                 "advfirewall firewall set rule name=\"osu block\" new enable=no";
             cmd.StartInfo.Verb = "runas";
             cmd.Start();
-            textBox1.Text = "Done! You can now submit your score";
+            textBox3.Text = "Status: Connecting";
         }
 
-        private void button3_Click(object sender, EventArgs e)
+        private void Button3_Click(object sender, EventArgs e)
         {
             OpenFileDialog ofd = new OpenFileDialog();
             if (ofd.ShowDialog() == System.Windows.Forms.DialogResult.OK)
@@ -68,7 +82,7 @@ namespace osuEscape
             }
         }
 
-        private void toggleFirewall()
+        private void ToggleFirewall()
         {
             if (toggle == 1)
             {
@@ -82,17 +96,41 @@ namespace osuEscape
             }
         }
 
+        /*
         private void Form1_KeyDown(object sender, KeyEventArgs e)
         {
-            if (e.KeyCode == Keys.A)
-            {
-                toggleFirewall();
+            //if (e.Control && String.Equals(ghk.ToString(),Key))
+            if (e.Control && String.Equals("S", Key))
+            {                
+                ToggleFirewall();
             }
         }
+        */
 
         private void Form1_Load_1(object sender, EventArgs e)
         {
 
         }
+
+        private void TextBox3_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        protected override void WndProc(ref Message m)
+        {
+            if (m.Msg == WM_HOTKEY_MSG_ID)
+            {
+                HandleHotkey();
+            }                
+           base.WndProc(ref m);
+        }
+
+        private void HandleHotkey()
+        {
+            ToggleFirewall();
+        }
     }
+
+
 }
