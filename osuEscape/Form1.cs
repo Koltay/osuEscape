@@ -11,6 +11,7 @@ using System.Windows.Forms;
 using System.Runtime.InteropServices;
 using WindowsInput;
 using WindowsInput.Native;
+using System.IO;
 
 namespace osuEscape
 {
@@ -18,11 +19,13 @@ namespace osuEscape
 
 
     {
-        readonly InputSimulator sim = new InputSimulator();
+        //readonly InputSimulator sim = new InputSimulator();
 
         private int toggle = 1; //1: Block Firewall; -1: Allow Firewall
 
         public const int WM_HOTKEY_MSG_ID = 0x0312;
+
+        private bool isLocationExist = false;
 
         //Global Hotkey
         private readonly KeyHandler ghk;
@@ -36,6 +39,8 @@ namespace osuEscape
             ghk.Register();
 
         }
+
+        /*
         public static void BringProcessToFront(Process process)
         {
             IntPtr handle = process.MainWindowHandle;
@@ -50,18 +55,20 @@ namespace osuEscape
         {
             AllowConnection();            
         }
+        */
 
         private void Button3_Click(object sender, EventArgs e)
         {
             OpenFileDialog ofd = new OpenFileDialog();
             if (ofd.ShowDialog() == System.Windows.Forms.DialogResult.OK)
             {
-                RuleResetAndSetUp(ofd.FileName);
-            }
-            else
-            {
-                MessageBox.Show("This is not osu! dumbass");
-            }
+                if (ofd.FileName.Contains("osu!"))
+                    RuleResetAndSetUp(ofd.FileName);
+                else
+                {
+                    MessageBox.Show("This is not osu! dumbass");
+                }
+            }            
         }
 
         private void ToggleFirewall()
@@ -81,21 +88,20 @@ namespace osuEscape
 
         private void Form1_Load_1(object sender, EventArgs e)
         {
-            checkBox1.Visible = false;
             // check if user is playing osu!, then get the directory
 
             string str = string.Empty;
+
             if (Process.GetProcessesByName("osu!").Count() != 0)
                 str = Process.GetProcessesByName("osu!").FirstOrDefault().MainModule.FileName;
 
             if (str.Contains("osu!"))
             {
                 Properties.Settings.Default.osuLocation = Process.GetProcessesByName("osu!").FirstOrDefault().MainModule.FileName;
-                Properties.Settings.Default.Save();
+                Properties.Settings.Default.Save();                
+                UpdateOsuLocationText();
 
                 RuleResetAndSetUp(Properties.Settings.Default.osuLocation);
-
-                //textBox4.Text = "not normal";
             }
             else
             {
@@ -107,8 +113,6 @@ namespace osuEscape
                 else
                 {                
                     RuleResetAndSetUp(Properties.Settings.Default.osuLocation);
-
-                    //textBox4.Text = "normal";
                 }
             }            
         }
@@ -131,14 +135,6 @@ namespace osuEscape
         {
             ToggleFirewall();
 
-            //this.TopMost = true;
-
-            /*
-            if (checkBox1.Checked)
-                AltTab(); 
-            else
-                BringMainWindowToFront(); 
-            */
         }
 
         [System.Runtime.InteropServices.DllImport("user32.dll")]
@@ -254,18 +250,23 @@ namespace osuEscape
             if (filename.Contains("osu!.exe"))
             {
                 textBox1.Text = "lol you got hacked gn";
+
                 Properties.Settings.Default.osuLocation = filename;
                 Properties.Settings.Default.Save();
+                UpdateOsuLocationText();
+
+
                 Process cmd = new Process();
                 cmd.StartInfo.FileName = "netsh";
                 cmd.StartInfo.Verb = "runas";
                 cmd.StartInfo.CreateNoWindow = true;
-                cmd.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
+                cmd.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;            
 
                 // reset the rules if the users used this application before
                 cmd.StartInfo.Arguments =
                     "advfirewall firewall delete rule name=\"osu block\"";
                 cmd.Start();
+
                 cmd.StartInfo.Arguments =
                     "advfirewall firewall add rule name=\"osu block\" dir=out action=block program=" + filename;
                 cmd.Start();
@@ -274,15 +275,64 @@ namespace osuEscape
                 cmd.StartInfo.Arguments =
                     "advfirewall firewall set rule name=\"osu block\" new enable=no"; ;
                 cmd.Start();
+                cmd.WaitForExit();
+
+                /* rewrite attempt
+                Process p = new Process();
+                ProcessStartInfo info = new ProcessStartInfo("cmd.exe");
+                info.RedirectStandardInput = true;
+                info.UseShellExecute = false;
+                info.Verb = "runas";
+                info.CreateNoWindow = false;
+                info.WindowStyle = ProcessWindowStyle.Hidden;
+                p.StartInfo = info;
+                p.Start();
+
+                using (StreamWriter sw = p.StandardInput)
+                {
+                    if (sw.BaseStream.CanWrite)
+                    {
+                        // reset the rules if the users used this application before
+                        sw.WriteLine("netsh advfirewall firewall delete rule name=\"osu block\"");
+
+                        // add rule to advfirewall
+                        sw.WriteLine("netsh advfirewall firewall add rule name=\"osu block\" dir=out action=block program=" + filename);
+
+                        // disable at first to avoid unneeded disconnection
+                        sw.WriteLine("netsh advfirewall firewall set rule name=\"osu block\" new enable=no");
+
+                        textBox1.Text = "working";
+                    }
+                }
+                */
 
                 textBox3.Text = "Connecting";
                 textBox3.ForeColor = Color.Green;
-            }
+            }            
         }
 
-        private void textBox5_TextChanged(object sender, EventArgs e)
+        private void TextBox5_TextChanged(object sender, EventArgs e)
         {
 
+        }
+
+        private void Button4_Click(object sender, EventArgs e)
+        {
+            if (isLocationExist)
+                HandleHotkey();
+            else
+                MessageBox.Show("Invalid Location");
+        }
+
+        private void textBox6_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void UpdateOsuLocationText()
+        {
+            isLocationExist = true;
+            textBox6.Text = "Your osu! location: " + Properties.Settings.Default.osuLocation;
         }
     }
 
