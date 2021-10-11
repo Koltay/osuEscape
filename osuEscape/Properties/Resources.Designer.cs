@@ -63,9 +63,9 @@ namespace osuEscape.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
         /// </summary>
-        internal static System.Drawing.Icon osuEscape {
+        internal static System.Drawing.Icon osuEscapeIcon {
             get {
-                object obj = ResourceManager.GetObject("osuEscape", resourceCulture);
+                object obj = ResourceManager.GetObject("osuEscapeIcon", resourceCulture);
                 return ((System.Drawing.Icon)(obj));
             }
         }

@@ -43,7 +43,7 @@ namespace osuEscape
             this.button3.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(128)))), ((int)(((byte)(0)))));
             this.button3.Location = new System.Drawing.Point(197, 5);
             this.button3.Name = "button3";
-            this.button3.Size = new System.Drawing.Size(52, 48);
+            this.button3.Size = new System.Drawing.Size(52, 52);
             this.button3.TabIndex = 2;
             this.button3.Text = "📂";
             this.button3.UseVisualStyleBackColor = false;
@@ -53,10 +53,10 @@ namespace osuEscape
             // 
             this.textBox2.BackColor = System.Drawing.SystemColors.Control;
             this.textBox2.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.textBox2.Location = new System.Drawing.Point(10, 56);
+            this.textBox2.Location = new System.Drawing.Point(10, 61);
             this.textBox2.Name = "textBox2";
             this.textBox2.ReadOnly = true;
-            this.textBox2.Size = new System.Drawing.Size(145, 15);
+            this.textBox2.Size = new System.Drawing.Size(145, 13);
             this.textBox2.TabIndex = 4;
             this.textBox2.Text = "Global Toggle Hotkey: F6";
             // 
@@ -66,7 +66,7 @@ namespace osuEscape
             this.button4.Font = new System.Drawing.Font("Microsoft Sans Serif", 14F);
             this.button4.Location = new System.Drawing.Point(9, 4);
             this.button4.Name = "button4";
-            this.button4.Size = new System.Drawing.Size(184, 50);
+            this.button4.Size = new System.Drawing.Size(184, 54);
             this.button4.TabIndex = 0;
             this.button4.Text = "Toggle";
             this.button4.UseVisualStyleBackColor = false;
@@ -76,18 +76,18 @@ namespace osuEscape
             // 
             this.textBox6.BackColor = System.Drawing.SystemColors.Control;
             this.textBox6.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.textBox6.Location = new System.Drawing.Point(10, 73);
+            this.textBox6.Location = new System.Drawing.Point(10, 79);
             this.textBox6.Name = "textBox6";
             this.textBox6.ReadOnly = true;
-            this.textBox6.Size = new System.Drawing.Size(255, 15);
+            this.textBox6.Size = new System.Drawing.Size(255, 13);
             this.textBox6.TabIndex = 12;
             this.textBox6.Text = "Your osu! location:";
             // 
             // Form1
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(266, 94);
+            this.ClientSize = new System.Drawing.Size(266, 102);
             this.Controls.Add(this.textBox6);
             this.Controls.Add(this.textBox2);
             this.Controls.Add(this.button3);
@@ -95,7 +95,7 @@ namespace osuEscape
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.KeyPreview = true;
             this.Name = "Form1";
-            this.Padding = new System.Windows.Forms.Padding(30, 28, 30, 28);
+            this.Padding = new System.Windows.Forms.Padding(30, 30, 30, 30);
             this.Text = "osu!Escape";
             this.TopMost = true;
             this.Load += new System.EventHandler(this.Form1_Load_1);
