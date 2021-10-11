@@ -12,3 +12,17 @@ C:\Users\Koltay\source\repos\osuEscape\osuEscape\bin\Release\WindowsInput.dll
 C:\Users\Koltay\source\repos\osuEscape\osuEscape\bin\Release\WindowsInput.pdb
 C:\Users\Koltay\source\repos\osuEscape\osuEscape\bin\Release\WindowsInput.xml
 C:\Users\Koltay\source\repos\osuEscape\osuEscape\obj\Release\osuEscape.csproj.CopyComplete
+C:\Users\Noel\Documents\GitHub\osuEscape\osuEscape\bin\Release\osuEscape.exe.config
+C:\Users\Noel\Documents\GitHub\osuEscape\osuEscape\bin\Release\osuEscape.exe
+C:\Users\Noel\Documents\GitHub\osuEscape\osuEscape\bin\Release\osuEscape.pdb
+C:\Users\Noel\Documents\GitHub\osuEscape\osuEscape\bin\Release\WindowsInput.dll
+C:\Users\Noel\Documents\GitHub\osuEscape\osuEscape\bin\Release\WindowsInput.pdb
+C:\Users\Noel\Documents\GitHub\osuEscape\osuEscape\bin\Release\WindowsInput.xml
+C:\Users\Noel\Documents\GitHub\osuEscape\osuEscape\obj\Release\osuEscape.csproj.AssemblyReference.cache
+C:\Users\Noel\Documents\GitHub\osuEscape\osuEscape\obj\Release\osuEscape.Form1.resources
+C:\Users\Noel\Documents\GitHub\osuEscape\osuEscape\obj\Release\osuEscape.Properties.Resources.resources
+C:\Users\Noel\Documents\GitHub\osuEscape\osuEscape\obj\Release\osuEscape.csproj.GenerateResource.cache
+C:\Users\Noel\Documents\GitHub\osuEscape\osuEscape\obj\Release\osuEscape.csproj.CoreCompileInputs.cache
+C:\Users\Noel\Documents\GitHub\osuEscape\osuEscape\obj\Release\osuEscape.csproj.CopyComplete
+C:\Users\Noel\Documents\GitHub\osuEscape\osuEscape\obj\Release\osuEscape.exe
+C:\Users\Noel\Documents\GitHub\osuEscape\osuEscape\obj\Release\osuEscape.pdb

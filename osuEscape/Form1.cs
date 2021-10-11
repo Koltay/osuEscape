@@ -16,12 +16,10 @@ using System.IO;
 namespace osuEscape
 {
     public partial class Form1 : Form
-
-
     {
         //readonly InputSimulator sim = new InputSimulator();
 
-        private int toggle = 1; //1: Block Firewall; -1: Allow Firewall
+        private int toggle = -1; //1: Allow Firewall; -1: Block Firewall
 
         public const int WM_HOTKEY_MSG_ID = 0x0312;
 
@@ -37,68 +35,45 @@ namespace osuEscape
 
             ghk = new KeyHandler(Keys.F6, this);
             ghk.Register();
-
         }
 
-        /*
-        public static void BringProcessToFront(Process process)
-        {
-            IntPtr handle = process.MainWindowHandle;
-            SetForegroundWindow(handle);
-        }
-
-        private void Button1_Click(object sender, EventArgs e)
-        {
-            BlockConnection();
-        }
-        private void Button2_Click(object sender, EventArgs e)
-        {
-            AllowConnection();            
-        }
-        */
-
-        private void Button3_Click(object sender, EventArgs e)
+        private void Button3_Click(object sender, EventArgs e) // select osu!.exe
         {
             OpenFileDialog ofd = new OpenFileDialog();
-            if (ofd.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            if (ofd.ShowDialog() == DialogResult.OK)
             {
                 if (ofd.FileName.Contains("osu!"))
+                {
                     RuleResetAndSetUp(ofd.FileName);
+                }
                 else
                 {
-                    MessageBox.Show("This is not osu! dumbass");
+                    MessageBox.Show("You need to rename the osu to osu!.exe");
                 }
-            }            
+            }
         }
 
         private void ToggleFirewall()
         {
-            //1: Block Firewall; -1: Allow Firewall
-            if (toggle == 1)
-            {
-                BlockConnection();
-                toggle *= -1;
-            }
-            else
-            {
-                AllowConnection();
-                toggle *= -1;
-            }
+            ChangeConnection(toggle == 1); // isAllow
+            toggle *= -1; // Check declaration
+        }
+
+        private string getOsuPath ()
+        {
+            return (Process.GetProcessesByName("osu!").Count() == 0 ? "" : Process.GetProcessesByName("osu!").FirstOrDefault().MainModule.FileName);
         }
 
         private void Form1_Load_1(object sender, EventArgs e)
         {
             // check if user is playing osu!, then get the directory
 
-            string str = string.Empty;
+            string str = getOsuPath(); // when you already execute osu!.exe
 
-            if (Process.GetProcessesByName("osu!").Count() != 0)
-                str = Process.GetProcessesByName("osu!").FirstOrDefault().MainModule.FileName;
-
-            if (str.Contains("osu!"))
+            if (str != "")
             {
                 Properties.Settings.Default.osuLocation = Process.GetProcessesByName("osu!").FirstOrDefault().MainModule.FileName;
-                Properties.Settings.Default.Save();                
+                Properties.Settings.Default.Save();
                 UpdateOsuLocationText();
 
                 RuleResetAndSetUp(Properties.Settings.Default.osuLocation);
@@ -106,22 +81,17 @@ namespace osuEscape
             else
             {
                 // if there is no user settings saved, initialize it
-                if (!Properties.Settings.Default.osuLocation.Contains("osu!"))
+                if (Properties.Settings.Default.osuLocation.Contains("osu!"))
                 {
-                    button3.PerformClick();
-                }
-                else
-                {                
                     RuleResetAndSetUp(Properties.Settings.Default.osuLocation);
                 }
-            }            
+                else
+                {
+                    button3.PerformClick(); // trigger select folder function since there is no any record
+                }
+            }
         }
-
-        private void TextBox3_TextChanged(object sender, EventArgs e)
-        {
-
-        }       
-
+        
         protected override void WndProc(ref Message m)
         {
             if (m.Msg == WM_HOTKEY_MSG_ID)
@@ -130,127 +100,30 @@ namespace osuEscape
             }                
            base.WndProc(ref m);
         }
-
         private void HandleHotkey()
         {
             ToggleFirewall();
-
         }
 
-        [System.Runtime.InteropServices.DllImport("user32.dll")]
-        [return: System.Runtime.InteropServices.MarshalAs(System.Runtime.InteropServices.UnmanagedType.Bool)]
-        private static extern bool ShowWindow(IntPtr hWnd, ShowWindowEnum flags);
-
-        [System.Runtime.InteropServices.DllImport("user32.dll")]
-        private static extern int SetForegroundWindow(IntPtr hwnd);
-
-        private enum ShowWindowEnum
-        {
-            Hide = 0,
-            ShowNormal = 1, ShowMinimized = 2, ShowMaximized = 3,
-            Maximize = 3, ShowNormalNoActivate = 4, Show = 5,
-            Minimize = 6, ShowMinNoActivate = 7, ShowNoActivate = 8,
-            Restore = 9, ShowDefault = 10, ForceMinimized = 11
-        };
-       
-        /*
-        private void BringMainWindowToFront()
-        {
-            // get the process
-            Process bProcess = System.Diagnostics.Process.GetProcessesByName("osu!").FirstOrDefault();
-
-            // check if the process is running
-            if (bProcess != null)
-            { 
-                
-                // check if the window is hidden / minimized
-                if (bProcess.MainWindowHandle == IntPtr.Zero)
-                {
-                    // the window is hidden so try to restore it before setting focus.
-                    ShowWindow(bProcess.Handle, ShowWindowEnum.ShowNormal);
-                }
-
-                // set user the focus to the window
-                SetForegroundWindow(bProcess.MainWindowHandle);
-            }
-        }
-
-        private void AltTab()
-        {
-            //reset keypress
-            sim.Keyboard.KeyPress(VirtualKeyCode.RMENU);
-            sim.Keyboard.Sleep(50);
-            sim.Keyboard.KeyPress(VirtualKeyCode.TAB);
-            sim.Keyboard.Sleep(50);
-
-            sim.Keyboard.Sleep(100);
-
-            sim.Keyboard.KeyDown(VirtualKeyCode.RMENU);
-            sim.Keyboard.KeyDown(VirtualKeyCode.TAB);
-            sim.Keyboard.Sleep(100);
-            sim.Keyboard.KeyUp(VirtualKeyCode.RMENU);
-            sim.Keyboard.KeyUp(VirtualKeyCode.TAB);
-            sim.Keyboard.Sleep(10);
-
-            sim.Keyboard.KeyDown(VirtualKeyCode.RMENU);
-            sim.Keyboard.KeyDown(VirtualKeyCode.TAB);
-            sim.Keyboard.Sleep(100);
-            sim.Keyboard.KeyUp(VirtualKeyCode.RMENU);
-            sim.Keyboard.KeyUp(VirtualKeyCode.TAB);
-            sim.Keyboard.Sleep(10);
-
-        }
-        */
-
-        private void TextBox4_TextChanged(object sender, EventArgs e)
-        {
-
-        }
-
-        private void CheckBox1_CheckedChanged(object sender, EventArgs e)
-        {        
-
-        }
-
-        private void TextBox1_TextChanged(object sender, EventArgs e)
-        {
-
-        }
-
-        private void BlockConnection()
+        private void ChangeConnection(bool isAllow)
         {
             Process cmd = new Process();
             cmd.StartInfo.FileName = "netsh";
             cmd.StartInfo.Arguments =
-                "advfirewall firewall set rule name=\"osu block\" new enable=yes";
+                "advfirewall firewall set rule name=\"osu block\" new enable=" + (isAllow ? "no" : "yes");
             cmd.StartInfo.Verb = "runas";
             cmd.StartInfo.CreateNoWindow = true;
             cmd.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
             cmd.Start();
-            textBox3.Text = "Blocked";
-            textBox3.ForeColor = Color.Red;
+
+            button4.Text = isAllow ? "Connecting" : "Blocked";
+            button4.ForeColor = isAllow ? Color.Green : Color.Red;
         }
 
-        private void AllowConnection()
-        {
-            Process cmd = new Process();
-            cmd.StartInfo.FileName = "netsh";
-            cmd.StartInfo.Arguments =
-                "advfirewall firewall set rule name=\"osu block\" new enable=no";
-            cmd.StartInfo.Verb = "runas";
-            cmd.StartInfo.CreateNoWindow = true;
-            cmd.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
-            cmd.Start();
-            textBox3.Text = "Connecting";
-            textBox3.ForeColor = Color.Green;
-        }
-
-        private void RuleResetAndSetUp(string filename)
+        private void RuleResetAndSetUp(string filename) 
         {
             if (filename.Contains("osu!.exe"))
             {
-                textBox1.Text = "lol you got hacked gn";
-
                 Properties.Settings.Default.osuLocation = filename;
                 Properties.Settings.Default.Save();
                 UpdateOsuLocationText();
@@ -306,35 +179,27 @@ namespace osuEscape
                 }
                 */
 
-                textBox3.Text = "Connecting";
-                textBox3.ForeColor = Color.Green;
-            }            
-        }
-
-        private void TextBox5_TextChanged(object sender, EventArgs e)
-        {
-
+                button4.Text = "Connecting";
+                button4.ForeColor = Color.Green;
+            }
         }
 
         private void Button4_Click(object sender, EventArgs e)
         {
             if (isLocationExist)
+            {
                 HandleHotkey();
+            }
             else
+            {
                 MessageBox.Show("Invalid Location");
-        }
-
-        private void textBox6_TextChanged(object sender, EventArgs e)
-        {
-
+            }
         }
 
         private void UpdateOsuLocationText()
         {
             isLocationExist = true;
-            textBox6.Text = "Your osu! location: " + Properties.Settings.Default.osuLocation;
+            textBox6.Text = "osu! Path: " + String.Join("\\", Properties.Settings.Default.osuLocation.Split('\\').Reverse().Skip(1).Reverse()) + "\\";
         }
     }
-
-
 }
