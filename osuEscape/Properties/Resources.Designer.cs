@@ -61,12 +61,12 @@ namespace osuEscape.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
         /// </summary>
-        internal static System.Drawing.Bitmap bad_tyler {
+        internal static System.Drawing.Icon osuEscape {
             get {
-                object obj = ResourceManager.GetObject("bad tyler", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
+                object obj = ResourceManager.GetObject("osuEscape", resourceCulture);
+                return ((System.Drawing.Icon)(obj));
             }
         }
     }

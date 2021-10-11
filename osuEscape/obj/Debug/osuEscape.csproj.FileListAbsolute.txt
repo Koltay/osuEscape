@@ -25,3 +25,4 @@ C:\Users\Noel\Documents\GitHub\osuEscape\osuEscape\obj\Debug\osuEscape.csproj.Co
 C:\Users\Noel\Documents\GitHub\osuEscape\osuEscape\obj\Debug\osuEscape.csproj.CopyComplete
 C:\Users\Noel\Documents\GitHub\osuEscape\osuEscape\obj\Debug\osuEscape.exe
 C:\Users\Noel\Documents\GitHub\osuEscape\osuEscape\obj\Debug\osuEscape.pdb
+C:\Users\Noel\Documents\GitHub\osuEscape\osuEscape\obj\Debug\osuEscape.csproj.AssemblyReference.cache
