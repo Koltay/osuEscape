@@ -1,9 +1,9 @@
 # osu! Escape
- ![alt text](https://i.imgur.com/jJvpA4K.png)
+ ![osuEscape-ico](https://user-images.githubusercontent.com/44802618/136822823-9cb9b9e1-6d9b-429e-b4b4-ef791d369d9f.png)
+
+ # WARNING: IT IS UNKNOWN IF THE APPLICATION IS BANNABLE SO KEEP EVERYTHING SAFE AND CLEAN BEFORE RELEASE
  
- # WARNING: IT IS UNKNOWN IF THE APPLICATION IS BANNABLE SO KEEP EVERYTHING SAFE AND CLEAN BEFORE RELEASE 
- 
- Inspired by 1E308 (Nameless player), Chaoslitz
+ This project is inspired by 1E308 (Nameless player), Chaoslitz
  
  Score Submission Block Application for osu! Players
  
@@ -12,12 +12,8 @@
  Features:
  
  - Question mark: locate your osu! file to initiate the blocking rule
- 
-- Allow: allowing score submission
- 
-- Block: blocking score submission 
 
-- Global Toggle Key: Toggle the connection using F6 Key
+ - Global Toggle Key: Toggle the connection using F6 Key
  
  These methods are conducted through adding rules on your PC's Advanced Firewall
  
@@ -25,6 +21,4 @@
  
  Testing: Hellotomlol225, Takanashi Ako;
  
- Coding: Shion Maker 
- 
- 
+ Coding: Shion Maker
