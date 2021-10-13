@@ -12,6 +12,9 @@ using System.Runtime.InteropServices;
 using WindowsInput;
 using WindowsInput.Native;
 using System.IO;
+using Microsoft.Win32;
+using System.Windows.Media;
+using System.Reflection;
 
 namespace osuEscape
 {
@@ -28,13 +31,31 @@ namespace osuEscape
         //Global Hotkey
         private readonly KeyHandler ghk;
 
-
         public Form1()
         {
             InitializeComponent();
 
+            // volume setting not yet completed
+            trackBar1.Visible = false;
+            textBox1.Visible = false;
+
+
             ghk = new KeyHandler(Keys.F6, this);
             ghk.Register();
+
+            //UI Update with saved user settings
+            if (Properties.Settings.Default.isStartUp)
+                checkBox1.Checked = true;
+            if (Properties.Settings.Default.isToggleSound)
+                checkBox2.Checked = true;
+            textBox1.Text = Properties.Settings.Default.soundVolume.ToString();
+            trackBar1.Value = Properties.Settings.Default.soundVolume;
+
+            //fixed size 
+            this.MaximumSize = this.Size;
+            this.MinimumSize = this.Size;          
+
+
         }
 
         private void Button3_Click(object sender, EventArgs e) // select osu!.exe
@@ -42,13 +63,13 @@ namespace osuEscape
             OpenFileDialog ofd = new OpenFileDialog();
             if (ofd.ShowDialog() == DialogResult.OK)
             {
-                if (ofd.FileName.Contains("osu!"))
+                if (ofd.FileName.Contains("osu!.exe"))
                 {
                     RuleResetAndSetUp(ofd.FileName);
                 }
                 else
                 {
-                    MessageBox.Show("You need to rename the osu to osu!.exe");
+                    MessageBox.Show("There is no osu!.exe");
                 }
             }
         }
@@ -56,10 +77,13 @@ namespace osuEscape
         private void ToggleFirewall()
         {
             ChangeConnection(toggle == 1); // isAllow
-            toggle *= -1; // Check declaration
+            toggle *= -1; // Check above for declaration 
+
+            if (checkBox2.Checked)
+                System.Media.SystemSounds.Asterisk.Play();            
         }
 
-        private string getOsuPath ()
+        private string GetOsuPath()
         {
             return (Process.GetProcessesByName("osu!").Count() == 0 ? "" : Process.GetProcessesByName("osu!").FirstOrDefault().MainModule.FileName);
         }
@@ -68,7 +92,7 @@ namespace osuEscape
         {
             // check if user is playing osu!, then get the directory
 
-            string str = getOsuPath(); // when you already execute osu!.exe
+            string str = GetOsuPath(); // when you already execute osu!.exe
 
             if (str != "")
             {
@@ -117,7 +141,7 @@ namespace osuEscape
             cmd.Start();
 
             button4.Text = isAllow ? "Connecting" : "Blocked";
-            button4.ForeColor = isAllow ? Color.Green : Color.Red;
+            button4.ForeColor = isAllow ? System.Drawing.Color.Green : System.Drawing.Color.Red;
         }
 
         private void RuleResetAndSetUp(string filename) 
@@ -150,37 +174,8 @@ namespace osuEscape
                 cmd.Start();
                 cmd.WaitForExit();
 
-                /* rewrite attempt
-                Process p = new Process();
-                ProcessStartInfo info = new ProcessStartInfo("cmd.exe");
-                info.RedirectStandardInput = true;
-                info.UseShellExecute = false;
-                info.Verb = "runas";
-                info.CreateNoWindow = false;
-                info.WindowStyle = ProcessWindowStyle.Hidden;
-                p.StartInfo = info;
-                p.Start();
-
-                using (StreamWriter sw = p.StandardInput)
-                {
-                    if (sw.BaseStream.CanWrite)
-                    {
-                        // reset the rules if the users used this application before
-                        sw.WriteLine("netsh advfirewall firewall delete rule name=\"osu block\"");
-
-                        // add rule to advfirewall
-                        sw.WriteLine("netsh advfirewall firewall add rule name=\"osu block\" dir=out action=block program=" + filename);
-
-                        // disable at first to avoid unneeded disconnection
-                        sw.WriteLine("netsh advfirewall firewall set rule name=\"osu block\" new enable=no");
-
-                        textBox1.Text = "working";
-                    }
-                }
-                */
-
                 button4.Text = "Connecting";
-                button4.ForeColor = Color.Green;
+                button4.ForeColor = System.Drawing.Color.Green;
             }
         }
 
@@ -200,6 +195,74 @@ namespace osuEscape
         {
             isLocationExist = true;
             textBox6.Text = "osu! Path: " + String.Join("\\", Properties.Settings.Default.osuLocation.Split('\\').Reverse().Skip(1).Reverse()) + "\\";
+        }
+
+        private void SetRunAtStartup(bool enabled)
+        {
+            try
+            {
+                string path = System.Reflection.Assembly.GetExecutingAssembly().Location;
+                RegistryKey rk = Registry.CurrentUser.OpenSubKey("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run", true);
+                if (enabled)
+                    rk.SetValue("osu!Escape", "\"" + path + "\" --hide");
+                else
+                    rk.DeleteValue("osu!Escape", false);
+
+                rk.Close();
+            }
+            catch (Exception)
+            {
+            }
+        }
+
+        private void CheckBox1_CheckedChanged(object sender, EventArgs e)
+        {
+            if (checkBox1.Checked)
+            {
+                SetRunAtStartup(true);
+                Properties.Settings.Default.isStartUp = true;
+                Properties.Settings.Default.Save();
+            }                
+            else
+            {
+                SetRunAtStartup(false);
+                Properties.Settings.Default.isStartUp = false;
+                Properties.Settings.Default.Save();
+            }
+                
+        }
+
+        private void NotifyIcon1_MouseDoubleClick(object sender, MouseEventArgs e)
+        {
+            
+            if(notifyIcon1.Visible)
+            {
+                Show();
+                this.WindowState = FormWindowState.Normal;
+                notifyIcon1.Visible = false;
+                this.ShowInTaskbar = true;
+            } 
+        }
+
+        private void Form1_Resize(object sender, EventArgs e)
+        {
+            //if the form is minimized  
+            //hide it from the task bar  
+            //and show the system tray icon (represented by the NotifyIcon control)  
+            if (this.WindowState == FormWindowState.Minimized)
+            {
+                Hide();
+                notifyIcon1.Visible = true;
+                this.ShowInTaskbar = false;
+            }
+                
+        }
+
+        private void TrackBar1_Scroll(object sender, EventArgs e)
+        {
+            textBox1.Text = trackBar1.Value.ToString();
+            Properties.Settings.Default.soundVolume = trackBar1.Value;
+            Properties.Settings.Default.Save();
         }
     }
 }

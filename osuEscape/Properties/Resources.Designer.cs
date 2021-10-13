@@ -69,5 +69,14 @@ namespace osuEscape.Properties {
                 return ((System.Drawing.Icon)(obj));
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.IO.UnmanagedMemoryStream similar to System.IO.MemoryStream.
+        /// </summary>
+        internal static System.IO.UnmanagedMemoryStream toggle {
+            get {
+                return ResourceManager.GetStream("toggle", resourceCulture);
+            }
+        }
     }
 }

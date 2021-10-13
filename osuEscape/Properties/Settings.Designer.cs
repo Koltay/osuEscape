@@ -34,5 +34,41 @@ namespace osuEscape.Properties {
                 this["osuLocation"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool isStartUp {
+            get {
+                return ((bool)(this["isStartUp"]));
+            }
+            set {
+                this["isStartUp"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool isToggleSound {
+            get {
+                return ((bool)(this["isToggleSound"]));
+            }
+            set {
+                this["isToggleSound"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("0")]
+        public int soundVolume {
+            get {
+                return ((int)(this["soundVolume"]));
+            }
+            set {
+                this["soundVolume"] = value;
+            }
+        }
     }
 }
