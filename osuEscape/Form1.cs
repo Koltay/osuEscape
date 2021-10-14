@@ -15,12 +15,12 @@ using System.IO;
 using Microsoft.Win32;
 using System.Windows.Media;
 using System.Reflection;
+using System.Threading;
 
 namespace osuEscape
 {
     public partial class Form1 : Form
     {
-        //readonly InputSimulator sim = new InputSimulator();
 
         private int toggle = -1; //1: Allow Firewall; -1: Block Firewall
 
@@ -29,13 +29,18 @@ namespace osuEscape
         private bool isLocationExist = false;
 
         //Global Hotkey
-        private readonly KeyHandler ghk;
+        private KeyHandler ghk;
 
         public Form1()
         {
             InitializeComponent();
 
-            // volume setting not yet completed
+
+            // check if osu!Escape is already opened
+            if (Process.GetProcessesByName("osuEscape").Count() > 1)
+                this.Close();            
+
+            // Volume setting not yet completed
             trackBar1.Visible = false;
             textBox1.Visible = false;
 
@@ -43,7 +48,7 @@ namespace osuEscape
             ghk = new KeyHandler(Keys.F6, this);
             ghk.Register();
 
-            //UI Update with saved user settings
+            // UI Update with saved user settings
             if (Properties.Settings.Default.isStartUp)
                 checkBox1.Checked = true;
             if (Properties.Settings.Default.isToggleSound)
@@ -51,11 +56,9 @@ namespace osuEscape
             textBox1.Text = Properties.Settings.Default.soundVolume.ToString();
             trackBar1.Value = Properties.Settings.Default.soundVolume;
 
-            //fixed size 
+            // UI fixed size 
             this.MaximumSize = this.Size;
-            this.MinimumSize = this.Size;          
-
-
+            this.MinimumSize = this.Size;    
         }
 
         private void Button3_Click(object sender, EventArgs e) // select osu!.exe
@@ -69,7 +72,8 @@ namespace osuEscape
                 }
                 else
                 {
-                    MessageBox.Show("There is no osu!.exe");
+                    // run until user finds osu.exe or user cancelled the action
+                    button3.PerformClick();
                 }
             }
         }
@@ -88,8 +92,9 @@ namespace osuEscape
             return (Process.GetProcessesByName("osu!").Count() == 0 ? "" : Process.GetProcessesByName("osu!").FirstOrDefault().MainModule.FileName);
         }
 
-        private void Form1_Load_1(object sender, EventArgs e)
-        {
+        private void Form1_Load(object sender, EventArgs e)
+        {          
+
             // check if user is playing osu!, then get the directory
 
             string str = GetOsuPath(); // when you already execute osu!.exe
@@ -114,6 +119,23 @@ namespace osuEscape
                     button3.PerformClick(); // trigger select folder function since there is no any record
                 }
             }
+
+            notifyIcon1.Visible = false;         
+        }
+
+        private void UpdateContextMenuStrip()
+        {
+            notifyIcon1.ContextMenuStrip = contextMenuStrip1;           
+
+            //Status Update
+            contextMenuStrip1.Items[0].Text = "Status: " + button4.Text;
+
+            //Quit function
+            contextMenuStrip1.Items[1].Click += new EventHandler(QuitLabel_Click);    
+        }
+        private void QuitLabel_Click(object sender, EventArgs e)
+        {
+            this.Close();
         }
         
         protected override void WndProc(ref Message m)
@@ -233,15 +255,16 @@ namespace osuEscape
         }
 
         private void NotifyIcon1_MouseDoubleClick(object sender, MouseEventArgs e)
-        {
-            
-            if(notifyIcon1.Visible)
-            {
-                Show();
-                this.WindowState = FormWindowState.Normal;
-                notifyIcon1.Visible = false;
-                this.ShowInTaskbar = true;
-            } 
+        {            
+            Show();
+            this.WindowState = FormWindowState.Normal;
+            notifyIcon1.Visible = false;
+            this.ShowInTaskbar = true;
+
+            // Re-enable Hotkey
+            ghk.Unregiser();
+            ghk = new KeyHandler(Keys.F6, this);
+            ghk.Register();
         }
 
         private void Form1_Resize(object sender, EventArgs e)
@@ -251,9 +274,10 @@ namespace osuEscape
             //and show the system tray icon (represented by the NotifyIcon control)  
             if (this.WindowState == FormWindowState.Minimized)
             {
-                Hide();
+                //Hide();
                 notifyIcon1.Visible = true;
                 this.ShowInTaskbar = false;
+                UpdateContextMenuStrip();
             }
                 
         }

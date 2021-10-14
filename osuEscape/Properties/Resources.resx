@@ -118,15 +118,18 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
-  <data name="osuEscapeIcon" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\resources\osuescapeicon.ico;System.Drawing.Icon, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="icon" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\resources\icon.ico;System.Drawing.Icon, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="osuEscape" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\osuescape.ico;System.Drawing.Icon, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="toggle" mimetype="application/x-microsoft.net.object.binary.base64">
     <value>
         AAEAAAD/////AQAAAAAAAAAEAQAAABZTeXN0ZW0uSU8uTWVtb3J5U3RyZWFtCgAAAAdfYnVmZmVyB19v
         cmlnaW4JX3Bvc2l0aW9uB19sZW5ndGgJX2NhcGFjaXR5C19leHBhbmRhYmxlCV93cml0YWJsZQpfZXhw
         b3NhYmxlB19pc09wZW4dTWFyc2hhbEJ5UmVmT2JqZWN0K19faWRlbnRpdHkHAAAAAAAAAAACAggICAgB
-        AQEBCQIAAAAAAAAAAAAAAGxLAABsSwAAAAEAAQoPAgAAAGxLAAACUklGRmRLAABXQVZFZm10IBAAAAAB
+        AQEBCQIAAAAAAAAAbEsAAGxLAABsSwAAAAEAAQoPAgAAAGxLAAACUklGRmRLAABXQVZFZm10IBAAAAAB
         AAIAgLsAAADuAgAEABAAZGF0YRRLAADm/xMA+P8bAAoAJQAcAC0ALwA1AEAAOwBRAEAAXwBFAGwASAB4
         AEsAgQBMAIgATACNAEoAkABHAJIAQgCRAD0AkAA2AIwALwCHACYAgAAcAHcAEgBsAAkAYAABAFMA+v9E
         APL/MwDr/yIA5P8PAN3/+//X/+j/0v/U/83/wf/J/6//xv+d/8P/jf/B/37/v/9y/7//aP/A/2D/wf9c
