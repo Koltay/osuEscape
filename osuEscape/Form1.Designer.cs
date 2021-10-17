@@ -31,95 +31,100 @@ namespace osuEscape
         {
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
-            this.button3 = new System.Windows.Forms.Button();
-            this.textBox2 = new System.Windows.Forms.TextBox();
-            this.button4 = new System.Windows.Forms.Button();
-            this.textBox6 = new System.Windows.Forms.TextBox();
-            this.checkBox1 = new System.Windows.Forms.CheckBox();
-            this.notifyIcon1 = new System.Windows.Forms.NotifyIcon(this.components);
-            this.checkBox2 = new System.Windows.Forms.CheckBox();
+            this.findLocationButton = new System.Windows.Forms.Button();
+            this.hotkeyTextBox = new System.Windows.Forms.TextBox();
+            this.toggleButton = new System.Windows.Forms.Button();
+            this.pathTextBox = new System.Windows.Forms.TextBox();
+            this.startUpChk = new System.Windows.Forms.CheckBox();
+            this.osuEscapeNotifyIcon = new System.Windows.Forms.NotifyIcon(this.components);
+            this.toggleSoundChk = new System.Windows.Forms.CheckBox();
             this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.statusToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.quitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.checkBox3 = new System.Windows.Forms.CheckBox();
+            this.systemTrayChk = new System.Windows.Forms.CheckBox();
+            this.topPanel = new System.Windows.Forms.Panel();
+            this.minimizeBtn = new System.Windows.Forms.Button();
+            this.exitButton = new System.Windows.Forms.Button();
+            this.titleLabel = new System.Windows.Forms.Label();
             this.contextMenuStrip1.SuspendLayout();
+            this.topPanel.SuspendLayout();
             this.SuspendLayout();
             // 
-            // button3
+            // findLocationButton
             // 
-            this.button3.BackColor = System.Drawing.Color.Transparent;
-            this.button3.Font = new System.Drawing.Font("Microsoft Sans Serif", 21.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.button3.ForeColor = System.Drawing.Color.Gray;
-            this.button3.Location = new System.Drawing.Point(197, 5);
-            this.button3.Name = "button3";
-            this.button3.Size = new System.Drawing.Size(52, 52);
-            this.button3.TabIndex = 2;
-            this.button3.Text = "📂";
-            this.button3.UseVisualStyleBackColor = false;
-            this.button3.Click += new System.EventHandler(this.Button3_Click);
+            this.findLocationButton.BackColor = System.Drawing.Color.Transparent;
+            this.findLocationButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 21.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.findLocationButton.ForeColor = System.Drawing.Color.Gray;
+            this.findLocationButton.Location = new System.Drawing.Point(197, 53);
+            this.findLocationButton.Name = "findLocationButton";
+            this.findLocationButton.Size = new System.Drawing.Size(52, 52);
+            this.findLocationButton.TabIndex = 2;
+            this.findLocationButton.Text = "📂";
+            this.findLocationButton.UseVisualStyleBackColor = false;
+            this.findLocationButton.Click += new System.EventHandler(this.FindLocationButton_Click);
             // 
-            // textBox2
+            // hotkeyTextBox
             // 
-            this.textBox2.BackColor = System.Drawing.SystemColors.Control;
-            this.textBox2.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.textBox2.Location = new System.Drawing.Point(10, 61);
-            this.textBox2.Name = "textBox2";
-            this.textBox2.ReadOnly = true;
-            this.textBox2.Size = new System.Drawing.Size(145, 13);
-            this.textBox2.TabIndex = 4;
-            this.textBox2.Text = "Global Toggle Hotkey: F6";
+            this.hotkeyTextBox.BackColor = System.Drawing.SystemColors.Control;
+            this.hotkeyTextBox.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.hotkeyTextBox.Location = new System.Drawing.Point(10, 109);
+            this.hotkeyTextBox.Name = "hotkeyTextBox";
+            this.hotkeyTextBox.ReadOnly = true;
+            this.hotkeyTextBox.Size = new System.Drawing.Size(145, 13);
+            this.hotkeyTextBox.TabIndex = 4;
+            this.hotkeyTextBox.Text = "Global Toggle Hotkey: F6";
             // 
-            // button4
+            // toggleButton
             // 
-            this.button4.BackColor = System.Drawing.Color.White;
-            this.button4.Font = new System.Drawing.Font("Microsoft Sans Serif", 14F);
-            this.button4.Location = new System.Drawing.Point(9, 4);
-            this.button4.Name = "button4";
-            this.button4.Size = new System.Drawing.Size(184, 54);
-            this.button4.TabIndex = 0;
-            this.button4.Text = "Toggle";
-            this.button4.UseVisualStyleBackColor = false;
-            this.button4.Click += new System.EventHandler(this.Button4_Click);
+            this.toggleButton.BackColor = System.Drawing.Color.White;
+            this.toggleButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 14F);
+            this.toggleButton.Location = new System.Drawing.Point(9, 52);
+            this.toggleButton.Name = "toggleButton";
+            this.toggleButton.Size = new System.Drawing.Size(184, 54);
+            this.toggleButton.TabIndex = 0;
+            this.toggleButton.Text = "Toggle";
+            this.toggleButton.UseVisualStyleBackColor = false;
+            this.toggleButton.Click += new System.EventHandler(this.ToggleButton_Click);
             // 
-            // textBox6
+            // pathTextBox
             // 
-            this.textBox6.BackColor = System.Drawing.SystemColors.Control;
-            this.textBox6.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.textBox6.Location = new System.Drawing.Point(10, 79);
-            this.textBox6.Name = "textBox6";
-            this.textBox6.ReadOnly = true;
-            this.textBox6.Size = new System.Drawing.Size(255, 13);
-            this.textBox6.TabIndex = 12;
-            this.textBox6.Text = "osu! Path:";
+            this.pathTextBox.BackColor = System.Drawing.SystemColors.Control;
+            this.pathTextBox.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.pathTextBox.Location = new System.Drawing.Point(10, 127);
+            this.pathTextBox.Name = "pathTextBox";
+            this.pathTextBox.ReadOnly = true;
+            this.pathTextBox.Size = new System.Drawing.Size(256, 13);
+            this.pathTextBox.TabIndex = 12;
+            this.pathTextBox.Text = "osu! Path:";
             // 
-            // checkBox1
+            // startUpChk
             // 
-            this.checkBox1.AutoSize = true;
-            this.checkBox1.Location = new System.Drawing.Point(10, 98);
-            this.checkBox1.Name = "checkBox1";
-            this.checkBox1.Size = new System.Drawing.Size(96, 17);
-            this.checkBox1.TabIndex = 14;
-            this.checkBox1.Text = "Run at start up";
-            this.checkBox1.UseVisualStyleBackColor = true;
-            this.checkBox1.CheckedChanged += new System.EventHandler(this.CheckBox1_CheckedChanged);
+            this.startUpChk.AutoSize = true;
+            this.startUpChk.Location = new System.Drawing.Point(10, 144);
+            this.startUpChk.Name = "startUpChk";
+            this.startUpChk.Size = new System.Drawing.Size(96, 17);
+            this.startUpChk.TabIndex = 14;
+            this.startUpChk.Text = "Run at start up";
+            this.startUpChk.UseVisualStyleBackColor = true;
+            this.startUpChk.CheckedChanged += new System.EventHandler(this.StartUpChk_CheckedChanged);
             // 
-            // notifyIcon1
+            // osuEscapeNotifyIcon
             // 
-            this.notifyIcon1.Icon = ((System.Drawing.Icon)(resources.GetObject("notifyIcon1.Icon")));
-            this.notifyIcon1.Text = "osu!Escape";
-            this.notifyIcon1.Visible = true;
-            this.notifyIcon1.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.NotifyIcon1_MouseDoubleClick);
+            this.osuEscapeNotifyIcon.Icon = ((System.Drawing.Icon)(resources.GetObject("osuEscapeNotifyIcon.Icon")));
+            this.osuEscapeNotifyIcon.Text = "osu!Escape";
+            this.osuEscapeNotifyIcon.Visible = true;
+            this.osuEscapeNotifyIcon.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.NotifyIcon1_MouseDoubleClick);
             // 
-            // checkBox2
+            // toggleSoundChk
             // 
-            this.checkBox2.AutoSize = true;
-            this.checkBox2.Location = new System.Drawing.Point(10, 121);
-            this.checkBox2.Name = "checkBox2";
-            this.checkBox2.Size = new System.Drawing.Size(113, 17);
-            this.checkBox2.TabIndex = 15;
-            this.checkBox2.Text = "Toggle with sound";
-            this.checkBox2.UseVisualStyleBackColor = true;
-            this.checkBox2.CheckedChanged += new System.EventHandler(this.CheckBox2_CheckedChanged);
+            this.toggleSoundChk.AutoSize = true;
+            this.toggleSoundChk.Location = new System.Drawing.Point(10, 167);
+            this.toggleSoundChk.Name = "toggleSoundChk";
+            this.toggleSoundChk.Size = new System.Drawing.Size(113, 17);
+            this.toggleSoundChk.TabIndex = 15;
+            this.toggleSoundChk.Text = "Toggle with sound";
+            this.toggleSoundChk.UseVisualStyleBackColor = true;
+            this.toggleSoundChk.CheckedChanged += new System.EventHandler(this.ToggleSoundChk_CheckedChanged);
             // 
             // contextMenuStrip1
             // 
@@ -141,56 +146,124 @@ namespace osuEscape
             this.quitToolStripMenuItem.Size = new System.Drawing.Size(109, 22);
             this.quitToolStripMenuItem.Text = "Quit";
             // 
-            // checkBox3
+            // systemTrayChk
             // 
-            this.checkBox3.AutoSize = true;
-            this.checkBox3.Location = new System.Drawing.Point(10, 144);
-            this.checkBox3.Name = "checkBox3";
-            this.checkBox3.Size = new System.Drawing.Size(139, 17);
-            this.checkBox3.TabIndex = 18;
-            this.checkBox3.Text = "Minimize to System Tray";
-            this.checkBox3.UseVisualStyleBackColor = true;
-            this.checkBox3.CheckedChanged += new System.EventHandler(this.CheckBox3_CheckedChanged);
+            this.systemTrayChk.AutoSize = true;
+            this.systemTrayChk.Location = new System.Drawing.Point(10, 190);
+            this.systemTrayChk.Name = "systemTrayChk";
+            this.systemTrayChk.Size = new System.Drawing.Size(139, 17);
+            this.systemTrayChk.TabIndex = 18;
+            this.systemTrayChk.Text = "Minimize to System Tray";
+            this.systemTrayChk.UseVisualStyleBackColor = true;
+            this.systemTrayChk.CheckedChanged += new System.EventHandler(this.SystemTrayChk_CheckedChanged);
+            // 
+            // topPanel
+            // 
+            this.topPanel.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(70)))), ((int)(((byte)(70)))), ((int)(((byte)(70)))));
+            this.topPanel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.topPanel.Controls.Add(this.minimizeBtn);
+            this.topPanel.Controls.Add(this.exitButton);
+            this.topPanel.Controls.Add(this.titleLabel);
+            this.topPanel.Dock = System.Windows.Forms.DockStyle.Top;
+            this.topPanel.Location = new System.Drawing.Point(0, 0);
+            this.topPanel.Name = "topPanel";
+            this.topPanel.Size = new System.Drawing.Size(266, 33);
+            this.topPanel.TabIndex = 19;
+            this.topPanel.MouseDown += new System.Windows.Forms.MouseEventHandler(this.TopPanel_MouseDown);
+            this.topPanel.MouseMove += new System.Windows.Forms.MouseEventHandler(this.TopPanel_MouseMove);
+            this.topPanel.MouseUp += new System.Windows.Forms.MouseEventHandler(this.TopPanel_MouseUp);
+            // 
+            // minimizeBtn
+            // 
+            this.minimizeBtn.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(70)))), ((int)(((byte)(70)))), ((int)(((byte)(70)))));
+            this.minimizeBtn.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(70)))), ((int)(((byte)(70)))), ((int)(((byte)(70)))));
+            this.minimizeBtn.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
+            this.minimizeBtn.Font = new System.Drawing.Font("Microsoft Sans Serif", 16F);
+            this.minimizeBtn.ForeColor = System.Drawing.Color.White;
+            this.minimizeBtn.Location = new System.Drawing.Point(201, -25);
+            this.minimizeBtn.Name = "minimizeBtn";
+            this.minimizeBtn.Size = new System.Drawing.Size(31, 62);
+            this.minimizeBtn.TabIndex = 21;
+            this.minimizeBtn.Text = "_";
+            this.minimizeBtn.TextImageRelation = System.Windows.Forms.TextImageRelation.TextAboveImage;
+            this.minimizeBtn.UseVisualStyleBackColor = false;
+            this.minimizeBtn.Click += new System.EventHandler(this.MinimizeBtn_Click);
+            // 
+            // exitButton
+            // 
+            this.exitButton.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(70)))), ((int)(((byte)(70)))), ((int)(((byte)(70)))));
+            this.exitButton.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(70)))), ((int)(((byte)(70)))), ((int)(((byte)(70)))));
+            this.exitButton.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(70)))), ((int)(((byte)(70)))), ((int)(((byte)(70)))));
+            this.exitButton.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(70)))), ((int)(((byte)(70)))), ((int)(((byte)(70)))));
+            this.exitButton.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
+            this.exitButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 16F);
+            this.exitButton.ForeColor = System.Drawing.Color.White;
+            this.exitButton.Location = new System.Drawing.Point(234, 0);
+            this.exitButton.Name = "exitButton";
+            this.exitButton.Size = new System.Drawing.Size(31, 33);
+            this.exitButton.TabIndex = 20;
+            this.exitButton.Text = "X";
+            this.exitButton.TextImageRelation = System.Windows.Forms.TextImageRelation.TextAboveImage;
+            this.exitButton.UseVisualStyleBackColor = false;
+            this.exitButton.Click += new System.EventHandler(this.ExitButton_Click);
+            // 
+            // titleLabel
+            // 
+            this.titleLabel.AutoSize = true;
+            this.titleLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 16F);
+            this.titleLabel.ForeColor = System.Drawing.Color.White;
+            this.titleLabel.Location = new System.Drawing.Point(3, 4);
+            this.titleLabel.Name = "label1";
+            this.titleLabel.Size = new System.Drawing.Size(132, 26);
+            this.titleLabel.TabIndex = 20;
+            this.titleLabel.Text = "osu! Escape";
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(266, 164);
-            this.Controls.Add(this.checkBox3);
-            this.Controls.Add(this.checkBox2);
-            this.Controls.Add(this.checkBox1);
-            this.Controls.Add(this.textBox6);
-            this.Controls.Add(this.textBox2);
-            this.Controls.Add(this.button3);
-            this.Controls.Add(this.button4);
+            this.ClientSize = new System.Drawing.Size(266, 217);
+            this.Controls.Add(this.topPanel);
+            this.Controls.Add(this.systemTrayChk);
+            this.Controls.Add(this.toggleSoundChk);
+            this.Controls.Add(this.startUpChk);
+            this.Controls.Add(this.pathTextBox);
+            this.Controls.Add(this.hotkeyTextBox);
+            this.Controls.Add(this.findLocationButton);
+            this.Controls.Add(this.toggleButton);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.KeyPreview = true;
             this.MaximizeBox = false;
             this.Name = "Form1";
-            this.Padding = new System.Windows.Forms.Padding(30);
             this.Text = "osu!Escape";
             this.TopMost = true;
             this.Load += new System.EventHandler(this.Form1_Load);
             this.Resize += new System.EventHandler(this.Form1_Resize);
             this.contextMenuStrip1.ResumeLayout(false);
+            this.topPanel.ResumeLayout(false);
+            this.topPanel.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
         }
 
         #endregion
-        private System.Windows.Forms.Button button3;
-        private System.Windows.Forms.TextBox textBox2;
-        private System.Windows.Forms.Button button4;
-        private System.Windows.Forms.TextBox textBox6;
-        private System.Windows.Forms.CheckBox checkBox1;
-        private System.Windows.Forms.NotifyIcon notifyIcon1;
-        private System.Windows.Forms.CheckBox checkBox2;
+        private System.Windows.Forms.Button findLocationButton;
+        private System.Windows.Forms.TextBox hotkeyTextBox;
+        private System.Windows.Forms.Button toggleButton;
+        private System.Windows.Forms.TextBox pathTextBox;
+        private System.Windows.Forms.CheckBox startUpChk;
+        private System.Windows.Forms.NotifyIcon osuEscapeNotifyIcon;
+        private System.Windows.Forms.CheckBox toggleSoundChk;
         private System.Windows.Forms.ContextMenuStrip contextMenuStrip1;
         private System.Windows.Forms.ToolStripMenuItem statusToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem quitToolStripMenuItem;
-        private System.Windows.Forms.CheckBox checkBox3;
+        private System.Windows.Forms.CheckBox systemTrayChk;
+        private System.Windows.Forms.Panel topPanel;
+        private System.Windows.Forms.Label titleLabel;
+        private System.Windows.Forms.Button exitButton;
+        private System.Windows.Forms.Button minimizeBtn;
     }
 }
 

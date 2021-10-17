@@ -49,16 +49,16 @@ namespace osuEscape
         private void UIUpdate()
         {
             // UI Update with saved user settings
-            checkBox1.Checked = Properties.Settings.Default.isStartUp;
-            checkBox2.Checked = Properties.Settings.Default.isToggleSound;
-            checkBox3.Checked = Properties.Settings.Default.isSystemTray;
+            startUpChk.Checked = Properties.Settings.Default.isStartUp;
+            toggleSoundChk.Checked = Properties.Settings.Default.isToggleSound;
+            systemTrayChk.Checked = Properties.Settings.Default.isSystemTray;
 
             // UI fixed size 
             this.MaximumSize = this.Size;
             this.MinimumSize = this.Size;
         }
 
-        private void Button3_Click(object sender, EventArgs e) // select osu!.exe
+        private void FindLocationButton_Click(object sender, EventArgs e) // select osu!.exe
         {
             OpenFileDialog ofd = new OpenFileDialog();
             if (ofd.ShowDialog() == DialogResult.OK)
@@ -70,7 +70,7 @@ namespace osuEscape
                 else
                 {
                     // run until user finds osu.exe or user cancelled the action
-                    button3.PerformClick();
+                    findLocationButton.PerformClick();
                 }
             }
         }
@@ -80,7 +80,7 @@ namespace osuEscape
             ChangeConnection(toggle == 1); // isAllow
             toggle *= -1; // Check above for declaration 
 
-            if (checkBox2.Checked)
+            if (toggleSoundChk.Checked)
                 System.Media.SystemSounds.Asterisk.Play();            
         }
 
@@ -114,19 +114,19 @@ namespace osuEscape
                 }
                 else
                 {
-                    button3.PerformClick(); // trigger select folder function since there is no any record
+                    findLocationButton.PerformClick(); // trigger select folder function since there is no any record
                 }
             }
 
-            notifyIcon1.Visible = false;         
+            osuEscapeNotifyIcon.Visible = false;         
         }
 
         private void UpdateContextMenuStrip()
         {
-            notifyIcon1.ContextMenuStrip = contextMenuStrip1;           
+            osuEscapeNotifyIcon.ContextMenuStrip = contextMenuStrip1;           
 
             //Status Update
-            contextMenuStrip1.Items[0].Text = "Status: " + button4.Text;
+            contextMenuStrip1.Items[0].Text = "Status: " + toggleButton.Text;
 
             //Quit function
             contextMenuStrip1.Items[1].Click += new EventHandler(QuitLabel_Click);    
@@ -160,8 +160,8 @@ namespace osuEscape
             cmd.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
             cmd.Start();
 
-            button4.Text = isAllow ? "Connecting" : "Blocked";
-            button4.ForeColor = isAllow ? System.Drawing.Color.Green : System.Drawing.Color.Red;
+            toggleButton.Text = isAllow ? "Connecting" : "Blocked";
+            toggleButton.ForeColor = isAllow ? System.Drawing.Color.Green : System.Drawing.Color.Red;
         }
 
         private void RuleResetAndSetUp(string filename) 
@@ -194,12 +194,12 @@ namespace osuEscape
                 cmd.Start();
                 cmd.WaitForExit();
 
-                button4.Text = "Connecting";
-                button4.ForeColor = System.Drawing.Color.Green;
+                toggleButton.Text = "Connecting";
+                toggleButton.ForeColor = System.Drawing.Color.Green;
             }
         }
 
-        private void Button4_Click(object sender, EventArgs e)
+        private void ToggleButton_Click(object sender, EventArgs e)
         {
             if (isLocationExist)
             {
@@ -214,7 +214,7 @@ namespace osuEscape
         private void UpdateOsuLocationText()
         {
             isLocationExist = true;
-            textBox6.Text = "osu! Path: " + String.Join("\\", Properties.Settings.Default.osuLocation.Split('\\').Reverse().Skip(1).Reverse()) + "\\";
+            pathTextBox.Text = "osu! Path: " + String.Join("\\", Properties.Settings.Default.osuLocation.Split('\\').Reverse().Skip(1).Reverse()) + "\\";
         }
 
         private void SetRunAtStartup(bool enabled)
@@ -242,7 +242,7 @@ namespace osuEscape
         private void NotifyIcon1_MouseDoubleClick(object sender, MouseEventArgs e)
         {            
             this.WindowState = FormWindowState.Normal;
-            notifyIcon1.Visible = false;
+            osuEscapeNotifyIcon.Visible = false;
             this.ShowInTaskbar = true;
 
             // Re-enable Hotkey
@@ -257,38 +257,73 @@ namespace osuEscape
             //hide it from the task bar  
             //and show the system tray icon (represented by the NotifyIcon control)
             
-            if (checkBox3.Checked && this.WindowState == FormWindowState.Minimized)
+            if (systemTrayChk.Checked && this.WindowState == FormWindowState.Minimized)
             {
-                notifyIcon1.Visible = true;
+                osuEscapeNotifyIcon.Visible = true;
                 this.ShowInTaskbar = false;
                 UpdateContextMenuStrip();
             }
                 
         }
 
-        private void CheckBox1_CheckedChanged(object sender, EventArgs e)
+        private void StartUpChk_CheckedChanged(object sender, EventArgs e)
         {
-            if (checkBox1.Checked)
+            if (startUpChk.Checked)
                 SetRunAtStartup(true);
             else
                 SetRunAtStartup(false);
 
-            Properties.Settings.Default.isStartUp = checkBox1.Checked;
+            Properties.Settings.Default.isStartUp = startUpChk.Checked;
         }
 
-        private void CheckBox2_CheckedChanged(object sender, EventArgs e)
+        private void ToggleSoundChk_CheckedChanged(object sender, EventArgs e)
         {
-            Properties.Settings.Default.isToggleSound = checkBox2.Checked;
+            Properties.Settings.Default.isToggleSound = toggleSoundChk.Checked;
         }
 
-        private void CheckBox3_CheckedChanged(object sender, EventArgs e)
+        private void SystemTrayChk_CheckedChanged(object sender, EventArgs e)
         {
-            Properties.Settings.Default.isSystemTray = checkBox3.Checked;
+            Properties.Settings.Default.isSystemTray = systemTrayChk.Checked;
         }
 
         void Application_ApplicationExit(object sender, EventArgs e)
         {
             Properties.Settings.Default.Save();
+        }
+
+        private bool dragging = false;
+        private Point dragCursorPoint;
+        private Point dragFormPoint;
+
+        private void TopPanel_MouseDown(object sender, MouseEventArgs e)
+        {
+            dragging = true;
+            dragCursorPoint = Cursor.Position;
+            dragFormPoint = this.Location;
+        }
+
+        private void TopPanel_MouseMove(object sender, MouseEventArgs e)
+        {
+            if (dragging)
+            {
+                Point dif = Point.Subtract(Cursor.Position, new Size(dragCursorPoint));
+                this.Location = Point.Add(dragFormPoint, new Size(dif));
+            }
+        }
+
+        private void TopPanel_MouseUp(object sender, MouseEventArgs e)
+        {
+            dragging = false;
+        }
+
+        private void ExitButton_Click(object sender, EventArgs e)
+        {
+            Application.Exit();
+        }
+
+        private void MinimizeBtn_Click(object sender, EventArgs e)
+        {
+            this.WindowState = FormWindowState.Minimized;
         }
     }
 }
