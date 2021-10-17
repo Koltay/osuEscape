@@ -16,6 +16,7 @@ using Microsoft.Win32;
 using System.Windows.Media;
 using System.Reflection;
 using System.Threading;
+using AudioSwitcher.AudioApi.CoreAudio;
 
 namespace osuEscape
 {
@@ -35,30 +36,26 @@ namespace osuEscape
         {
             InitializeComponent();
 
-
             // check if osu!Escape is already opened
             if (Process.GetProcessesByName("osuEscape").Count() > 1)
                 this.Close();            
 
-            // Volume setting not yet completed
-            trackBar1.Visible = false;
-            textBox1.Visible = false;
-
-
             ghk = new KeyHandler(Keys.F6, this);
             ghk.Register();
 
+            UIUpdate();
+        }
+
+        private void UIUpdate()
+        {
             // UI Update with saved user settings
-            if (Properties.Settings.Default.isStartUp)
-                checkBox1.Checked = true;
-            if (Properties.Settings.Default.isToggleSound)
-                checkBox2.Checked = true;
-            textBox1.Text = Properties.Settings.Default.soundVolume.ToString();
-            trackBar1.Value = Properties.Settings.Default.soundVolume;
+            checkBox1.Checked = Properties.Settings.Default.isStartUp;
+            checkBox2.Checked = Properties.Settings.Default.isToggleSound;
+            checkBox3.Checked = Properties.Settings.Default.isSystemTray;
 
             // UI fixed size 
             this.MaximumSize = this.Size;
-            this.MinimumSize = this.Size;    
+            this.MinimumSize = this.Size;
         }
 
         private void Button3_Click(object sender, EventArgs e) // select osu!.exe
@@ -93,7 +90,8 @@ namespace osuEscape
         }
 
         private void Form1_Load(object sender, EventArgs e)
-        {          
+        { 
+            Application.ApplicationExit += new EventHandler(Application_ApplicationExit);
 
             // check if user is playing osu!, then get the directory
 
@@ -224,39 +222,25 @@ namespace osuEscape
             try
             {
                 string path = System.Reflection.Assembly.GetExecutingAssembly().Location;
-                RegistryKey rk = Registry.CurrentUser.OpenSubKey("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run", true);
-                if (enabled)
-                    rk.SetValue("osu!Escape", "\"" + path + "\" --hide");
-                else
-                    rk.DeleteValue("osu!Escape", false);
 
+                RegistryKey rk = Registry.CurrentUser.OpenSubKey("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run", true);            
+
+                if (enabled)
+                {
+                    rk.SetValue("osu!Escape", "\"" + path + "\" --hide");
+                }                    
+                else
+                {
+                    rk.DeleteValue("osu!Escape", false);
+                }
                 rk.Close();
             }
             catch (Exception)
             {
             }
         }
-
-        private void CheckBox1_CheckedChanged(object sender, EventArgs e)
-        {
-            if (checkBox1.Checked)
-            {
-                SetRunAtStartup(true);
-                Properties.Settings.Default.isStartUp = true;
-                Properties.Settings.Default.Save();
-            }                
-            else
-            {
-                SetRunAtStartup(false);
-                Properties.Settings.Default.isStartUp = false;
-                Properties.Settings.Default.Save();
-            }
-                
-        }
-
         private void NotifyIcon1_MouseDoubleClick(object sender, MouseEventArgs e)
         {            
-            Show();
             this.WindowState = FormWindowState.Normal;
             notifyIcon1.Visible = false;
             this.ShowInTaskbar = true;
@@ -271,10 +255,10 @@ namespace osuEscape
         {
             //if the form is minimized  
             //hide it from the task bar  
-            //and show the system tray icon (represented by the NotifyIcon control)  
-            if (this.WindowState == FormWindowState.Minimized)
+            //and show the system tray icon (represented by the NotifyIcon control)
+            
+            if (checkBox3.Checked && this.WindowState == FormWindowState.Minimized)
             {
-                //Hide();
                 notifyIcon1.Visible = true;
                 this.ShowInTaskbar = false;
                 UpdateContextMenuStrip();
@@ -282,10 +266,28 @@ namespace osuEscape
                 
         }
 
-        private void TrackBar1_Scroll(object sender, EventArgs e)
+        private void CheckBox1_CheckedChanged(object sender, EventArgs e)
         {
-            textBox1.Text = trackBar1.Value.ToString();
-            Properties.Settings.Default.soundVolume = trackBar1.Value;
+            if (checkBox1.Checked)
+                SetRunAtStartup(true);
+            else
+                SetRunAtStartup(false);
+
+            Properties.Settings.Default.isStartUp = checkBox1.Checked;
+        }
+
+        private void CheckBox2_CheckedChanged(object sender, EventArgs e)
+        {
+            Properties.Settings.Default.isToggleSound = checkBox2.Checked;
+        }
+
+        private void CheckBox3_CheckedChanged(object sender, EventArgs e)
+        {
+            Properties.Settings.Default.isSystemTray = checkBox3.Checked;
+        }
+
+        void Application_ApplicationExit(object sender, EventArgs e)
+        {
             Properties.Settings.Default.Save();
         }
     }

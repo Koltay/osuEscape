@@ -61,13 +61,13 @@ namespace osuEscape.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("0")]
-        public int soundVolume {
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool isSystemTray {
             get {
-                return ((int)(this["soundVolume"]));
+                return ((bool)(this["isSystemTray"]));
             }
             set {
-                this["soundVolume"] = value;
+                this["isSystemTray"] = value;
             }
         }
     }
