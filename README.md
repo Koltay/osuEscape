@@ -3,21 +3,26 @@
 
  # WARNING: IT IS UNKNOWN IF THE APPLICATION IS BANNABLE SO KEEP EVERYTHING SAFE AND CLEAN BEFORE RELEASE
  
- This project is inspired by 1E308 (Nameless player), Chaoslitz
+ This project is a Score Submission Block Application, inspired by:
  
- Score Submission Block Application for osu! Players
+ 1E308 (Nameless player)'s score submitting [video](https://www.youtube.com/watch?v=D7x7OXpUmss&t=647s&ab_channel=RoriSanbyaku)
+
+ DigitalHypno's disable score submission [video](https://www.youtube.com/watch?v=lusAZ1fiph8&ab_channel=DigitalHypno)
  
- Available on all modes, but not for osu!lazer
+ Currently available on all modes, but not for osu!lazer
  
- Features:
+ ![image](https://user-images.githubusercontent.com/73950784/137898101-da1b265c-395b-4d2b-b80a-d299027cd09d.png)
+
  
- - Question mark: locate your osu! file to initiate the blocking rule
+ Basic features:
+ 
+ - File icon: Locate the osu! file to initiate the blocking rule on advanced firewall
 
  - Global Toggle Key: Toggle the connection using F6 Key
  
- These methods are conducted through adding rules on your PC's Advanced Firewall
+ These methods are conducted through adding rules on Advanced Firewall
  
- Thank you for those who contributed in this project:
+ Thank you to those who contributed to this project:
  
  Testing: Hellotomlol225, Takanashi Ako;
  
