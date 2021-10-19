@@ -43,8 +43,8 @@ namespace osuEscape
             this.quitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.systemTrayChk = new System.Windows.Forms.CheckBox();
             this.topPanel = new System.Windows.Forms.Panel();
-            this.minimizeBtn = new System.Windows.Forms.Button();
             this.exitButton = new System.Windows.Forms.Button();
+            this.minimizeBtn = new System.Windows.Forms.Button();
             this.titleLabel = new System.Windows.Forms.Label();
             this.contextMenuStrip1.SuspendLayout();
             this.topPanel.SuspendLayout();
@@ -110,7 +110,6 @@ namespace osuEscape
             // 
             // osuEscapeNotifyIcon
             // 
-            this.osuEscapeNotifyIcon.Icon = ((System.Drawing.Icon)(resources.GetObject("osuEscapeNotifyIcon.Icon")));
             this.osuEscapeNotifyIcon.Text = "osu!Escape";
             this.osuEscapeNotifyIcon.Visible = true;
             this.osuEscapeNotifyIcon.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.NotifyIcon1_MouseDoubleClick);
@@ -159,64 +158,65 @@ namespace osuEscape
             // 
             // topPanel
             // 
+            this.topPanel.AllowDrop = true;
             this.topPanel.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(70)))), ((int)(((byte)(70)))), ((int)(((byte)(70)))));
             this.topPanel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.topPanel.Controls.Add(this.minimizeBtn);
             this.topPanel.Controls.Add(this.exitButton);
+            this.topPanel.Controls.Add(this.minimizeBtn);
             this.topPanel.Controls.Add(this.titleLabel);
             this.topPanel.Dock = System.Windows.Forms.DockStyle.Top;
             this.topPanel.Location = new System.Drawing.Point(0, 0);
             this.topPanel.Name = "topPanel";
             this.topPanel.Size = new System.Drawing.Size(266, 33);
-            this.topPanel.TabIndex = 19;
+            this.topPanel.TabIndex = 1;
             this.topPanel.MouseDown += new System.Windows.Forms.MouseEventHandler(this.TopPanel_MouseDown);
             this.topPanel.MouseMove += new System.Windows.Forms.MouseEventHandler(this.TopPanel_MouseMove);
             this.topPanel.MouseUp += new System.Windows.Forms.MouseEventHandler(this.TopPanel_MouseUp);
-            // 
-            // minimizeBtn
-            // 
-            this.minimizeBtn.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(70)))), ((int)(((byte)(70)))), ((int)(((byte)(70)))));
-            this.minimizeBtn.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(70)))), ((int)(((byte)(70)))), ((int)(((byte)(70)))));
-            this.minimizeBtn.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.minimizeBtn.Font = new System.Drawing.Font("Microsoft Sans Serif", 16F);
-            this.minimizeBtn.ForeColor = System.Drawing.Color.White;
-            this.minimizeBtn.Location = new System.Drawing.Point(201, -25);
-            this.minimizeBtn.Name = "minimizeBtn";
-            this.minimizeBtn.Size = new System.Drawing.Size(31, 62);
-            this.minimizeBtn.TabIndex = 21;
-            this.minimizeBtn.Text = "_";
-            this.minimizeBtn.TextImageRelation = System.Windows.Forms.TextImageRelation.TextAboveImage;
-            this.minimizeBtn.UseVisualStyleBackColor = false;
-            this.minimizeBtn.Click += new System.EventHandler(this.MinimizeBtn_Click);
             // 
             // exitButton
             // 
             this.exitButton.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(70)))), ((int)(((byte)(70)))), ((int)(((byte)(70)))));
             this.exitButton.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(70)))), ((int)(((byte)(70)))), ((int)(((byte)(70)))));
-            this.exitButton.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(70)))), ((int)(((byte)(70)))), ((int)(((byte)(70)))));
-            this.exitButton.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(70)))), ((int)(((byte)(70)))), ((int)(((byte)(70)))));
-            this.exitButton.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
+            this.exitButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.exitButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 16F);
             this.exitButton.ForeColor = System.Drawing.Color.White;
-            this.exitButton.Location = new System.Drawing.Point(234, 0);
+            this.exitButton.Location = new System.Drawing.Point(233, -15);
             this.exitButton.Name = "exitButton";
-            this.exitButton.Size = new System.Drawing.Size(31, 33);
-            this.exitButton.TabIndex = 20;
+            this.exitButton.Size = new System.Drawing.Size(31, 62);
+            this.exitButton.TabIndex = 22;
             this.exitButton.Text = "X";
-            this.exitButton.TextImageRelation = System.Windows.Forms.TextImageRelation.TextAboveImage;
             this.exitButton.UseVisualStyleBackColor = false;
             this.exitButton.Click += new System.EventHandler(this.ExitButton_Click);
             // 
+            // minimizeBtn
+            // 
+            this.minimizeBtn.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(70)))), ((int)(((byte)(70)))), ((int)(((byte)(70)))));
+            this.minimizeBtn.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(70)))), ((int)(((byte)(70)))), ((int)(((byte)(70)))));
+            this.minimizeBtn.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.minimizeBtn.Font = new System.Drawing.Font("Microsoft Sans Serif", 16F);
+            this.minimizeBtn.ForeColor = System.Drawing.Color.White;
+            this.minimizeBtn.Location = new System.Drawing.Point(203, -25);
+            this.minimizeBtn.Name = "minimizeBtn";
+            this.minimizeBtn.Size = new System.Drawing.Size(31, 62);
+            this.minimizeBtn.TabIndex = 21;
+            this.minimizeBtn.Text = "_";
+            this.minimizeBtn.UseVisualStyleBackColor = false;
+            this.minimizeBtn.Click += new System.EventHandler(this.MinimizeBtn_Click);
+            // 
             // titleLabel
             // 
+            this.titleLabel.AllowDrop = true;
             this.titleLabel.AutoSize = true;
-            this.titleLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 16F);
+            this.titleLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F);
             this.titleLabel.ForeColor = System.Drawing.Color.White;
-            this.titleLabel.Location = new System.Drawing.Point(3, 4);
-            this.titleLabel.Name = "label1";
-            this.titleLabel.Size = new System.Drawing.Size(132, 26);
-            this.titleLabel.TabIndex = 20;
+            this.titleLabel.Location = new System.Drawing.Point(2, 7);
+            this.titleLabel.Name = "titleLabel";
+            this.titleLabel.Size = new System.Drawing.Size(85, 17);
+            this.titleLabel.TabIndex = 0;
             this.titleLabel.Text = "osu! Escape";
+            this.titleLabel.MouseDown += new System.Windows.Forms.MouseEventHandler(this.TitleLabel_MouseDown);
+            this.titleLabel.MouseMove += new System.Windows.Forms.MouseEventHandler(this.TitleLabel_MouseMove);
+            this.titleLabel.MouseUp += new System.Windows.Forms.MouseEventHandler(this.TitleLabel_MouseUp);
             // 
             // Form1
             // 
@@ -262,8 +262,8 @@ namespace osuEscape
         private System.Windows.Forms.CheckBox systemTrayChk;
         private System.Windows.Forms.Panel topPanel;
         private System.Windows.Forms.Label titleLabel;
-        private System.Windows.Forms.Button exitButton;
         private System.Windows.Forms.Button minimizeBtn;
+        private System.Windows.Forms.Button exitButton;
     }
 }
 

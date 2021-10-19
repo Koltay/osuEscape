@@ -21,7 +21,7 @@ using AudioSwitcher.AudioApi.CoreAudio;
 namespace osuEscape
 {
     public partial class Form1 : Form
-    {
+    { 
 
         private int toggle = -1; //1: Allow Firewall; -1: Block Firewall
 
@@ -91,16 +91,19 @@ namespace osuEscape
 
         private void Form1_Load(object sender, EventArgs e)
         { 
+            // avoid opening twice
             Application.ApplicationExit += new EventHandler(Application_ApplicationExit);
 
-            // check if user is playing osu!, then get the directory
+            // open the app at the previous location 
+            this.Location = Properties.Settings.Default.appLocation;
 
-            string str = GetOsuPath(); // when you already execute osu!.exe
+            // getting osu! directory from running process
+            string str = GetOsuPath(); 
 
             if (str != "")
             {
                 Properties.Settings.Default.osuLocation = Process.GetProcessesByName("osu!").FirstOrDefault().MainModule.FileName;
-                Properties.Settings.Default.Save();
+
                 UpdateOsuLocationText();
 
                 RuleResetAndSetUp(Properties.Settings.Default.osuLocation);
@@ -128,8 +131,7 @@ namespace osuEscape
             //Status Update
             contextMenuStrip1.Items[0].Text = "Status: " + toggleButton.Text;
 
-            //Quit function
-            contextMenuStrip1.Items[1].Click += new EventHandler(QuitLabel_Click);    
+            contextMenuStrip1.Items[1].Click += new EventHandler(QuitLabel_Click);
         }
         private void QuitLabel_Click(object sender, EventArgs e)
         {
@@ -169,7 +171,7 @@ namespace osuEscape
             if (filename.Contains("osu!.exe"))
             {
                 Properties.Settings.Default.osuLocation = filename;
-                Properties.Settings.Default.Save();
+
                 UpdateOsuLocationText();
 
 
@@ -252,11 +254,7 @@ namespace osuEscape
         }
 
         private void Form1_Resize(object sender, EventArgs e)
-        {
-            //if the form is minimized  
-            //hide it from the task bar  
-            //and show the system tray icon (represented by the NotifyIcon control)
-            
+        {            
             if (systemTrayChk.Checked && this.WindowState == FormWindowState.Minimized)
             {
                 osuEscapeNotifyIcon.Visible = true;
@@ -288,6 +286,9 @@ namespace osuEscape
 
         void Application_ApplicationExit(object sender, EventArgs e)
         {
+            // save the last position of the application
+            Properties.Settings.Default.appLocation = this.Location;
+
             Properties.Settings.Default.Save();
         }
 
@@ -312,6 +313,28 @@ namespace osuEscape
         }
 
         private void TopPanel_MouseUp(object sender, MouseEventArgs e)
+        {
+            dragging = false;
+        }
+
+        // Make dragging also usable for label
+        private void TitleLabel_MouseDown(object sender, MouseEventArgs e)
+        {
+            dragging = true;
+            dragCursorPoint = Cursor.Position;
+            dragFormPoint = this.Location;
+        }
+
+        private void TitleLabel_MouseMove(object sender, MouseEventArgs e)
+        {
+            if (dragging)
+            {
+                Point dif = Point.Subtract(Cursor.Position, new Size(dragCursorPoint));
+                this.Location = Point.Add(dragFormPoint, new Size(dif));
+            }
+        }
+
+        private void TitleLabel_MouseUp(object sender, MouseEventArgs e)
         {
             dragging = false;
         }
