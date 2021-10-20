@@ -60,6 +60,11 @@ namespace osuEscape
 
         private void FindLocationButton_Click(object sender, EventArgs e) // select osu!.exe
         {
+            findLocation();
+        }
+
+        private void findLocation()
+        {
             OpenFileDialog ofd = new OpenFileDialog();
             if (ofd.ShowDialog() == DialogResult.OK)
             {
@@ -69,8 +74,8 @@ namespace osuEscape
                 }
                 else
                 {
-                    // run until user finds osu.exe or user cancelled the action
-                    findLocationButton.PerformClick();
+                    // run again until user finds osu.exe or user cancelled the action
+                    findLocation();
                 }
             }
         }
@@ -91,6 +96,8 @@ namespace osuEscape
 
         private void Form1_Load(object sender, EventArgs e)
         { 
+            
+
             // avoid opening twice
             Application.ApplicationExit += new EventHandler(Application_ApplicationExit);
 
@@ -117,7 +124,7 @@ namespace osuEscape
                 }
                 else
                 {
-                    findLocationButton.PerformClick(); // trigger select folder function since there is no any record
+                    findLocation(); // trigger select folder function since there is no any record
                 }
             }
 
@@ -126,12 +133,12 @@ namespace osuEscape
 
         private void UpdateContextMenuStrip()
         {
-            osuEscapeNotifyIcon.ContextMenuStrip = contextMenuStrip1;           
+            osuEscapeNotifyIcon.ContextMenuStrip = osuCMS;           
 
             //Status Update
-            contextMenuStrip1.Items[0].Text = "Status: " + toggleButton.Text;
+            osuCMS.Items[0].Text = "Status: " + toggleButton.Text;
 
-            contextMenuStrip1.Items[1].Click += new EventHandler(QuitLabel_Click);
+            osuCMS.Items[1].Click += new EventHandler(QuitLabel_Click);
         }
         private void QuitLabel_Click(object sender, EventArgs e)
         {
@@ -173,7 +180,6 @@ namespace osuEscape
                 Properties.Settings.Default.osuLocation = filename;
 
                 UpdateOsuLocationText();
-
 
                 Process cmd = new Process();
                 cmd.StartInfo.FileName = "netsh";
@@ -228,24 +234,21 @@ namespace osuEscape
                 RegistryKey rk = Registry.CurrentUser.OpenSubKey("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run", true);            
 
                 if (enabled)
-                {
-                    rk.SetValue("osu!Escape", "\"" + path + "\" --hide");
-                }                    
+                    rk.SetValue("osu!Escape", "\"" + path + "\" --hide");                  
                 else
-                {
                     rk.DeleteValue("osu!Escape", false);
-                }
+
                 rk.Close();
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                MessageBox.Show(ex.Message);
             }
         }
-        private void NotifyIcon1_MouseDoubleClick(object sender, MouseEventArgs e)
+        private void OsuEscapeNotifyIcon_MouseDoubleClick(object sender, MouseEventArgs e)
         {            
             this.WindowState = FormWindowState.Normal;
-            osuEscapeNotifyIcon.Visible = false;
-            this.ShowInTaskbar = true;
+            ToggleSystemTray(false);
 
             // Re-enable Hotkey
             ghk.Unregiser();
@@ -253,23 +256,9 @@ namespace osuEscape
             ghk.Register();
         }
 
-        private void Form1_Resize(object sender, EventArgs e)
-        {            
-            if (systemTrayChk.Checked && this.WindowState == FormWindowState.Minimized)
-            {
-                osuEscapeNotifyIcon.Visible = true;
-                this.ShowInTaskbar = false;
-                UpdateContextMenuStrip();
-            }
-                
-        }
-
         private void StartUpChk_CheckedChanged(object sender, EventArgs e)
-        {
-            if (startUpChk.Checked)
-                SetRunAtStartup(true);
-            else
-                SetRunAtStartup(false);
+        {        
+            SetRunAtStartup(startUpChk.Checked);
 
             Properties.Settings.Default.isStartUp = startUpChk.Checked;
         }
@@ -287,7 +276,8 @@ namespace osuEscape
         void Application_ApplicationExit(object sender, EventArgs e)
         {
             // save the last position of the application
-            Properties.Settings.Default.appLocation = this.Location;
+            if (this.WindowState != FormWindowState.Minimized)
+                Properties.Settings.Default.appLocation = this.Location;
 
             Properties.Settings.Default.Save();
         }
@@ -347,6 +337,18 @@ namespace osuEscape
         private void MinimizeBtn_Click(object sender, EventArgs e)
         {
             this.WindowState = FormWindowState.Minimized;
+
+            if (systemTrayChk.Checked)
+            {
+                ToggleSystemTray(true);
+                UpdateContextMenuStrip();
+            }
+        }
+
+        private void ToggleSystemTray(bool enabled)
+        {
+            osuEscapeNotifyIcon.Visible = enabled;
+            this.ShowInTaskbar = !enabled;
         }
     }
 }

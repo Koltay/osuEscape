@@ -38,7 +38,7 @@ namespace osuEscape
             this.startUpChk = new System.Windows.Forms.CheckBox();
             this.osuEscapeNotifyIcon = new System.Windows.Forms.NotifyIcon(this.components);
             this.toggleSoundChk = new System.Windows.Forms.CheckBox();
-            this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.osuCMS = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.statusToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.quitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.systemTrayChk = new System.Windows.Forms.CheckBox();
@@ -46,7 +46,7 @@ namespace osuEscape
             this.exitButton = new System.Windows.Forms.Button();
             this.minimizeBtn = new System.Windows.Forms.Button();
             this.titleLabel = new System.Windows.Forms.Label();
-            this.contextMenuStrip1.SuspendLayout();
+            this.osuCMS.SuspendLayout();
             this.topPanel.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -110,9 +110,10 @@ namespace osuEscape
             // 
             // osuEscapeNotifyIcon
             // 
+            this.osuEscapeNotifyIcon.Icon = ((System.Drawing.Icon)(resources.GetObject("osuEscapeNotifyIcon.Icon")));
             this.osuEscapeNotifyIcon.Text = "osu!Escape";
             this.osuEscapeNotifyIcon.Visible = true;
-            this.osuEscapeNotifyIcon.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.NotifyIcon1_MouseDoubleClick);
+            this.osuEscapeNotifyIcon.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.OsuEscapeNotifyIcon_MouseDoubleClick);
             // 
             // toggleSoundChk
             // 
@@ -125,24 +126,24 @@ namespace osuEscape
             this.toggleSoundChk.UseVisualStyleBackColor = true;
             this.toggleSoundChk.CheckedChanged += new System.EventHandler(this.ToggleSoundChk_CheckedChanged);
             // 
-            // contextMenuStrip1
+            // osuCMS
             // 
-            this.contextMenuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.osuCMS.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.statusToolStripMenuItem,
             this.quitToolStripMenuItem});
-            this.contextMenuStrip1.Name = "contextMenuStrip1";
-            this.contextMenuStrip1.Size = new System.Drawing.Size(110, 48);
+            this.osuCMS.Name = "osuCMS";
+            this.osuCMS.Size = new System.Drawing.Size(110, 48);
             // 
             // statusToolStripMenuItem
             // 
             this.statusToolStripMenuItem.Name = "statusToolStripMenuItem";
-            this.statusToolStripMenuItem.Size = new System.Drawing.Size(109, 22);
+            this.statusToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.statusToolStripMenuItem.Text = "Status:";
             // 
             // quitToolStripMenuItem
             // 
             this.quitToolStripMenuItem.Name = "quitToolStripMenuItem";
-            this.quitToolStripMenuItem.Size = new System.Drawing.Size(109, 22);
+            this.quitToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.quitToolStripMenuItem.Text = "Quit";
             // 
             // systemTrayChk
@@ -239,8 +240,7 @@ namespace osuEscape
             this.Text = "osu!Escape";
             this.TopMost = true;
             this.Load += new System.EventHandler(this.Form1_Load);
-            this.Resize += new System.EventHandler(this.Form1_Resize);
-            this.contextMenuStrip1.ResumeLayout(false);
+            this.osuCMS.ResumeLayout(false);
             this.topPanel.ResumeLayout(false);
             this.topPanel.PerformLayout();
             this.ResumeLayout(false);
@@ -256,7 +256,7 @@ namespace osuEscape
         private System.Windows.Forms.CheckBox startUpChk;
         private System.Windows.Forms.NotifyIcon osuEscapeNotifyIcon;
         private System.Windows.Forms.CheckBox toggleSoundChk;
-        private System.Windows.Forms.ContextMenuStrip contextMenuStrip1;
+        private System.Windows.Forms.ContextMenuStrip osuCMS;
         private System.Windows.Forms.ToolStripMenuItem statusToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem quitToolStripMenuItem;
         private System.Windows.Forms.CheckBox systemTrayChk;
