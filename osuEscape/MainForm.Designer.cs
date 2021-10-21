@@ -1,7 +1,7 @@
 ﻿
 namespace osuEscape
 {
-    partial class Form1
+    partial class MainForm
     {
         /// <summary>
         /// Required designer variable.
@@ -30,7 +30,7 @@ namespace osuEscape
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
             this.findLocationButton = new System.Windows.Forms.Button();
             this.hotkeyTextBox = new System.Windows.Forms.TextBox();
             this.toggleButton = new System.Windows.Forms.Button();
@@ -47,6 +47,9 @@ namespace osuEscape
             this.minimizeBtn = new System.Windows.Forms.Button();
             this.titleLabel = new System.Windows.Forms.Label();
             this.topMostChk = new System.Windows.Forms.CheckBox();
+            this.openOsuButton = new System.Windows.Forms.Button();
+            this.toggleOsuTextBox = new System.Windows.Forms.TextBox();
+            this.closeOsuButton = new System.Windows.Forms.Button();
             this.osuCMS.SuspendLayout();
             this.topPanel.SuspendLayout();
             this.SuspendLayout();
@@ -54,13 +57,14 @@ namespace osuEscape
             // findLocationButton
             // 
             this.findLocationButton.BackColor = System.Drawing.Color.Transparent;
-            this.findLocationButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 21.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.findLocationButton.Font = new System.Drawing.Font("Microsoft YaHei UI", 21.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.findLocationButton.ForeColor = System.Drawing.Color.Gray;
-            this.findLocationButton.Location = new System.Drawing.Point(197, 53);
+            this.findLocationButton.Location = new System.Drawing.Point(200, 53);
             this.findLocationButton.Name = "findLocationButton";
-            this.findLocationButton.Size = new System.Drawing.Size(52, 52);
+            this.findLocationButton.Size = new System.Drawing.Size(50, 50);
             this.findLocationButton.TabIndex = 2;
             this.findLocationButton.Text = "📂";
+            this.findLocationButton.TextImageRelation = System.Windows.Forms.TextImageRelation.TextAboveImage;
             this.findLocationButton.UseVisualStyleBackColor = false;
             this.findLocationButton.Click += new System.EventHandler(this.FindLocationButton_Click);
             // 
@@ -68,7 +72,7 @@ namespace osuEscape
             // 
             this.hotkeyTextBox.BackColor = System.Drawing.SystemColors.Control;
             this.hotkeyTextBox.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.hotkeyTextBox.Location = new System.Drawing.Point(10, 109);
+            this.hotkeyTextBox.Location = new System.Drawing.Point(10, 129);
             this.hotkeyTextBox.Name = "hotkeyTextBox";
             this.hotkeyTextBox.ReadOnly = true;
             this.hotkeyTextBox.Size = new System.Drawing.Size(145, 13);
@@ -91,7 +95,7 @@ namespace osuEscape
             // 
             this.pathTextBox.BackColor = System.Drawing.SystemColors.Control;
             this.pathTextBox.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.pathTextBox.Location = new System.Drawing.Point(10, 127);
+            this.pathTextBox.Location = new System.Drawing.Point(10, 147);
             this.pathTextBox.Name = "pathTextBox";
             this.pathTextBox.ReadOnly = true;
             this.pathTextBox.Size = new System.Drawing.Size(256, 13);
@@ -101,7 +105,7 @@ namespace osuEscape
             // startUpChk
             // 
             this.startUpChk.AutoSize = true;
-            this.startUpChk.Location = new System.Drawing.Point(10, 144);
+            this.startUpChk.Location = new System.Drawing.Point(10, 164);
             this.startUpChk.Name = "startUpChk";
             this.startUpChk.Size = new System.Drawing.Size(96, 17);
             this.startUpChk.TabIndex = 14;
@@ -119,7 +123,7 @@ namespace osuEscape
             // toggleSoundChk
             // 
             this.toggleSoundChk.AutoSize = true;
-            this.toggleSoundChk.Location = new System.Drawing.Point(10, 167);
+            this.toggleSoundChk.Location = new System.Drawing.Point(10, 187);
             this.toggleSoundChk.Name = "toggleSoundChk";
             this.toggleSoundChk.Size = new System.Drawing.Size(113, 17);
             this.toggleSoundChk.TabIndex = 15;
@@ -150,7 +154,7 @@ namespace osuEscape
             // systemTrayChk
             // 
             this.systemTrayChk.AutoSize = true;
-            this.systemTrayChk.Location = new System.Drawing.Point(10, 190);
+            this.systemTrayChk.Location = new System.Drawing.Point(10, 210);
             this.systemTrayChk.Name = "systemTrayChk";
             this.systemTrayChk.Size = new System.Drawing.Size(139, 17);
             this.systemTrayChk.TabIndex = 18;
@@ -169,7 +173,7 @@ namespace osuEscape
             this.topPanel.Dock = System.Windows.Forms.DockStyle.Top;
             this.topPanel.Location = new System.Drawing.Point(0, 0);
             this.topPanel.Name = "topPanel";
-            this.topPanel.Size = new System.Drawing.Size(266, 33);
+            this.topPanel.Size = new System.Drawing.Size(261, 33);
             this.topPanel.TabIndex = 1;
             this.topPanel.MouseDown += new System.Windows.Forms.MouseEventHandler(this.TopPanel_MouseDown);
             this.topPanel.MouseMove += new System.Windows.Forms.MouseEventHandler(this.TopPanel_MouseMove);
@@ -182,7 +186,7 @@ namespace osuEscape
             this.exitButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.exitButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 16F);
             this.exitButton.ForeColor = System.Drawing.Color.White;
-            this.exitButton.Location = new System.Drawing.Point(233, -15);
+            this.exitButton.Location = new System.Drawing.Point(229, -15);
             this.exitButton.Name = "exitButton";
             this.exitButton.Size = new System.Drawing.Size(31, 62);
             this.exitButton.TabIndex = 22;
@@ -197,7 +201,7 @@ namespace osuEscape
             this.minimizeBtn.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.minimizeBtn.Font = new System.Drawing.Font("Microsoft Sans Serif", 16F);
             this.minimizeBtn.ForeColor = System.Drawing.Color.White;
-            this.minimizeBtn.Location = new System.Drawing.Point(203, -25);
+            this.minimizeBtn.Location = new System.Drawing.Point(199, -25);
             this.minimizeBtn.Name = "minimizeBtn";
             this.minimizeBtn.Size = new System.Drawing.Size(31, 62);
             this.minimizeBtn.TabIndex = 21;
@@ -223,7 +227,7 @@ namespace osuEscape
             // topMostChk
             // 
             this.topMostChk.AutoSize = true;
-            this.topMostChk.Location = new System.Drawing.Point(10, 213);
+            this.topMostChk.Location = new System.Drawing.Point(10, 233);
             this.topMostChk.Name = "topMostChk";
             this.topMostChk.Size = new System.Drawing.Size(93, 17);
             this.topMostChk.TabIndex = 19;
@@ -231,11 +235,50 @@ namespace osuEscape
             this.topMostChk.UseVisualStyleBackColor = true;
             this.topMostChk.CheckedChanged += new System.EventHandler(this.TopMostChk_CheckedChanged);
             // 
-            // Form1
+            // openOsuButton
+            // 
+            this.openOsuButton.BackColor = System.Drawing.Color.Transparent;
+            this.openOsuButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 21.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.openOsuButton.ForeColor = System.Drawing.Color.Gray;
+            this.openOsuButton.Image = ((System.Drawing.Image)(resources.GetObject("openOsuButton.Image")));
+            this.openOsuButton.Location = new System.Drawing.Point(200, 109);
+            this.openOsuButton.Name = "openOsuButton";
+            this.openOsuButton.Size = new System.Drawing.Size(50, 50);
+            this.openOsuButton.TabIndex = 20;
+            this.openOsuButton.UseVisualStyleBackColor = false;
+            this.openOsuButton.Click += new System.EventHandler(this.OpenOsuButton_Click);
+            // 
+            // toggleOsuTextBox
+            // 
+            this.toggleOsuTextBox.BackColor = System.Drawing.SystemColors.Control;
+            this.toggleOsuTextBox.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.toggleOsuTextBox.Location = new System.Drawing.Point(10, 111);
+            this.toggleOsuTextBox.Name = "toggleOsuTextBox";
+            this.toggleOsuTextBox.ReadOnly = true;
+            this.toggleOsuTextBox.Size = new System.Drawing.Size(145, 13);
+            this.toggleOsuTextBox.TabIndex = 21;
+            // 
+            // closeOsuButton
+            // 
+            this.closeOsuButton.BackColor = System.Drawing.Color.Transparent;
+            this.closeOsuButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 21.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.closeOsuButton.ForeColor = System.Drawing.Color.Gray;
+            this.closeOsuButton.Image = global::osuEscape.Properties.Resources.banned_osu_icon;
+            this.closeOsuButton.Location = new System.Drawing.Point(200, 165);
+            this.closeOsuButton.Name = "closeOsuButton";
+            this.closeOsuButton.Size = new System.Drawing.Size(50, 50);
+            this.closeOsuButton.TabIndex = 22;
+            this.closeOsuButton.UseVisualStyleBackColor = false;
+            this.closeOsuButton.Click += new System.EventHandler(this.CloseOsuButton_Click);
+            // 
+            // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(266, 236);
+            this.ClientSize = new System.Drawing.Size(261, 255);
+            this.Controls.Add(this.closeOsuButton);
+            this.Controls.Add(this.toggleOsuTextBox);
+            this.Controls.Add(this.openOsuButton);
             this.Controls.Add(this.topMostChk);
             this.Controls.Add(this.topPanel);
             this.Controls.Add(this.systemTrayChk);
@@ -249,10 +292,10 @@ namespace osuEscape
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.KeyPreview = true;
             this.MaximizeBox = false;
-            this.Name = "Form1";
+            this.Name = "MainForm";
             this.Text = "osu!Escape";
             this.TopMost = true;
-            this.Load += new System.EventHandler(this.Form1_Load);
+            this.Load += new System.EventHandler(this.MainForm_Load);
             this.osuCMS.ResumeLayout(false);
             this.topPanel.ResumeLayout(false);
             this.topPanel.PerformLayout();
@@ -278,6 +321,9 @@ namespace osuEscape
         private System.Windows.Forms.Button minimizeBtn;
         private System.Windows.Forms.Button exitButton;
         private System.Windows.Forms.CheckBox topMostChk;
+        private System.Windows.Forms.Button openOsuButton;
+        private System.Windows.Forms.TextBox toggleOsuTextBox;
+        private System.Windows.Forms.Button closeOsuButton;
     }
 }
 
