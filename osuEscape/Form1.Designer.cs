@@ -46,6 +46,7 @@ namespace osuEscape
             this.exitButton = new System.Windows.Forms.Button();
             this.minimizeBtn = new System.Windows.Forms.Button();
             this.titleLabel = new System.Windows.Forms.Label();
+            this.topMostChk = new System.Windows.Forms.CheckBox();
             this.osuCMS.SuspendLayout();
             this.topPanel.SuspendLayout();
             this.SuspendLayout();
@@ -137,13 +138,13 @@ namespace osuEscape
             // statusToolStripMenuItem
             // 
             this.statusToolStripMenuItem.Name = "statusToolStripMenuItem";
-            this.statusToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.statusToolStripMenuItem.Size = new System.Drawing.Size(109, 22);
             this.statusToolStripMenuItem.Text = "Status:";
             // 
             // quitToolStripMenuItem
             // 
             this.quitToolStripMenuItem.Name = "quitToolStripMenuItem";
-            this.quitToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.quitToolStripMenuItem.Size = new System.Drawing.Size(109, 22);
             this.quitToolStripMenuItem.Text = "Quit";
             // 
             // systemTrayChk
@@ -219,11 +220,23 @@ namespace osuEscape
             this.titleLabel.MouseMove += new System.Windows.Forms.MouseEventHandler(this.TitleLabel_MouseMove);
             this.titleLabel.MouseUp += new System.Windows.Forms.MouseEventHandler(this.TitleLabel_MouseUp);
             // 
+            // topMostChk
+            // 
+            this.topMostChk.AutoSize = true;
+            this.topMostChk.Location = new System.Drawing.Point(10, 213);
+            this.topMostChk.Name = "topMostChk";
+            this.topMostChk.Size = new System.Drawing.Size(93, 17);
+            this.topMostChk.TabIndex = 19;
+            this.topMostChk.Text = "Always at Top";
+            this.topMostChk.UseVisualStyleBackColor = true;
+            this.topMostChk.CheckedChanged += new System.EventHandler(this.TopMostChk_CheckedChanged);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(266, 217);
+            this.ClientSize = new System.Drawing.Size(266, 236);
+            this.Controls.Add(this.topMostChk);
             this.Controls.Add(this.topPanel);
             this.Controls.Add(this.systemTrayChk);
             this.Controls.Add(this.toggleSoundChk);
@@ -264,6 +277,7 @@ namespace osuEscape
         private System.Windows.Forms.Label titleLabel;
         private System.Windows.Forms.Button minimizeBtn;
         private System.Windows.Forms.Button exitButton;
+        private System.Windows.Forms.CheckBox topMostChk;
     }
 }
 

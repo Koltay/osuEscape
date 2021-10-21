@@ -82,5 +82,17 @@ namespace osuEscape.Properties {
                 this["appLocation"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool isTopMost {
+            get {
+                return ((bool)(this["isTopMost"]));
+            }
+            set {
+                this["isTopMost"] = value;
+            }
+        }
     }
 }

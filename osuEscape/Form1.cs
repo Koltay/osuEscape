@@ -52,6 +52,7 @@ namespace osuEscape
             startUpChk.Checked = Properties.Settings.Default.isStartUp;
             toggleSoundChk.Checked = Properties.Settings.Default.isToggleSound;
             systemTrayChk.Checked = Properties.Settings.Default.isSystemTray;
+            topMostChk.Checked = Properties.Settings.Default.isTopMost;
 
             // UI fixed size 
             this.MaximumSize = this.Size;
@@ -60,10 +61,10 @@ namespace osuEscape
 
         private void FindLocationButton_Click(object sender, EventArgs e) // select osu!.exe
         {
-            findLocation();
+            FindLocation();
         }
 
-        private void findLocation()
+        private void FindLocation()
         {
             OpenFileDialog ofd = new OpenFileDialog();
             if (ofd.ShowDialog() == DialogResult.OK)
@@ -75,7 +76,7 @@ namespace osuEscape
                 else
                 {
                     // run again until user finds osu.exe or user cancelled the action
-                    findLocation();
+                    FindLocation();
                 }
             }
         }
@@ -124,7 +125,7 @@ namespace osuEscape
                 }
                 else
                 {
-                    findLocation(); // trigger select folder function since there is no any record
+                    FindLocation(); // trigger select folder function since there is no any record
                 }
             }
 
@@ -349,6 +350,12 @@ namespace osuEscape
         {
             osuEscapeNotifyIcon.Visible = enabled;
             this.ShowInTaskbar = !enabled;
+        }
+
+        private void TopMostChk_CheckedChanged(object sender, EventArgs e)
+        {
+            Properties.Settings.Default.isTopMost = topMostChk.Checked;
+            this.TopMost = topMostChk.Checked;                
         }
     }
 }
