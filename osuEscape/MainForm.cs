@@ -367,6 +367,8 @@ namespace osuEscape
                 toggleOsuTextBox.Text = "You have already opened osu!";
             else
             {
+                ChangeConnection(true);
+
                 osuProcess = Process.Start(Properties.Settings.Default.osuLocation);
 
                 toggleOsuTextBox.Text = "Opening osu!...";
@@ -421,7 +423,7 @@ namespace osuEscape
             if (Process.GetProcessesByName("osu!").Count() == 0)
                 toggleOsuTextBox.Text = "You have not opened any osu!";
             else
-            {
+            {               
                 Process[] prs = Process.GetProcesses();
 
                 foreach (Process process in prs)
