@@ -363,18 +363,29 @@ namespace osuEscape
 
         private void OpenOsuButton_Click(object sender, EventArgs e)
         {
-            if (Process.GetProcessesByName("osu!").Count() >= 1)
-                toggleOsuTextBox.Text = "You have already opened osu!";
-            else
+            // kill the process, then re-open osu! using cmd command line
+            Process[] prs = Process.GetProcesses();
+
+            foreach (Process process in prs)
             {
-                ChangeConnection(true);
+                if (process.ProcessName == "osu!")
+                {
+                    process.Kill();
+                    toggleOsuTextBox.Text = "Closed!";
+                    break;
+                }
+            }
 
-                osuProcess = Process.Start(Properties.Settings.Default.osuLocation);
+            // allow connection to avoid no login
+            toggle = -1;
+            ChangeConnection(true);
 
-                toggleOsuTextBox.Text = "Opening osu!...";
+            // start osu! process
+            osuProcess = Process.Start(Properties.Settings.Default.osuLocation);
 
-                OpenOsuSetTimer(5000);
-            }               
+            toggleOsuTextBox.Text = "Opening osu!...";
+
+            OpenOsuSetTimer(5000);                           
         }
 
         private void OpenOsuSetTimer(int time)
@@ -393,7 +404,7 @@ namespace osuEscape
             try
             {
                 if (Process.GetProcessesByName("osu!").Count() >= 1)
-                    OpenOsuSetText("Opened!");
+                    SetText("Opened!");
             }
             catch (Exception ex)
             {
@@ -401,15 +412,15 @@ namespace osuEscape
             }
         }
 
-        delegate void OpenOsuSetTextCallback(string text);
-        private void OpenOsuSetText(string text)
+        delegate void SetTextCallback(string text);
+        private void SetText(string text)
         {
             // InvokeRequired required compares the thread ID of the
             // calling thread to the thread ID of the creating thread.
             // If these threads are different, it returns true.
             if (this.toggleOsuTextBox.InvokeRequired)
             {
-                OpenOsuSetTextCallback d = new OpenOsuSetTextCallback(OpenOsuSetText);
+                SetTextCallback d = new SetTextCallback(SetText);
                 this.Invoke(d, new object[] { text });
             }
             else

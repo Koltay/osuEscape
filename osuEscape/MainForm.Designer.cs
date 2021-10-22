@@ -47,9 +47,8 @@ namespace osuEscape
             this.minimizeBtn = new System.Windows.Forms.Button();
             this.titleLabel = new System.Windows.Forms.Label();
             this.topMostChk = new System.Windows.Forms.CheckBox();
-            this.openOsuButton = new System.Windows.Forms.Button();
+            this.reopenOsuButton = new System.Windows.Forms.Button();
             this.toggleOsuTextBox = new System.Windows.Forms.TextBox();
-            this.closeOsuButton = new System.Windows.Forms.Button();
             this.osuCMS.SuspendLayout();
             this.topPanel.SuspendLayout();
             this.SuspendLayout();
@@ -235,18 +234,18 @@ namespace osuEscape
             this.topMostChk.UseVisualStyleBackColor = true;
             this.topMostChk.CheckedChanged += new System.EventHandler(this.TopMostChk_CheckedChanged);
             // 
-            // openOsuButton
+            // reopenOsuButton
             // 
-            this.openOsuButton.BackColor = System.Drawing.Color.Transparent;
-            this.openOsuButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 21.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.openOsuButton.ForeColor = System.Drawing.Color.Gray;
-            this.openOsuButton.Image = ((System.Drawing.Image)(resources.GetObject("openOsuButton.Image")));
-            this.openOsuButton.Location = new System.Drawing.Point(200, 109);
-            this.openOsuButton.Name = "openOsuButton";
-            this.openOsuButton.Size = new System.Drawing.Size(50, 50);
-            this.openOsuButton.TabIndex = 20;
-            this.openOsuButton.UseVisualStyleBackColor = false;
-            this.openOsuButton.Click += new System.EventHandler(this.OpenOsuButton_Click);
+            this.reopenOsuButton.BackColor = System.Drawing.Color.Transparent;
+            this.reopenOsuButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 21.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.reopenOsuButton.ForeColor = System.Drawing.Color.Gray;
+            this.reopenOsuButton.Image = global::osuEscape.Properties.Resources.reopen_osu_icon;
+            this.reopenOsuButton.Location = new System.Drawing.Point(200, 109);
+            this.reopenOsuButton.Name = "reopenOsuButton";
+            this.reopenOsuButton.Size = new System.Drawing.Size(50, 50);
+            this.reopenOsuButton.TabIndex = 20;
+            this.reopenOsuButton.UseVisualStyleBackColor = false;
+            this.reopenOsuButton.Click += new System.EventHandler(this.OpenOsuButton_Click);
             // 
             // toggleOsuTextBox
             // 
@@ -258,27 +257,13 @@ namespace osuEscape
             this.toggleOsuTextBox.Size = new System.Drawing.Size(145, 13);
             this.toggleOsuTextBox.TabIndex = 21;
             // 
-            // closeOsuButton
-            // 
-            this.closeOsuButton.BackColor = System.Drawing.Color.Transparent;
-            this.closeOsuButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 21.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.closeOsuButton.ForeColor = System.Drawing.Color.Gray;
-            this.closeOsuButton.Image = global::osuEscape.Properties.Resources.banned_osu_icon;
-            this.closeOsuButton.Location = new System.Drawing.Point(200, 165);
-            this.closeOsuButton.Name = "closeOsuButton";
-            this.closeOsuButton.Size = new System.Drawing.Size(50, 50);
-            this.closeOsuButton.TabIndex = 22;
-            this.closeOsuButton.UseVisualStyleBackColor = false;
-            this.closeOsuButton.Click += new System.EventHandler(this.CloseOsuButton_Click);
-            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(261, 255);
-            this.Controls.Add(this.closeOsuButton);
             this.Controls.Add(this.toggleOsuTextBox);
-            this.Controls.Add(this.openOsuButton);
+            this.Controls.Add(this.reopenOsuButton);
             this.Controls.Add(this.topMostChk);
             this.Controls.Add(this.topPanel);
             this.Controls.Add(this.systemTrayChk);
@@ -321,9 +306,8 @@ namespace osuEscape
         private System.Windows.Forms.Button minimizeBtn;
         private System.Windows.Forms.Button exitButton;
         private System.Windows.Forms.CheckBox topMostChk;
-        private System.Windows.Forms.Button openOsuButton;
+        private System.Windows.Forms.Button reopenOsuButton;
         private System.Windows.Forms.TextBox toggleOsuTextBox;
-        private System.Windows.Forms.Button closeOsuButton;
     }
 }
 

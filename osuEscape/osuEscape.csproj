@@ -150,6 +150,7 @@
     <None Include="Resources\%24this.Icon.ico" />
     <None Include="Resources\banned osu icon.png" />
     <Content Include="Resources\icon.ico" />
+    <None Include="Resources\reopen osu icon.png" />
     <Content Include="Resources\toggle.wav" />
     <None Include="Resources\osuEscapeIcon.ico" />
   </ItemGroup>
