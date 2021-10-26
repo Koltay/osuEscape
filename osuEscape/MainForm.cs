@@ -35,15 +35,13 @@ namespace osuEscape
 
         private static System.Timers.Timer aTimer;
 
-        private Process osuProcess;
-
         public MainForm()
         {
             InitializeComponent();
 
             // check if osu!Escape is already opened
             if (Process.GetProcessesByName("osuEscape").Count() > 1)
-                this.Close();            
+                this.Close();
 
             ghk = new KeyHandler(Keys.F6, this);
             ghk.Register();
@@ -135,7 +133,7 @@ namespace osuEscape
             osuEscapeNotifyIcon.Visible = false;         
         }
 
-        private void UpdateContextMenuStrip()
+        private void ContextMenuStripUpdate()
         {
             osuEscapeNotifyIcon.ContextMenuStrip = osuCMS;           
 
@@ -143,6 +141,8 @@ namespace osuEscape
             osuCMS.Items[0].Text = "Status: " + toggleButton.Text;
 
             osuCMS.Items[1].Click += new EventHandler(QuitLabel_Click);
+
+            osuEscapeNotifyIcon.Icon = (toggleButton.Text == "Connecting") ? Properties.Resources.osuEscapeConnecting : Properties.Resources.osuEscapeBlocking;
         }
         private void QuitLabel_Click(object sender, EventArgs e)
         {
@@ -173,10 +173,15 @@ namespace osuEscape
             cmd.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
             cmd.Start();
 
+            toggleButtonUpdate(isAllow);
+            ContextMenuStripUpdate();
+        }
+
+        private void toggleButtonUpdate(bool isAllow)
+        {
             toggleButton.Text = isAllow ? "Connecting" : "Blocked";
             toggleButton.ForeColor = isAllow ? System.Drawing.Color.Green : System.Drawing.Color.Red;
         }
-
         private void RuleResetAndSetUp(string filename) 
         {
             if (filename.Contains("osu!.exe"))
@@ -255,7 +260,14 @@ namespace osuEscape
             ToggleSystemTray(false);
 
             // Re-enable Hotkey
-            ghk.Unregiser();
+            GlobalHotkeyRegister();
+        }
+
+        private void GlobalHotkeyRegister()
+        {
+            if (ghk.Register() == true)
+                ghk.Unregiser();
+
             ghk = new KeyHandler(Keys.F6, this);
             ghk.Register();
         }
@@ -344,9 +356,11 @@ namespace osuEscape
 
             if (systemTrayChk.Checked)
             {
-                ToggleSystemTray(true);
-                UpdateContextMenuStrip();
+                ToggleSystemTray(systemTrayChk.Checked);
+                ContextMenuStripUpdate();
             }
+
+            GlobalHotkeyRegister();
         }
 
         private void ToggleSystemTray(bool enabled)
@@ -380,8 +394,11 @@ namespace osuEscape
             toggle = -1;
             ChangeConnection(true);
 
+            // stop for 3s in order to let osu database save
+            Thread.Sleep(3000);
+
             // start osu! process
-            osuProcess = Process.Start(Properties.Settings.Default.osuLocation);
+            Process.Start(Properties.Settings.Default.osuLocation);
 
             toggleOsuTextBox.Text = "Opening osu!...";
 
