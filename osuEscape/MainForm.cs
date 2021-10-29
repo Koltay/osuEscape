@@ -1,35 +1,37 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Data;
 using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using System.Runtime.InteropServices;
-using WindowsInput;
-using WindowsInput.Native;
-using System.IO;
 using Microsoft.Win32;
-using System.Windows.Media;
-using System.Reflection;
 using System.Threading;
-using AudioSwitcher.AudioApi.CoreAudio;
 using System.Timers;
-using CSharpOsu;
-using System.Net.Http;
-using SimpleOsuPerformanceCalculator.Calculator;
-using SimpleOsuPerformanceCalculator;
-
+using OsuMemoryDataProvider;
+using System.Globalization;
+using OsuMemoryDataProvider.OsuMemoryModels;
+using OsuMemoryDataProviderMods;
 
 namespace osuEscape
 {
 
     
     public partial class MainForm : Form
-    { 
+    {
+        private readonly string _osuWindowTitleHint;
+        private int _readDelay = 250;
+        private readonly object _minMaxLock = new object();
+        private double _memoryReadTimeMin = double.PositiveInfinity;
+        private double _memoryReadTimeMax = double.NegativeInfinity;
+        private readonly ISet<string> _patternsToSkip = new HashSet<string>();
+        private readonly IOsuMemoryReader _reader;
+        private readonly StructuredOsuMemoryReader _sreader;
+        private CancellationTokenSource cts = new CancellationTokenSource();
+
+        private bool firstLoad = false;
+
 
         private int toggle = -1; //1: Allow Firewall; -1: Block Firewall
 
@@ -42,9 +44,15 @@ namespace osuEscape
 
         private static System.Timers.Timer aTimer;
 
-        public MainForm()
+        public MainForm(string osuWindowTitleHint)
         {
+            _osuWindowTitleHint = osuWindowTitleHint;
             InitializeComponent();
+            _reader = OsuMemoryReader.Instance.GetInstanceForWindowTitleHint(osuWindowTitleHint);
+            _sreader = StructuredOsuMemoryReader.Instance.GetInstanceForWindowTitleHint(osuWindowTitleHint);
+            Shown += OnShown;
+            Closing += OnClosing;
+            numericUpDown_readDelay.ValueChanged += NumericUpDownReadDelayOnValueChanged;
 
             // check if osu!Escape is already opened
             if (Process.GetProcessesByName("osuEscape").Count() > 1)
@@ -54,22 +62,268 @@ namespace osuEscape
             ghk.Register();
 
             UIUpdate();
+            
         }
+
+        private void NumericUpDownReadDelayOnValueChanged(object sender, EventArgs eventArgs)
+        {
+            if (int.TryParse(numericUpDown_readDelay.Value.ToString(CultureInfo.InvariantCulture), out var value))
+            {
+                _readDelay = value;
+            }
+            else
+            {
+                numericUpDown_readDelay.Value = 250;
+            }
+        }
+        private void OnClosing(object sender, CancelEventArgs cancelEventArgs)
+        {
+            cts.Cancel();
+        }
+
+        private void OnShown(object sender, EventArgs eventArgs)
+        {
+            if (!string.IsNullOrEmpty(_osuWindowTitleHint)) Text += $": {_osuWindowTitleHint}";
+            _ = Task.Run(async () =>
+            {
+                try
+                {
+                    Stopwatch stopwatch;
+                    double readTimeMs, readTimeMsMin, readTimeMsMax;
+                    var playContainer = new PlayContainerEx();
+                    var playReseted = false;
+                    var baseAddresses = new OsuBaseAddresses();
+                    while (true)
+                    {
+                        if (cts.IsCancellationRequested)
+                            return;
+
+                        var patternsToRead = GetPatternsToRead();
+
+                        stopwatch = Stopwatch.StartNew();
+
+                        #region OsuBase
+
+                        var mapId = -1;
+                        var mapSetId = -1;
+                        var songString = string.Empty;
+                        var mapMd5 = string.Empty;
+                        var mapFolderName = string.Empty;
+                        var osuFileName = string.Empty;
+                        var retrys = -1;
+                        var gameMode = -1;
+                        var mapData = string.Empty;
+                        var status = OsuMemoryStatus.Unknown;
+                        var statusNum = -1;
+                        var playTime = -1;
+                        if (patternsToRead.OsuBase)
+                        {
+                            mapId = _reader.GetMapId();
+                            mapSetId = _reader.GetMapSetId();
+                            songString = _reader.GetSongString();
+                            mapMd5 = _reader.GetMapMd5();
+                            mapFolderName = _reader.GetMapFolderName();
+                            osuFileName = _reader.GetOsuFileName();
+                            retrys = _reader.GetRetrys();
+                            gameMode = _reader.ReadSongSelectGameMode();
+                            mapData =
+                                $"HP:{_reader.GetMapHp()} OD:{_reader.GetMapOd()}, CS:{_reader.GetMapCs()}, AR:{_reader.GetMapAr()}, setId:{_reader.GetMapSetId()}";
+                            status = _reader.GetCurrentStatus(out statusNum);
+                            playTime = _reader.ReadPlayTime();
+                        }
+
+                        #endregion
+
+                        #region Mods
+
+                        var mods = -1;
+                        if (patternsToRead.Mods)
+                        {
+                            mods = _reader.GetMods();
+                        }
+
+                        #endregion
+
+                        #region CurrentSkinData
+
+                        var skinFolderName = string.Empty;
+                        if (patternsToRead.CurrentSkinData)
+                        {
+                            skinFolderName = _reader.GetSkinFolderName();
+                        }
+
+                        #endregion
+
+                        #region IsReplay
+
+                        bool isReplay = false;
+                        if (status == OsuMemoryStatus.Playing && patternsToRead.IsReplay)
+                        {
+                            isReplay = _reader.IsReplay();
+                        }
+
+                        #endregion
+
+                        #region PlayContainer
+
+                        double hp = 0;
+                        var playerName = string.Empty;
+                        var hitErrorCount = -1;
+                        var playingMods = -1;
+                        double displayedPlayerHp = 0;
+                        int scoreV2 = -1;
+                        if (status == OsuMemoryStatus.Playing && patternsToRead.PlayContainer)
+                        {
+                            playReseted = false;
+                            _reader.GetPlayData(playContainer);
+                            hp = _reader.ReadPlayerHp();
+                            playerName = _reader.PlayerName();
+                            hitErrorCount = _reader.HitErrors()?.Count ?? -2;
+                            playingMods = _reader.GetPlayingMods();
+                            displayedPlayerHp = _reader.ReadDisplayedPlayerHp();
+                            scoreV2 = _reader.ReadScoreV2();
+                        }
+                        else if (!playReseted)
+                        {
+                            playReseted = true;
+                            playContainer.Reset();
+                        }
+
+                        #endregion
+
+                        #region TourneyBase
+
+                        // TourneyBase
+                        var tourneyIpcState = TourneyIpcState.Unknown;
+                        var tourneyIpcStateNumber = -1;
+                        var tourneyLeftStars = -1;
+                        var tourneyRightStars = -1;
+                        var tourneyBO = -1;
+                        var tourneyStarsVisible = false;
+                        var tourneyScoreVisible = false;
+                        if (status == OsuMemoryStatus.Tourney && patternsToRead.TourneyBase)
+                        {
+                            tourneyIpcState = _reader.GetTourneyIpcState(out tourneyIpcStateNumber);
+                            tourneyLeftStars = _reader.ReadTourneyLeftStars();
+                            tourneyRightStars = _reader.ReadTourneyRightStars();
+                            tourneyBO = _reader.ReadTourneyBO();
+                            tourneyStarsVisible = _reader.ReadTourneyStarsVisible();
+                            tourneyScoreVisible = _reader.ReadTourneyScoreVisible();
+                        }
+
+                        #endregion
+
+                        stopwatch.Stop();
+
+                        readTimeMs = stopwatch.ElapsedTicks / (double)TimeSpan.TicksPerMillisecond;
+                        lock (_minMaxLock)
+                        {
+                            if (readTimeMs < _memoryReadTimeMin) _memoryReadTimeMin = readTimeMs;
+                            if (readTimeMs > _memoryReadTimeMax) _memoryReadTimeMax = readTimeMs;
+                            // copy value since we're inside lock
+                            readTimeMsMin = _memoryReadTimeMin;
+                            readTimeMsMax = _memoryReadTimeMax;
+                        }
+
+                        Invoke((MethodInvoker)(() =>
+                        {
+                            textBox_readTime.Text = $"         ReadTimeMS: {readTimeMs}{Environment.NewLine}" +
+                                                    $" Min ReadTimeMS: {readTimeMsMin}{Environment.NewLine}" +
+                                                    $"Max ReadTimeMS: {readTimeMsMax}{Environment.NewLine}";
+
+                            textBox_mapId.Text = $"Id:{mapId} setId:{mapSetId}";
+                            textBox_strings.Text = $"songString: \"{songString}\" {Environment.NewLine}" +
+                                                   $"md5: \"{mapMd5}\" {Environment.NewLine}" +
+                                                   $"mapFolder: \"{mapFolderName}\" {Environment.NewLine}" +
+                                                   $"fileName: \"{osuFileName}\" {Environment.NewLine}" +
+                                                   $"Retrys:{retrys} {Environment.NewLine}" +
+                                                   $"mods:{(Mods)mods}({mods}) {Environment.NewLine}" +
+                                                   $"SkinName: \"{skinFolderName}\"";
+                            textBox_time.Text = playTime.ToString();
+                            textBox_mapData.Text = mapData;
+                            textBox_Status.Text = status + " " + statusNum + " " + gameMode;
+
+                            textBox_CurrentPlayData.Text =
+                                playContainer + Environment.NewLine +
+                                $"scoreV2: {scoreV2} {Environment.NewLine}" +
+                                $"IsReplay: {isReplay} {Environment.NewLine}" +
+                                $"hp________: {hp:00.##} {Environment.NewLine}" +
+                                $"displayedHp: {displayedPlayerHp:00.##} {Environment.NewLine}" +
+                                $"playingMods:{(Mods)playingMods} ({playingMods}) " +
+                                $"PlayerName: {playerName}{Environment.NewLine}" +
+                                $"HitErrorCount: {hitErrorCount} ";    
+                        }));
+                        await Task.Delay(_readDelay);
+
+                        //if (!firstLoad)
+                        //{
+                        //    firstLoad = true;
+                        //    this.Load += new System.EventHandler(this.MainForm_Load);
+                        //}
+                    }
+                }
+                catch (ThreadAbortException ex)
+                {
+                    MessageBox.Show(ex.Message);
+                }
+            });
+
+            
+        }
+
+        public class PlayContainerEx : PlayContainer
+        {
+            public override string ToString()
+            {
+                var nl = Environment.NewLine;
+                return $"{C300}/{C100}/{C50}/{CMiss} : {CGeki},{CKatsu}" + nl +
+                       $"acc:{Acc}, combo: {Combo}, maxCombo {MaxCombo}" + nl +
+                       $"score: {Score}";
+            }
+        }
+        private PatternsToRead GetPatternsToRead()
+        {
+            lock (_patternsToSkip)
+            {
+                return new PatternsToRead(_patternsToSkip);
+            }
+        }
+
+        internal struct PatternsToRead
+        {
+            public readonly bool OsuBase;
+            public readonly bool Mods;
+            public readonly bool IsReplay;
+            public readonly bool CurrentSkinData;
+            public readonly bool TourneyBase;
+            public readonly bool PlayContainer;
+
+            public PatternsToRead(ISet<string> patternsToSkip)
+            {
+                OsuBase = !patternsToSkip.Contains(nameof(OsuBase));
+                Mods = !patternsToSkip.Contains(nameof(Mods));
+                IsReplay = !patternsToSkip.Contains(nameof(IsReplay));
+                CurrentSkinData = !patternsToSkip.Contains(nameof(CurrentSkinData));
+                TourneyBase = !patternsToSkip.Contains(nameof(TourneyBase));
+                PlayContainer = !patternsToSkip.Contains(nameof(PlayContainer));
+            }
+        }
+
 
         private void UIUpdate()
         {
             // UI Update with saved user settings
-            startUpChk.Checked = Properties.Settings.Default.isStartUp;
-            toggleSoundChk.Checked = Properties.Settings.Default.isToggleSound;
-            systemTrayChk.Checked = Properties.Settings.Default.isSystemTray;
-            topMostChk.Checked = Properties.Settings.Default.isTopMost;
+            checkBox_startUp.Checked = Properties.Settings.Default.isStartUp;
+            checkBox_toggleSound.Checked = Properties.Settings.Default.isToggleSound;
+            checkBox_systemTray.Checked = Properties.Settings.Default.isSystemTray;
+            checkBox_topMost.Checked = Properties.Settings.Default.isTopMost;
 
             // UI fixed size 
             this.MaximumSize = this.Size;
             this.MinimumSize = this.Size;
         }
 
-        private void FindLocationButton_Click(object sender, EventArgs e) // select osu!.exe
+        private void Button_findLocation_Click(object sender, EventArgs e) // select osu!.exe
         {
             FindLocation();
         }
@@ -96,7 +350,7 @@ namespace osuEscape
             ChangeConnection(toggle == 1); // isAllow
             toggle *= -1; // Check above for declaration 
 
-            if (toggleSoundChk.Checked)
+            if (checkBox_toggleSound.Checked)
                 System.Media.SystemSounds.Asterisk.Play();            
         }
 
@@ -137,21 +391,34 @@ namespace osuEscape
                 }
             }
 
-            osuEscapeNotifyIcon.Visible = false;
+            notifyIcon_osuEscape.Visible = false;
+
+            button_reOpenOsu.Visible = false;
+
+            //lock (_patternsToSkip)
+            //{
+            //    // we store inverted state, easier since default is all on, so we can have a default of empty set to check :D
+            //    _patternsToSkip.Add("OsuBase");
+            //    _patternsToSkip.Add("PlayContainer");
+            //    _patternsToSkip.Add("TourneyBase");
+            //    _patternsToSkip.Add("Mods");
+            //    _patternsToSkip.Add("IsReplay");
+            //    _patternsToSkip.Add("CurrentSkinData");
+            //}
         }
 
         private void ContextMenuStripUpdate()
         {
-            osuEscapeNotifyIcon.ContextMenuStrip = osuCMS;           
+            notifyIcon_osuEscape.ContextMenuStrip = contextMenuStrip_osu;           
 
             //Status Update
-            osuCMS.Items[0].Text = "Status: " + toggleButton.Text;
+            contextMenuStrip_osu.Items[0].Text = "Status: " + button_toggle.Text;
 
-            osuCMS.Items[1].Click += new EventHandler(QuitLabel_Click);
+            contextMenuStrip_osu.Items[1].Click += new EventHandler(Item_quit_Click);
 
-            osuEscapeNotifyIcon.Icon = (toggleButton.Text == "Connecting") ? Properties.Resources.osuEscapeConnecting : Properties.Resources.osuEscapeBlocking;
+            notifyIcon_osuEscape.Icon = (button_toggle.Text == "Connecting") ? Properties.Resources.osuEscapeConnecting : Properties.Resources.osuEscapeBlocking;
         }
-        private void QuitLabel_Click(object sender, EventArgs e)
+        private void Item_quit_Click(object sender, EventArgs e)
         {
             this.Close();
         }
@@ -186,8 +453,8 @@ namespace osuEscape
 
         private void ToggleButtonUpdate(bool isAllow)
         {
-            toggleButton.Text = isAllow ? "Connecting" : "Blocked";
-            toggleButton.ForeColor = isAllow ? System.Drawing.Color.Green : System.Drawing.Color.Red;
+            button_toggle.Text = isAllow ? "Connecting" : "Blocked";
+            button_toggle.ForeColor = isAllow ? System.Drawing.Color.Green : System.Drawing.Color.Red;
         }
         private void RuleResetAndSetUp(string filename) 
         {
@@ -218,12 +485,12 @@ namespace osuEscape
                 cmd.Start();
                 cmd.WaitForExit();
 
-                toggleButton.Text = "Connecting";
-                toggleButton.ForeColor = System.Drawing.Color.Green;
+                button_toggle.Text = "Connecting";
+                button_toggle.ForeColor = System.Drawing.Color.Green;
             }
         }
 
-        private void ToggleButton_Click(object sender, EventArgs e)
+        private void Button_toggle_Click(object sender, EventArgs e)
         {
             if (isLocationExist)
             {
@@ -238,7 +505,7 @@ namespace osuEscape
         private void UpdateOsuLocationText()
         {
             isLocationExist = true;
-            pathTextBox.Text = "osu! Path: " + String.Join("\\", Properties.Settings.Default.osuLocation.Split('\\').Reverse().Skip(1).Reverse()) + "\\";
+            textBox_osuPath.Text = "osu! Path: " + String.Join("\\", Properties.Settings.Default.osuLocation.Split('\\').Reverse().Skip(1).Reverse()) + "\\";
         }
 
         private void SetRunAtStartup(bool enabled)
@@ -261,7 +528,7 @@ namespace osuEscape
                 MessageBox.Show(ex.Message);
             }
         }
-        private void OsuEscapeNotifyIcon_MouseDoubleClick(object sender, MouseEventArgs e)
+        private void NotifyIcon_osuEscape_MouseDoubleClick(object sender, MouseEventArgs e)
         {            
             this.WindowState = FormWindowState.Normal;
             ToggleSystemTray(false);
@@ -279,21 +546,21 @@ namespace osuEscape
             ghk.Register();
         }
 
-        private void StartUpChk_CheckedChanged(object sender, EventArgs e)
+        private void CheckBox_startUp_CheckedChanged(object sender, EventArgs e)
         {        
-            SetRunAtStartup(startUpChk.Checked);
+            SetRunAtStartup(checkBox_startUp.Checked);
 
-            Properties.Settings.Default.isStartUp = startUpChk.Checked;
+            Properties.Settings.Default.isStartUp = checkBox_startUp.Checked;
         }
 
-        private void ToggleSoundChk_CheckedChanged(object sender, EventArgs e)
+        private void CheckBox_toggleSound_CheckedChanged(object sender, EventArgs e)
         {
-            Properties.Settings.Default.isToggleSound = toggleSoundChk.Checked;
+            Properties.Settings.Default.isToggleSound = checkBox_toggleSound.Checked;
         }
 
-        private void SystemTrayChk_CheckedChanged(object sender, EventArgs e)
+        private void CheckBox_systemTray_CheckedChanged(object sender, EventArgs e)
         {
-            Properties.Settings.Default.isSystemTray = systemTrayChk.Checked;
+            Properties.Settings.Default.isSystemTray = checkBox_systemTray.Checked;
         }
 
         void Application_ApplicationExit(object sender, EventArgs e)
@@ -309,14 +576,14 @@ namespace osuEscape
         private Point dragCursorPoint;
         private Point dragFormPoint;
 
-        private void TopPanel_MouseDown(object sender, MouseEventArgs e)
+        private void Panel_top_MouseDown(object sender, MouseEventArgs e)
         {
             dragging = true;
             dragCursorPoint = Cursor.Position;
             dragFormPoint = this.Location;
         }
 
-        private void TopPanel_MouseMove(object sender, MouseEventArgs e)
+        private void Panel_top_MouseMove(object sender, MouseEventArgs e)
         {
             if (dragging)
             {
@@ -325,20 +592,20 @@ namespace osuEscape
             }
         }
 
-        private void TopPanel_MouseUp(object sender, MouseEventArgs e)
+        private void Panel_top_MouseUp(object sender, MouseEventArgs e)
         {
             dragging = false;
         }
 
         // Make dragging also usable for label
-        private void TitleLabel_MouseDown(object sender, MouseEventArgs e)
+        private void Label_title_MouseDown(object sender, MouseEventArgs e)
         {
             dragging = true;
             dragCursorPoint = Cursor.Position;
             dragFormPoint = this.Location;
         }
 
-        private void TitleLabel_MouseMove(object sender, MouseEventArgs e)
+        private void Label_title_MouseMove(object sender, MouseEventArgs e)
         {
             if (dragging)
             {
@@ -347,23 +614,23 @@ namespace osuEscape
             }
         }
 
-        private void TitleLabel_MouseUp(object sender, MouseEventArgs e)
+        private void Label_title_MouseUp(object sender, MouseEventArgs e)
         {
             dragging = false;
         }
 
-        private void ExitButton_Click(object sender, EventArgs e)
+        private void Button_exit_Click(object sender, EventArgs e)
         {
             Application.Exit();
         }
 
-        private void MinimizeBtn_Click(object sender, EventArgs e)
+        private void Button_minimize_Click(object sender, EventArgs e)
         {
             this.WindowState = FormWindowState.Minimized;
 
-            if (systemTrayChk.Checked)
+            if (checkBox_systemTray.Checked)
             {
-                ToggleSystemTray(systemTrayChk.Checked);
+                ToggleSystemTray(checkBox_systemTray.Checked);
                 ContextMenuStripUpdate();
             }
 
@@ -372,17 +639,17 @@ namespace osuEscape
 
         private void ToggleSystemTray(bool enabled)
         {
-            osuEscapeNotifyIcon.Visible = enabled;
+            notifyIcon_osuEscape.Visible = enabled;
             this.ShowInTaskbar = !enabled;
         }
 
-        private void TopMostChk_CheckedChanged(object sender, EventArgs e)
+        private void CheckBox_topMost_CheckedChanged(object sender, EventArgs e)
         {
-            Properties.Settings.Default.isTopMost = topMostChk.Checked;
-            this.TopMost = topMostChk.Checked;                
+            Properties.Settings.Default.isTopMost = checkBox_topMost.Checked;
+            this.TopMost = checkBox_topMost.Checked;                
         }
 
-        private void OpenOsuButton_Click(object sender, EventArgs e)
+        private void Button_reOpenOsu_Click(object sender, EventArgs e)
         {
             // kill the process, then re-open osu! using cmd command line
             Process[] prs = Process.GetProcesses();
@@ -392,7 +659,7 @@ namespace osuEscape
                 if (process.ProcessName == "osu!")
                 {
                     process.Kill();
-                    toggleOsuTextBox.Text = "Closed!";
+                    textBox_toggleOsu.Text = "Closed!";
                     break;
                 }
             }
@@ -407,7 +674,7 @@ namespace osuEscape
             // start osu! process
             Process.Start(Properties.Settings.Default.osuLocation);
 
-            toggleOsuTextBox.Text = "Opening osu!...";
+            textBox_toggleOsu.Text = "Opening osu!...";
 
             OpenOsuSetTimer(5000);                           
         }
@@ -442,68 +709,63 @@ namespace osuEscape
             // InvokeRequired required compares the thread ID of the
             // calling thread to the thread ID of the creating thread.
             // If these threads are different, it returns true.
-            if (this.toggleOsuTextBox.InvokeRequired)
+            if (this.textBox_toggleOsu.InvokeRequired)
             {
                 SetTextCallback d = new SetTextCallback(SetText);
                 this.Invoke(d, new object[] { text });
             }
             else
             {
-                this.toggleOsuTextBox.Text = text;
+                this.textBox_toggleOsu.Text = text;
             }
         }
 
-        private void CloseOsuButton_Click(object sender, EventArgs e)
-        {
-            if (Process.GetProcessesByName("osu!").Count() == 0)
-                toggleOsuTextBox.Text = "You have not opened any osu!";
-            else
-            {               
-                Process[] prs = Process.GetProcesses();
+        //private void CloseOsuButton_Click(object sender, EventArgs e)
+        //{
+        //    if (Process.GetProcessesByName("osu!").Count() == 0)
+        //        textBox_toggleOsu.Text = "You have not opened any osu!";
+        //    else
+        //    {
+        //        Process[] prs = Process.GetProcesses();
 
-                foreach (Process process in prs)
+        //        foreach (Process process in prs)
+        //        {
+        //            if (process.ProcessName == "osu!")
+        //            {
+        //                process.Kill();
+        //                textBox_toggleOsu.Text = "Closed!";
+        //                break;
+        //            }
+        //        }
+        //    }
+        //}
+
+        private void CheckBox_CheckedChanged(object sender, EventArgs e)
+        {
+            var cb = (CheckBox)sender;
+            var name = (string)cb.Tag;
+            var shouldInclude = cb.Checked;
+            lock (_patternsToSkip)
+            {
+                // we store inverted state, easier since default is all on, so we can have a default of empty set to check :D
+                if (shouldInclude)
                 {
-                    if (process.ProcessName == "osu!")
-                    {
-                        process.Kill();
-                        toggleOsuTextBox.Text = "Closed!";
-                        break;
-                    }                        
+                    _patternsToSkip.Remove(name);
+                }
+                else
+                {
+                    _patternsToSkip.Add(name);
                 }
             }
         }
-
-
-
-
-        private void GetUserInfo()
+        private void Button_ResetReadTimeMinMax_Click(object sender, EventArgs e)
         {
-            var beatmapFilePath = @"D:\osu!\Songs\476048 Happy Clover -PUNCH MIND HAPPINESS\Happy Clover -PUNCH MIND HAPPINESS(FreeSongs) [Hard]\";
-            //var beatmapFilePath = @"D:\osu!\Songs\476048 Happy Clover -PUNCH MIND HAPPINESS\";
-            //var beatmapFilePath = @"D:\osu!\Songs\476048 Happy Clover -PUNCH MIND HAPPINESS";
-            var calculator = new SimplePerformanceCalculator(SupportModes.Osu, beatmapFilePath);
-
-            var maxCombo = calculator.MaxCombo;
-            var max300 = calculator.Max300;
-
-            // get pp of current beatmap
-            calculator.UpdateOsuScore(max300, 0, 0, 0, 1, maxCombo);
-            Console.WriteLine(calculator.Performance);
-
-            // get pp on slice of Beatmap playable timeline
-            var offset = 10000; // ms, slice the hitobject which offset greater than settled value
-            calculator.SetCurrentOffset(offset);
-            Console.WriteLine(calculator.Performance);
-
-            // get pp with specific moderator(LegacyMods)
-            calculator.UpdateModerator(1 << 4); // in legacy moderator, '1 << 4' represent HR
-            Console.WriteLine(calculator.Performance);
-
+            lock (_minMaxLock)
+            {
+                _memoryReadTimeMin = double.PositiveInfinity;
+                _memoryReadTimeMax = double.NegativeInfinity;
+            }
         }
 
-        private void apiButton_Click(object sender, EventArgs e)
-        {
-            GetUserInfo();
-        }
     }
 }

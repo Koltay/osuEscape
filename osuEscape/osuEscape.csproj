@@ -95,7 +95,13 @@
     <Reference Include="Newtonsoft.Json, Version=13.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.13.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
+    <Reference Include="OsuMemoryDataProvider, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\OsuMemoryDataProvider.0.8.2\lib\net472\OsuMemoryDataProvider.dll</HintPath>
+    </Reference>
     <Reference Include="PresentationCore, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
+    <Reference Include="ProcessMemoryDataFinder, Version=0.8.1.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\ProcessMemoryDataFinder.0.8.1\lib\net472\ProcessMemoryDataFinder.dll</HintPath>
+    </Reference>
     <Reference Include="SimpleOsuPerformanceCalculator">
       <HintPath>Resources\SimpleOsuPerformanceCalculator.dll</HintPath>
     </Reference>
@@ -124,6 +130,7 @@
     <Compile Include="MainForm.Designer.cs">
       <DependentUpon>MainForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="Mods.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="MainForm.resx">
@@ -162,7 +169,6 @@
     <None Include="Resources\reopen osu icon.png" />
     <None Include="Resources\osuEscapeConnecting.ico" />
     <None Include="Resources\osuEscapeBlocking.ico" />
-    <Content Include="Resources\SimpleOsuPerformanceCalculator.dll" />
     <Content Include="Resources\toggle.wav" />
   </ItemGroup>
   <ItemGroup>
