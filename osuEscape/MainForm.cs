@@ -478,7 +478,9 @@ namespace osuEscape
 
         private void GetUserInfo()
         {
-            var beatmapFilePath = @"D:\osu!\Songs\476048 Happy Clover -PUNCH MIND HAPPINESS\Happy Clover -PUNCH MIND HAPPINESS(FreeSongs) [Hard]";
+            var beatmapFilePath = @"D:\osu!\Songs\476048 Happy Clover -PUNCH MIND HAPPINESS\Happy Clover -PUNCH MIND HAPPINESS(FreeSongs) [Hard]\";
+            //var beatmapFilePath = @"D:\osu!\Songs\476048 Happy Clover -PUNCH MIND HAPPINESS\";
+            //var beatmapFilePath = @"D:\osu!\Songs\476048 Happy Clover -PUNCH MIND HAPPINESS";
             var calculator = new SimplePerformanceCalculator(SupportModes.Osu, beatmapFilePath);
 
             var maxCombo = calculator.MaxCombo;

@@ -162,6 +162,7 @@
     <None Include="Resources\reopen osu icon.png" />
     <None Include="Resources\osuEscapeConnecting.ico" />
     <None Include="Resources\osuEscapeBlocking.ico" />
+    <Content Include="Resources\SimpleOsuPerformanceCalculator.dll" />
     <Content Include="Resources\toggle.wav" />
   </ItemGroup>
   <ItemGroup>
