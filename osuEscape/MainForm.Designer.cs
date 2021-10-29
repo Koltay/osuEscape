@@ -49,6 +49,8 @@ namespace osuEscape
             this.topMostChk = new System.Windows.Forms.CheckBox();
             this.reopenOsuButton = new System.Windows.Forms.Button();
             this.toggleOsuTextBox = new System.Windows.Forms.TextBox();
+            this.apiTextBox = new System.Windows.Forms.TextBox();
+            this.apiButton = new System.Windows.Forms.Button();
             this.osuCMS.SuspendLayout();
             this.topPanel.SuspendLayout();
             this.SuspendLayout();
@@ -257,11 +259,30 @@ namespace osuEscape
             this.toggleOsuTextBox.Size = new System.Drawing.Size(145, 13);
             this.toggleOsuTextBox.TabIndex = 21;
             // 
+            // apiTextBox
+            // 
+            this.apiTextBox.Location = new System.Drawing.Point(164, 196);
+            this.apiTextBox.Name = "apiTextBox";
+            this.apiTextBox.Size = new System.Drawing.Size(51, 20);
+            this.apiTextBox.TabIndex = 22;
+            // 
+            // apiButton
+            // 
+            this.apiButton.Location = new System.Drawing.Point(225, 187);
+            this.apiButton.Name = "apiButton";
+            this.apiButton.Size = new System.Drawing.Size(25, 29);
+            this.apiButton.TabIndex = 23;
+            this.apiButton.Text = "API";
+            this.apiButton.UseVisualStyleBackColor = true;
+            this.apiButton.Click += new System.EventHandler(this.apiButton_Click);
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(261, 255);
+            this.Controls.Add(this.apiButton);
+            this.Controls.Add(this.apiTextBox);
             this.Controls.Add(this.toggleOsuTextBox);
             this.Controls.Add(this.reopenOsuButton);
             this.Controls.Add(this.topMostChk);
@@ -308,6 +329,8 @@ namespace osuEscape
         private System.Windows.Forms.CheckBox topMostChk;
         private System.Windows.Forms.Button reopenOsuButton;
         private System.Windows.Forms.TextBox toggleOsuTextBox;
+        private System.Windows.Forms.TextBox apiTextBox;
+        private System.Windows.Forms.Button apiButton;
     }
 }
 

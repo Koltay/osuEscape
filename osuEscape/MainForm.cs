@@ -18,9 +18,16 @@ using System.Reflection;
 using System.Threading;
 using AudioSwitcher.AudioApi.CoreAudio;
 using System.Timers;
+using CSharpOsu;
+using System.Net.Http;
+using SimpleOsuPerformanceCalculator.Calculator;
+using SimpleOsuPerformanceCalculator;
+
 
 namespace osuEscape
 {
+
+    
     public partial class MainForm : Form
     { 
 
@@ -130,7 +137,7 @@ namespace osuEscape
                 }
             }
 
-            osuEscapeNotifyIcon.Visible = false;         
+            osuEscapeNotifyIcon.Visible = false;
         }
 
         private void ContextMenuStripUpdate()
@@ -173,11 +180,11 @@ namespace osuEscape
             cmd.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
             cmd.Start();
 
-            toggleButtonUpdate(isAllow);
+            ToggleButtonUpdate(isAllow);
             ContextMenuStripUpdate();
         }
 
-        private void toggleButtonUpdate(bool isAllow)
+        private void ToggleButtonUpdate(bool isAllow)
         {
             toggleButton.Text = isAllow ? "Connecting" : "Blocked";
             toggleButton.ForeColor = isAllow ? System.Drawing.Color.Green : System.Drawing.Color.Red;
@@ -464,6 +471,37 @@ namespace osuEscape
                     }                        
                 }
             }
+        }
+
+
+
+
+        private void GetUserInfo()
+        {
+            var beatmapFilePath = @"D:\osu!\Songs\476048 Happy Clover -PUNCH MIND HAPPINESS\Happy Clover -PUNCH MIND HAPPINESS(FreeSongs) [Hard]";
+            var calculator = new SimplePerformanceCalculator(SupportModes.Osu, beatmapFilePath);
+
+            var maxCombo = calculator.MaxCombo;
+            var max300 = calculator.Max300;
+
+            // get pp of current beatmap
+            calculator.UpdateOsuScore(max300, 0, 0, 0, 1, maxCombo);
+            Console.WriteLine(calculator.Performance);
+
+            // get pp on slice of Beatmap playable timeline
+            var offset = 10000; // ms, slice the hitobject which offset greater than settled value
+            calculator.SetCurrentOffset(offset);
+            Console.WriteLine(calculator.Performance);
+
+            // get pp with specific moderator(LegacyMods)
+            calculator.UpdateModerator(1 << 4); // in legacy moderator, '1 << 4' represent HR
+            Console.WriteLine(calculator.Performance);
+
+        }
+
+        private void apiButton_Click(object sender, EventArgs e)
+        {
+            GetUserInfo();
         }
     }
 }
