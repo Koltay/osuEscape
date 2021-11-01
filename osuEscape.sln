@@ -5,7 +5,7 @@ VisualStudioVersion = 16.0.31702.278
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "osuEscape", "osuEscape\osuEscape.csproj", "{58AEB465-56C5-472F-8FAC-07AB7C40D696}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OsuMemoryDataProviderTester", "OsuMemoryDataProviderTester\OsuMemoryDataProviderTester.csproj", "{BA9BEB13-A89F-414F-8A59-9210E2DC2B21}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "osuEscape 2", "OsuMemoryDataProviderTester\osuEscape 2.csproj", "{BA9BEB13-A89F-414F-8A59-9210E2DC2B21}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

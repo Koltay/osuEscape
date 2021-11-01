@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace osuEscape.Properties {
+namespace osuEscape_2.Properties {
     using System;
     
     

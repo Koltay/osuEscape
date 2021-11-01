@@ -1,6 +1,6 @@
-﻿namespace OsuMemoryDataProviderTester
+﻿namespace osuEscape_2
 {
-    partial class OsuMemoryDataProviderForm
+    partial class osuEscape
     {
         /// <summary>
         /// Required designer variable.
@@ -28,116 +28,101 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.textBox_mapId = new System.Windows.Forms.TextBox();
+            this.components = new System.ComponentModel.Container();
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(osuEscape));
             this.textBox_strings = new System.Windows.Forms.TextBox();
-            this.label1 = new System.Windows.Forms.Label();
-            this.label2 = new System.Windows.Forms.Label();
-            this.label3 = new System.Windows.Forms.Label();
+            this.label_status = new System.Windows.Forms.Label();
             this.textBox_Status = new System.Windows.Forms.TextBox();
-            this.label4 = new System.Windows.Forms.Label();
+            this.label_currentPlay = new System.Windows.Forms.Label();
             this.textBox_CurrentPlayData = new System.Windows.Forms.TextBox();
-            this.label6 = new System.Windows.Forms.Label();
+            this.label_refreshRate = new System.Windows.Forms.Label();
             this.numericUpDown_readDelay = new System.Windows.Forms.NumericUpDown();
             this.textBox_time = new System.Windows.Forms.TextBox();
             this.button_ResetReadTimeMinMax = new System.Windows.Forms.Button();
-            this.checkBox_OsuBase = new System.Windows.Forms.CheckBox();
-            this.checkBox_Mods = new System.Windows.Forms.CheckBox();
-            this.checkBox_CurrentSkinData = new System.Windows.Forms.CheckBox();
-            this.checkBox_PlayContainer = new System.Windows.Forms.CheckBox();
-            this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.panel_top = new System.Windows.Forms.Panel();
+            this.button_exit = new System.Windows.Forms.Button();
+            this.button_minimize = new System.Windows.Forms.Button();
+            this.label_title = new System.Windows.Forms.Label();
+            this.button_findLocation = new System.Windows.Forms.Button();
+            this.button_toggle = new System.Windows.Forms.Button();
+            this.label_currentMapTime = new System.Windows.Forms.Label();
+            this.checkBox_topMost = new System.Windows.Forms.CheckBox();
+            this.checkBox_systemTray = new System.Windows.Forms.CheckBox();
+            this.checkBox_toggleSound = new System.Windows.Forms.CheckBox();
+            this.checkBox_startUp = new System.Windows.Forms.CheckBox();
+            this.textBox_osuPath = new System.Windows.Forms.TextBox();
+            this.textBox_hotkey = new System.Windows.Forms.TextBox();
+            this.notifyIcon_osuEscape = new System.Windows.Forms.NotifyIcon(this.components);
+            this.contextMenuStrip_osu = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.statusToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.connectingToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.label_map = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown_readDelay)).BeginInit();
-            this.groupBox1.SuspendLayout();
+            this.panel_top.SuspendLayout();
+            this.contextMenuStrip_osu.SuspendLayout();
             this.SuspendLayout();
-            // 
-            // textBox_mapId
-            // 
-            this.textBox_mapId.Location = new System.Drawing.Point(13, 63);
-            this.textBox_mapId.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
-            this.textBox_mapId.Multiline = true;
-            this.textBox_mapId.Name = "textBox_mapId";
-            this.textBox_mapId.Size = new System.Drawing.Size(116, 48);
-            this.textBox_mapId.TabIndex = 0;
             // 
             // textBox_strings
             // 
-            this.textBox_strings.Location = new System.Drawing.Point(202, 32);
+            this.textBox_strings.Location = new System.Drawing.Point(9, 129);
             this.textBox_strings.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.textBox_strings.Multiline = true;
             this.textBox_strings.Name = "textBox_strings";
-            this.textBox_strings.Size = new System.Drawing.Size(394, 136);
+            this.textBox_strings.Size = new System.Drawing.Size(280, 82);
             this.textBox_strings.TabIndex = 1;
             // 
-            // label1
+            // label_status
             // 
-            this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(13, 42);
-            this.label1.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(41, 15);
-            this.label1.TabIndex = 2;
-            this.label1.Text = "mapId";
-            // 
-            // label2
-            // 
-            this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(198, 14);
-            this.label2.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(43, 15);
-            this.label2.TabIndex = 3;
-            this.label2.Text = "Strings";
-            // 
-            // label3
-            // 
-            this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(16, 126);
-            this.label3.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(39, 15);
-            this.label3.TabIndex = 5;
-            this.label3.Text = "Status";
+            this.label_status.AutoSize = true;
+            this.label_status.Location = new System.Drawing.Point(298, 218);
+            this.label_status.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label_status.Name = "label_status";
+            this.label_status.Size = new System.Drawing.Size(39, 15);
+            this.label_status.TabIndex = 5;
+            this.label_status.Text = "Status";
             // 
             // textBox_Status
             // 
-            this.textBox_Status.Location = new System.Drawing.Point(13, 145);
+            this.textBox_Status.Location = new System.Drawing.Point(298, 233);
             this.textBox_Status.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.textBox_Status.Name = "textBox_Status";
             this.textBox_Status.Size = new System.Drawing.Size(116, 23);
             this.textBox_Status.TabIndex = 4;
             // 
-            // label4
+            // label_currentPlay
             // 
-            this.label4.AutoSize = true;
-            this.label4.Cursor = System.Windows.Forms.Cursors.No;
-            this.label4.Location = new System.Drawing.Point(18, 182);
-            this.label4.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(200, 15);
-            this.label4.TabIndex = 7;
-            this.label4.Text = "CurrentPlay (available when playing)";
+            this.label_currentPlay.AutoSize = true;
+            this.label_currentPlay.Cursor = System.Windows.Forms.Cursors.No;
+            this.label_currentPlay.Location = new System.Drawing.Point(8, 211);
+            this.label_currentPlay.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label_currentPlay.Name = "label_currentPlay";
+            this.label_currentPlay.Size = new System.Drawing.Size(116, 15);
+            this.label_currentPlay.TabIndex = 7;
+            this.label_currentPlay.Text = "Current Playing Data";
             // 
             // textBox_CurrentPlayData
             // 
-            this.textBox_CurrentPlayData.Location = new System.Drawing.Point(16, 201);
+            this.textBox_CurrentPlayData.Location = new System.Drawing.Point(9, 229);
             this.textBox_CurrentPlayData.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.textBox_CurrentPlayData.Multiline = true;
             this.textBox_CurrentPlayData.Name = "textBox_CurrentPlayData";
             this.textBox_CurrentPlayData.Size = new System.Drawing.Size(279, 103);
             this.textBox_CurrentPlayData.TabIndex = 6;
             // 
-            // label6
+            // label_refreshRate
             // 
-            this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(318, 184);
-            this.label6.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(200, 15);
-            this.label6.TabIndex = 9;
-            this.label6.Text = "Read delay in ms (set 0 for no delay):";
+            this.label_refreshRate.AutoSize = true;
+            this.label_refreshRate.Location = new System.Drawing.Point(298, 259);
+            this.label_refreshRate.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label_refreshRate.Name = "label_refreshRate";
+            this.label_refreshRate.Size = new System.Drawing.Size(104, 15);
+            this.label_refreshRate.TabIndex = 9;
+            this.label_refreshRate.Text = "Refresh rate in ms ";
             // 
             // numericUpDown_readDelay
             // 
-            this.numericUpDown_readDelay.Location = new System.Drawing.Point(321, 202);
+            this.numericUpDown_readDelay.Location = new System.Drawing.Point(300, 278);
+            this.numericUpDown_readDelay.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.numericUpDown_readDelay.Maximum = new decimal(new int[] {
             10000,
             0,
@@ -154,7 +139,7 @@
             // 
             // textBox_time
             // 
-            this.textBox_time.Location = new System.Drawing.Point(13, 10);
+            this.textBox_time.Location = new System.Drawing.Point(297, 190);
             this.textBox_time.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.textBox_time.Name = "textBox_time";
             this.textBox_time.Size = new System.Drawing.Size(116, 23);
@@ -162,7 +147,8 @@
             // 
             // button_ResetReadTimeMinMax
             // 
-            this.button_ResetReadTimeMinMax.Location = new System.Drawing.Point(318, 231);
+            this.button_ResetReadTimeMinMax.Location = new System.Drawing.Point(298, 306);
+            this.button_ResetReadTimeMinMax.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.button_ResetReadTimeMinMax.Name = "button_ResetReadTimeMinMax";
             this.button_ResetReadTimeMinMax.Size = new System.Drawing.Size(75, 23);
             this.button_ResetReadTimeMinMax.TabIndex = 17;
@@ -170,127 +156,293 @@
             this.button_ResetReadTimeMinMax.UseVisualStyleBackColor = true;
             this.button_ResetReadTimeMinMax.Click += new System.EventHandler(this.Button_ResetReadTimeMinMax_Click);
             // 
-            // checkBox_OsuBase
+            // panel_top
             // 
-            this.checkBox_OsuBase.AutoSize = true;
-            this.checkBox_OsuBase.Checked = true;
-            this.checkBox_OsuBase.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.checkBox_OsuBase.Location = new System.Drawing.Point(6, 21);
-            this.checkBox_OsuBase.Name = "checkBox_OsuBase";
-            this.checkBox_OsuBase.Size = new System.Drawing.Size(71, 19);
-            this.checkBox_OsuBase.TabIndex = 0;
-            this.checkBox_OsuBase.Tag = "OsuBase";
-            this.checkBox_OsuBase.Text = "OsuBase";
-            this.checkBox_OsuBase.UseVisualStyleBackColor = true;
-            this.checkBox_OsuBase.CheckedChanged += new System.EventHandler(this.CheckBox_CheckedChanged);
+            this.panel_top.AllowDrop = true;
+            this.panel_top.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(70)))), ((int)(((byte)(70)))), ((int)(((byte)(70)))));
+            this.panel_top.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.panel_top.Controls.Add(this.button_exit);
+            this.panel_top.Controls.Add(this.button_minimize);
+            this.panel_top.Controls.Add(this.label_title);
+            this.panel_top.Dock = System.Windows.Forms.DockStyle.Top;
+            this.panel_top.Location = new System.Drawing.Point(0, 0);
+            this.panel_top.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            this.panel_top.Name = "panel_top";
+            this.panel_top.Size = new System.Drawing.Size(426, 38);
+            this.panel_top.TabIndex = 1;
+            this.panel_top.MouseDown += new System.Windows.Forms.MouseEventHandler(this.Panel_top_MouseDown);
+            this.panel_top.MouseMove += new System.Windows.Forms.MouseEventHandler(this.Panel_top_MouseMove);
+            this.panel_top.MouseUp += new System.Windows.Forms.MouseEventHandler(this.Panel_top_MouseUp);
             // 
-            // checkBox_Mods
+            // button_exit
             // 
-            this.checkBox_Mods.AutoSize = true;
-            this.checkBox_Mods.Checked = true;
-            this.checkBox_Mods.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.checkBox_Mods.Location = new System.Drawing.Point(89, 21);
-            this.checkBox_Mods.Name = "checkBox_Mods";
-            this.checkBox_Mods.Size = new System.Drawing.Size(56, 19);
-            this.checkBox_Mods.TabIndex = 2;
-            this.checkBox_Mods.Tag = "Mods";
-            this.checkBox_Mods.Text = "Mods";
-            this.checkBox_Mods.UseVisualStyleBackColor = true;
-            this.checkBox_Mods.CheckedChanged += new System.EventHandler(this.CheckBox_CheckedChanged);
+            this.button_exit.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(70)))), ((int)(((byte)(70)))), ((int)(((byte)(70)))));
+            this.button_exit.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(70)))), ((int)(((byte)(70)))), ((int)(((byte)(70)))));
+            this.button_exit.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.button_exit.Font = new System.Drawing.Font("Microsoft Sans Serif", 16F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+            this.button_exit.ForeColor = System.Drawing.Color.White;
+            this.button_exit.Location = new System.Drawing.Point(389, -15);
+            this.button_exit.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            this.button_exit.Name = "button_exit";
+            this.button_exit.Size = new System.Drawing.Size(36, 72);
+            this.button_exit.TabIndex = 22;
+            this.button_exit.Text = "X";
+            this.button_exit.UseVisualStyleBackColor = false;
+            this.button_exit.Click += new System.EventHandler(this.Button_exit_Click);
             // 
-            // checkBox_CurrentSkinData
+            // button_minimize
             // 
-            this.checkBox_CurrentSkinData.AutoSize = true;
-            this.checkBox_CurrentSkinData.Checked = true;
-            this.checkBox_CurrentSkinData.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.checkBox_CurrentSkinData.Location = new System.Drawing.Point(157, 21);
-            this.checkBox_CurrentSkinData.Name = "checkBox_CurrentSkinData";
-            this.checkBox_CurrentSkinData.Size = new System.Drawing.Size(112, 19);
-            this.checkBox_CurrentSkinData.TabIndex = 3;
-            this.checkBox_CurrentSkinData.Tag = "CurrentSkinData";
-            this.checkBox_CurrentSkinData.Text = "CurrentSkinData";
-            this.checkBox_CurrentSkinData.UseVisualStyleBackColor = true;
-            this.checkBox_CurrentSkinData.CheckedChanged += new System.EventHandler(this.CheckBox_CheckedChanged);
+            this.button_minimize.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(70)))), ((int)(((byte)(70)))), ((int)(((byte)(70)))));
+            this.button_minimize.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(70)))), ((int)(((byte)(70)))), ((int)(((byte)(70)))));
+            this.button_minimize.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.button_minimize.Font = new System.Drawing.Font("Microsoft Sans Serif", 16F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+            this.button_minimize.ForeColor = System.Drawing.Color.White;
+            this.button_minimize.Location = new System.Drawing.Point(354, -27);
+            this.button_minimize.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            this.button_minimize.Name = "button_minimize";
+            this.button_minimize.Size = new System.Drawing.Size(36, 72);
+            this.button_minimize.TabIndex = 21;
+            this.button_minimize.Text = "_";
+            this.button_minimize.UseVisualStyleBackColor = false;
+            this.button_minimize.Click += new System.EventHandler(this.Button_minimize_Click);
             // 
-            // checkBox_PlayContainer
+            // label_title
             // 
-            this.checkBox_PlayContainer.AutoSize = true;
-            this.checkBox_PlayContainer.Checked = true;
-            this.checkBox_PlayContainer.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.checkBox_PlayContainer.Location = new System.Drawing.Point(6, 46);
-            this.checkBox_PlayContainer.Name = "checkBox_PlayContainer";
-            this.checkBox_PlayContainer.Size = new System.Drawing.Size(208, 19);
-            this.checkBox_PlayContainer.TabIndex = 5;
-            this.checkBox_PlayContainer.Tag = "PlayContainer";
-            this.checkBox_PlayContainer.Text = "PlayContainer (only when playing)";
-            this.checkBox_PlayContainer.UseVisualStyleBackColor = true;
-            this.checkBox_PlayContainer.CheckedChanged += new System.EventHandler(this.CheckBox_CheckedChanged);
+            this.label_title.AllowDrop = true;
+            this.label_title.AutoSize = true;
+            this.label_title.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+            this.label_title.ForeColor = System.Drawing.Color.White;
+            this.label_title.Location = new System.Drawing.Point(2, 7);
+            this.label_title.Name = "label_title";
+            this.label_title.Size = new System.Drawing.Size(85, 17);
+            this.label_title.TabIndex = 0;
+            this.label_title.Text = "osu! Escape";
+            this.label_title.MouseDown += new System.Windows.Forms.MouseEventHandler(this.Label_title_MouseDown);
+            this.label_title.MouseMove += new System.Windows.Forms.MouseEventHandler(this.Label_title_MouseMove);
+            this.label_title.MouseUp += new System.Windows.Forms.MouseEventHandler(this.Label_title_MouseUp);
             // 
-            // groupBox1
+            // button_findLocation
             // 
-            this.groupBox1.Controls.Add(this.checkBox_PlayContainer);
-            this.groupBox1.Controls.Add(this.checkBox_CurrentSkinData);
-            this.groupBox1.Controls.Add(this.checkBox_Mods);
-            this.groupBox1.Controls.Add(this.checkBox_OsuBase);
-            this.groupBox1.Location = new System.Drawing.Point(302, 260);
-            this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(275, 75);
-            this.groupBox1.TabIndex = 18;
-            this.groupBox1.TabStop = false;
-            this.groupBox1.Text = "Enabled Patterns";
+            this.button_findLocation.BackColor = System.Drawing.Color.Transparent;
+            this.button_findLocation.Font = new System.Drawing.Font("Microsoft YaHei UI", 21.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
+            this.button_findLocation.ForeColor = System.Drawing.Color.Gray;
+            this.button_findLocation.Location = new System.Drawing.Point(239, 50);
+            this.button_findLocation.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            this.button_findLocation.Name = "button_findLocation";
+            this.button_findLocation.Size = new System.Drawing.Size(58, 58);
+            this.button_findLocation.TabIndex = 24;
+            this.button_findLocation.Text = "📂";
+            this.button_findLocation.TextImageRelation = System.Windows.Forms.TextImageRelation.TextAboveImage;
+            this.button_findLocation.UseVisualStyleBackColor = false;
+            this.button_findLocation.Click += new System.EventHandler(this.Button_findLocation_Click);
             // 
-            // OsuMemoryDataProviderForm
+            // button_toggle
+            // 
+            this.button_toggle.BackColor = System.Drawing.Color.White;
+            this.button_toggle.Font = new System.Drawing.Font("Microsoft Sans Serif", 14F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+            this.button_toggle.Location = new System.Drawing.Point(9, 46);
+            this.button_toggle.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            this.button_toggle.Name = "button_toggle";
+            this.button_toggle.Size = new System.Drawing.Size(215, 62);
+            this.button_toggle.TabIndex = 23;
+            this.button_toggle.Text = "Toggle";
+            this.button_toggle.UseVisualStyleBackColor = false;
+            this.button_toggle.Click += new System.EventHandler(this.Button_toggle_Click);
+            // 
+            // label_currentMapTime
+            // 
+            this.label_currentMapTime.AutoSize = true;
+            this.label_currentMapTime.Location = new System.Drawing.Point(297, 172);
+            this.label_currentMapTime.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label_currentMapTime.Name = "label_currentMapTime";
+            this.label_currentMapTime.Size = new System.Drawing.Size(103, 15);
+            this.label_currentMapTime.TabIndex = 25;
+            this.label_currentMapTime.Text = "Current Map Time";
+            // 
+            // checkBox_topMost
+            // 
+            this.checkBox_topMost.AutoSize = true;
+            this.checkBox_topMost.Location = new System.Drawing.Point(144, 402);
+            this.checkBox_topMost.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            this.checkBox_topMost.Name = "checkBox_topMost";
+            this.checkBox_topMost.Size = new System.Drawing.Size(98, 19);
+            this.checkBox_topMost.TabIndex = 31;
+            this.checkBox_topMost.Text = "Always at Top";
+            this.checkBox_topMost.UseVisualStyleBackColor = true;
+            this.checkBox_topMost.CheckedChanged += new System.EventHandler(this.CheckBox_topMost_CheckedChanged);
+            // 
+            // checkBox_systemTray
+            // 
+            this.checkBox_systemTray.AutoSize = true;
+            this.checkBox_systemTray.Location = new System.Drawing.Point(143, 375);
+            this.checkBox_systemTray.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            this.checkBox_systemTray.Name = "checkBox_systemTray";
+            this.checkBox_systemTray.Size = new System.Drawing.Size(154, 19);
+            this.checkBox_systemTray.TabIndex = 30;
+            this.checkBox_systemTray.Text = "Minimize to System Tray";
+            this.checkBox_systemTray.UseVisualStyleBackColor = true;
+            this.checkBox_systemTray.CheckedChanged += new System.EventHandler(this.CheckBox_systemTray_CheckedChanged);
+            // 
+            // checkBox_toggleSound
+            // 
+            this.checkBox_toggleSound.AutoSize = true;
+            this.checkBox_toggleSound.Location = new System.Drawing.Point(13, 402);
+            this.checkBox_toggleSound.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            this.checkBox_toggleSound.Name = "checkBox_toggleSound";
+            this.checkBox_toggleSound.Size = new System.Drawing.Size(123, 19);
+            this.checkBox_toggleSound.TabIndex = 29;
+            this.checkBox_toggleSound.Text = "Toggle with sound";
+            this.checkBox_toggleSound.UseVisualStyleBackColor = true;
+            this.checkBox_toggleSound.CheckedChanged += new System.EventHandler(this.CheckBox_toggleSound_CheckedChanged);
+            // 
+            // checkBox_startUp
+            // 
+            this.checkBox_startUp.AutoSize = true;
+            this.checkBox_startUp.Location = new System.Drawing.Point(13, 375);
+            this.checkBox_startUp.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            this.checkBox_startUp.Name = "checkBox_startUp";
+            this.checkBox_startUp.Size = new System.Drawing.Size(103, 19);
+            this.checkBox_startUp.TabIndex = 28;
+            this.checkBox_startUp.Text = "Run at start up";
+            this.checkBox_startUp.UseVisualStyleBackColor = true;
+            this.checkBox_startUp.CheckedChanged += new System.EventHandler(this.CheckBox_startUp_CheckedChanged);
+            // 
+            // textBox_osuPath
+            // 
+            this.textBox_osuPath.BackColor = System.Drawing.SystemColors.Control;
+            this.textBox_osuPath.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.textBox_osuPath.Location = new System.Drawing.Point(13, 355);
+            this.textBox_osuPath.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            this.textBox_osuPath.Name = "textBox_osuPath";
+            this.textBox_osuPath.ReadOnly = true;
+            this.textBox_osuPath.Size = new System.Drawing.Size(299, 16);
+            this.textBox_osuPath.TabIndex = 27;
+            this.textBox_osuPath.Text = "osu! Path:";
+            // 
+            // textBox_hotkey
+            // 
+            this.textBox_hotkey.BackColor = System.Drawing.SystemColors.Control;
+            this.textBox_hotkey.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.textBox_hotkey.Location = new System.Drawing.Point(13, 335);
+            this.textBox_hotkey.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            this.textBox_hotkey.Name = "textBox_hotkey";
+            this.textBox_hotkey.ReadOnly = true;
+            this.textBox_hotkey.Size = new System.Drawing.Size(169, 16);
+            this.textBox_hotkey.TabIndex = 26;
+            this.textBox_hotkey.Text = "Global Toggle Hotkey: F6";
+            // 
+            // notifyIcon_osuEscape
+            // 
+            this.notifyIcon_osuEscape.Icon = ((System.Drawing.Icon)(resources.GetObject("notifyIcon_osuEscape.Icon")));
+            this.notifyIcon_osuEscape.Text = "osu! Escape";
+            this.notifyIcon_osuEscape.Visible = true;
+            this.notifyIcon_osuEscape.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.NotifyIcon_osuEscape_MouseDoubleClick);
+            // 
+            // contextMenuStrip_osu
+            // 
+            this.contextMenuStrip_osu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.statusToolStripMenuItem,
+            this.connectingToolStripMenuItem});
+            this.contextMenuStrip_osu.Name = "contextMenuStrip_osu";
+            this.contextMenuStrip_osu.Size = new System.Drawing.Size(107, 48);
+            // 
+            // statusToolStripMenuItem
+            // 
+            this.statusToolStripMenuItem.Name = "statusToolStripMenuItem";
+            this.statusToolStripMenuItem.Size = new System.Drawing.Size(106, 22);
+            this.statusToolStripMenuItem.Text = "Status";
+            // 
+            // connectingToolStripMenuItem
+            // 
+            this.connectingToolStripMenuItem.Name = "connectingToolStripMenuItem";
+            this.connectingToolStripMenuItem.Size = new System.Drawing.Size(106, 22);
+            this.connectingToolStripMenuItem.Text = "Quit";
+            // 
+            // label_map
+            // 
+            this.label_map.AutoSize = true;
+            this.label_map.Location = new System.Drawing.Point(11, 111);
+            this.label_map.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label_map.Name = "label_map";
+            this.label_map.Size = new System.Drawing.Size(31, 15);
+            this.label_map.TabIndex = 32;
+            this.label_map.Text = "Map";
+            this.label_map.Click += new System.EventHandler(this.label1_Click);
+            // 
+            // osuEscape
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(600, 342);
-            this.Controls.Add(this.groupBox1);
+            this.ClientSize = new System.Drawing.Size(426, 427);
+            this.ControlBox = false;
+            this.Controls.Add(this.label_map);
+            this.Controls.Add(this.checkBox_topMost);
+            this.Controls.Add(this.checkBox_systemTray);
+            this.Controls.Add(this.checkBox_toggleSound);
+            this.Controls.Add(this.checkBox_startUp);
+            this.Controls.Add(this.textBox_osuPath);
+            this.Controls.Add(this.textBox_hotkey);
+            this.Controls.Add(this.label_currentMapTime);
+            this.Controls.Add(this.button_findLocation);
+            this.Controls.Add(this.panel_top);
+            this.Controls.Add(this.button_toggle);
             this.Controls.Add(this.button_ResetReadTimeMinMax);
             this.Controls.Add(this.textBox_time);
             this.Controls.Add(this.numericUpDown_readDelay);
-            this.Controls.Add(this.label6);
-            this.Controls.Add(this.label4);
+            this.Controls.Add(this.label_refreshRate);
+            this.Controls.Add(this.label_currentPlay);
             this.Controls.Add(this.textBox_CurrentPlayData);
-            this.Controls.Add(this.label3);
+            this.Controls.Add(this.label_status);
             this.Controls.Add(this.textBox_Status);
-            this.Controls.Add(this.label2);
-            this.Controls.Add(this.label1);
             this.Controls.Add(this.textBox_strings);
-            this.Controls.Add(this.textBox_mapId);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
-            this.Name = "OsuMemoryDataProviderForm";
-            this.Text = "OsuMemoryDataProvider Form";
+            this.MaximizeBox = false;
+            this.MinimizeBox = false;
+            this.Name = "osuEscape";
+            this.Text = "osuEscape";
+            this.Load += new System.EventHandler(this.osuEscape_Load);
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown_readDelay)).EndInit();
-            this.groupBox1.ResumeLayout(false);
-            this.groupBox1.PerformLayout();
+            this.panel_top.ResumeLayout(false);
+            this.panel_top.PerformLayout();
+            this.contextMenuStrip_osu.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
         }
 
         #endregion
-
-        private System.Windows.Forms.TextBox textBox_mapId;
         private System.Windows.Forms.TextBox textBox_strings;
-        private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.Label label2;
-        private System.Windows.Forms.Label label3;
+        private System.Windows.Forms.Label label_status;
         private System.Windows.Forms.TextBox textBox_Status;
-        private System.Windows.Forms.Label label4;
+        private System.Windows.Forms.Label label_currentPlay;
         private System.Windows.Forms.TextBox textBox_CurrentPlayData;
-        private System.Windows.Forms.Label label6;
+        private System.Windows.Forms.Label label_refreshRate;
         private System.Windows.Forms.NumericUpDown numericUpDown_readDelay;
 
 
         private System.Windows.Forms.TextBox textBox_time;
 
         private System.Windows.Forms.Button button_ResetReadTimeMinMax;
-        private System.Windows.Forms.GroupBox groupBox1;
-        private System.Windows.Forms.CheckBox checkBox_OsuBase;
-        private System.Windows.Forms.CheckBox checkBox_Mods;
-        private System.Windows.Forms.CheckBox checkBox_CurrentSkinData;
-        private System.Windows.Forms.CheckBox checkBox_PlayContainer;
-
+        private System.Windows.Forms.Panel panel_top;
+        private System.Windows.Forms.Button button_exit;
+        private System.Windows.Forms.Button button_minimize;
+        private System.Windows.Forms.Label label_title;
+        private System.Windows.Forms.Button button_findLocation;
+        private System.Windows.Forms.Button button_toggle;
+        private System.Windows.Forms.Label label_currentMapTime;
+        private System.Windows.Forms.CheckBox checkBox_topMost;
+        private System.Windows.Forms.CheckBox checkBox_systemTray;
+        private System.Windows.Forms.CheckBox checkBox_toggleSound;
+        private System.Windows.Forms.CheckBox checkBox_startUp;
+        private System.Windows.Forms.TextBox textBox_osuPath;
+        private System.Windows.Forms.TextBox textBox_hotkey;
+        private System.Windows.Forms.NotifyIcon notifyIcon_osuEscape;
+        private System.Windows.Forms.ContextMenuStrip contextMenuStrip_osu;
+        private System.Windows.Forms.ToolStripMenuItem statusToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem connectingToolStripMenuItem;
+        private System.Windows.Forms.Label label_map;
     }
 }
 

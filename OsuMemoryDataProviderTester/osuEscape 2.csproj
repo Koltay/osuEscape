@@ -5,6 +5,10 @@
     <OutputType>WinExe</OutputType>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <UseWindowsForms>true</UseWindowsForms>
+    <StartupObject></StartupObject>
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    <ApplicationIcon>osuEscape-small.ico</ApplicationIcon>
+    <Win32Resource />
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
     <OutputPath>bin\x86\Debug\</OutputPath>
@@ -46,10 +50,21 @@
     <PackageReference Include="System.Data.DataSetExtensions" Version="4.5.0" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Update="OsuMemoryDataProviderForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="OsuMemoryDataProviderForm.Designer.cs">
+      <DependentUpon>OsuMemoryDataProviderForm.cs</DependentUpon>
+    </Compile>
     <Compile Update="Properties\Settings.Designer.cs">
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <AutoGen>True</AutoGen>
       <DependentUpon>Settings.settings</DependentUpon>
     </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Update="OsuMemoryDataProviderForm.resx">
+      <DependentUpon>OsuMemoryDataProviderForm.cs</DependentUpon>
+    </EmbeddedResource>
   </ItemGroup>
 </Project>

@@ -6,15 +6,16 @@ using System.Windows.Forms;
 using Microsoft.Win32;
 using System.Threading;
 using System.Timers;
+using osuEscape_2;
+using OsuMemoryDataProvider;
 
 
-namespace osuEscape
+namespace osuEscape_2
 {
 
     
     public partial class MainForm : Form
     {
-        private readonly string _osuWindowTitleHint;
 
         private int toggle = -1; //1: Allow Firewall; -1: Block Firewall
 
@@ -22,14 +23,15 @@ namespace osuEscape
 
         private bool isLocationExist = false;
 
-        //Global Hotkey
+        //Global Hotkeys
         private KeyHandler ghk;
 
         private static System.Timers.Timer aTimer;
 
-        public MainForm(string osuWindowTitleHint)
-        {
-            _osuWindowTitleHint = osuWindowTitleHint;
+
+        public MainForm()
+        {         
+
             InitializeComponent();
 
             // check if osu!Escape is already opened
@@ -56,6 +58,43 @@ namespace osuEscape
             // UI fixed size 
             this.MaximumSize = this.Size;
             this.MinimumSize = this.Size;
+        }
+        private void osuEscape_Load(object sender, EventArgs e)
+        {
+            // avoid opening twice
+            Application.ApplicationExit += new EventHandler(Application_ApplicationExit);
+
+            // open the app at the previous location 
+            this.Location = Properties.Settings.Default.appLocation;
+
+            // getting osu! directory from running process
+            string str = GetOsuPath();
+
+            if (str != "")
+            {
+                Properties.Settings.Default.osuLocation = Process.GetProcessesByName("osu!").FirstOrDefault().MainModule.FileName;
+
+                UpdateOsuLocationText();
+
+                RuleResetAndSetUp(Properties.Settings.Default.osuLocation);
+            }
+            else
+            {
+                // if there is no user settings saved, initialize it
+                if (Properties.Settings.Default.osuLocation.Contains("osu!"))
+                {
+                    RuleResetAndSetUp(Properties.Settings.Default.osuLocation);
+                }
+                else
+                {
+                    FindLocation(); // trigger select folder function since there is no any record
+                }
+            }
+
+            ghk = new KeyHandler(Keys.F6, this);
+            ghk.Register();
+
+            //notifyIcon_osuEscape.Visible = false;
         }
 
         private void Button_findLocation_Click(object sender, EventArgs e) // select osu!.exe
@@ -127,17 +166,6 @@ namespace osuEscape
             }
 
             notifyIcon_osuEscape.Visible = false;
-
-            //lock (_patternsToSkip)
-            //{
-            //    // we store inverted state, easier since default is all on, so we can have a default of empty set to check :D
-            //    _patternsToSkip.Add("OsuBase");
-            //    _patternsToSkip.Add("PlayContainer");
-            //    _patternsToSkip.Add("TourneyBase");
-            //    _patternsToSkip.Add("Mods");
-            //    _patternsToSkip.Add("IsReplay");
-            //    _patternsToSkip.Add("CurrentSkinData");
-            //}
         }
 
         private void ContextMenuStripUpdate()
@@ -164,6 +192,7 @@ namespace osuEscape
             }                
            base.WndProc(ref m);
         }
+
         private void HandleHotkey()
         {
             ToggleFirewall();
@@ -174,8 +203,9 @@ namespace osuEscape
             Process cmd = new Process();
             cmd.StartInfo.FileName = "netsh";
             cmd.StartInfo.Arguments =
-                "advfirewall firewall set rule name=\"osu block\" new enable=" + (isAllow ? "no" : "yes");
+                @"advfirewall firewall set rule name=""osu block"" new enable=" + (isAllow ? "no" : "yes");
             cmd.StartInfo.Verb = "runas";
+            cmd.StartInfo.UseShellExecute = true;
             cmd.StartInfo.CreateNoWindow = true;
             cmd.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
             cmd.Start();
@@ -296,7 +326,13 @@ namespace osuEscape
             Properties.Settings.Default.isSystemTray = checkBox_systemTray.Checked;
         }
 
-        void Application_ApplicationExit(object sender, EventArgs e)
+        private void CheckBox_topMost_CheckedChanged(object sender, EventArgs e)
+        {
+            Properties.Settings.Default.isTopMost = checkBox_topMost.Checked;
+            this.TopMost = checkBox_topMost.Checked;
+        }
+
+        private void Application_ApplicationExit(object sender, EventArgs e)
         {
             // save the last position of the application
             if (this.WindowState != FormWindowState.Minimized)
@@ -376,12 +412,6 @@ namespace osuEscape
             this.ShowInTaskbar = !enabled;
         }
 
-        private void CheckBox_topMost_CheckedChanged(object sender, EventArgs e)
-        {
-            Properties.Settings.Default.isTopMost = checkBox_topMost.Checked;
-            this.TopMost = checkBox_topMost.Checked;                
-        }
-
         private void Button_reOpenOsu_Click(object sender, EventArgs e)
         {
             // kill the process, then re-open osu! using cmd command line
@@ -453,30 +483,9 @@ namespace osuEscape
             }
         }
 
-        //private void CloseOsuButton_Click(object sender, EventArgs e)
-        //{
-        //    if (Process.GetProcessesByName("osu!").Count() == 0)
-        //        textBox_toggleOsu.Text = "You have not opened any osu!";
-        //    else
-        //    {
-        //        Process[] prs = Process.GetProcesses();
-
-        //        foreach (Process process in prs)
-        //        {
-        //            if (process.ProcessName == "osu!")
-        //            {
-        //                process.Kill();
-        //                textBox_toggleOsu.Text = "Closed!";
-        //                break;
-        //            }
-        //        }
-        //    }
-        //}
-
         private void Button_showData_Click(object sender, EventArgs e)
         {
-            OsuMemoryDataProviderTester.OsuMemoryDataProviderForm form = new OsuMemoryDataProviderTester.OsuMemoryDataProviderForm(_osuWindowTitleHint);
-            form.Show();
+            string[] args = Environment.GetCommandLineArgs();
         }
     }
 }
