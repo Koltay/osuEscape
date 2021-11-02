@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace osuEscape_2.Properties {
+namespace osuEscape.Properties {
     
     
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
@@ -50,24 +50,24 @@ namespace osuEscape_2.Properties {
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("False")]
-        public bool isToggleSound {
-            get {
-                return ((bool)(this["isToggleSound"]));
-            }
-            set {
-                this["isToggleSound"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("False")]
         public bool isSystemTray {
             get {
                 return ((bool)(this["isSystemTray"]));
             }
             set {
                 this["isSystemTray"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool isToggleSound {
+            get {
+                return ((bool)(this["isToggleSound"]));
+            }
+            set {
+                this["isToggleSound"] = value;
             }
         }
         
@@ -92,6 +92,42 @@ namespace osuEscape_2.Properties {
             }
             set {
                 this["isTopMost"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("33")]
+        public int refreshRate {
+            get {
+                return ((int)(this["refreshRate"]));
+            }
+            set {
+                this["refreshRate"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool isSubmitIfSS {
+            get {
+                return ((bool)(this["isSubmitIfSS"]));
+            }
+            set {
+                this["isSubmitIfSS"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool isHideData {
+            get {
+                return ((bool)(this["isHideData"]));
+            }
+            set {
+                this["isHideData"] = value;
             }
         }
     }

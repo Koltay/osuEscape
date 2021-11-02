@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace osuEscape_2
+namespace osuEscape
 {
     [Flags]
     public enum Mods
