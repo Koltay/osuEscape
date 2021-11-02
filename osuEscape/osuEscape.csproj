@@ -102,9 +102,6 @@
     <Reference Include="ProcessMemoryDataFinder, Version=0.8.1.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\ProcessMemoryDataFinder.0.8.1\lib\net472\ProcessMemoryDataFinder.dll</HintPath>
     </Reference>
-    <Reference Include="SimpleOsuPerformanceCalculator">
-      <HintPath>Resources\SimpleOsuPerformanceCalculator.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Management" />
@@ -182,12 +179,6 @@
       <ProductName>.NET Framework 3.5 SP1</ProductName>
       <Install>false</Install>
     </BootstrapperPackage>
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\OsuMemoryDataProviderTester\osuEscape 2.csproj">
-      <Project>{ba9beb13-a89f-414f-8a59-9210e2dc2b21}</Project>
-      <Name>osuEscape 2</Name>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

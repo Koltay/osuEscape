@@ -33,7 +33,7 @@
             this.textBox_strings = new System.Windows.Forms.TextBox();
             this.label_status = new System.Windows.Forms.Label();
             this.textBox_Status = new System.Windows.Forms.TextBox();
-            this.label_currentPlay = new System.Windows.Forms.Label();
+            this.label_currentPlayingData = new System.Windows.Forms.Label();
             this.textBox_CurrentPlayData = new System.Windows.Forms.TextBox();
             this.label_refreshRate = new System.Windows.Forms.Label();
             this.numericUpDown_readDelay = new System.Windows.Forms.NumericUpDown();
@@ -57,6 +57,7 @@
             this.statusToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.connectingToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.label_map = new System.Windows.Forms.Label();
+            this.checkBox_submitIfSS = new System.Windows.Forms.CheckBox();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown_readDelay)).BeginInit();
             this.panel_top.SuspendLayout();
             this.contextMenuStrip_osu.SuspendLayout();
@@ -89,16 +90,16 @@
             this.textBox_Status.Size = new System.Drawing.Size(116, 23);
             this.textBox_Status.TabIndex = 4;
             // 
-            // label_currentPlay
+            // label_currentPlayingData
             // 
-            this.label_currentPlay.AutoSize = true;
-            this.label_currentPlay.Cursor = System.Windows.Forms.Cursors.No;
-            this.label_currentPlay.Location = new System.Drawing.Point(8, 211);
-            this.label_currentPlay.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.label_currentPlay.Name = "label_currentPlay";
-            this.label_currentPlay.Size = new System.Drawing.Size(116, 15);
-            this.label_currentPlay.TabIndex = 7;
-            this.label_currentPlay.Text = "Current Playing Data";
+            this.label_currentPlayingData.AutoSize = true;
+            this.label_currentPlayingData.Cursor = System.Windows.Forms.Cursors.No;
+            this.label_currentPlayingData.Location = new System.Drawing.Point(8, 211);
+            this.label_currentPlayingData.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label_currentPlayingData.Name = "label_currentPlayingData";
+            this.label_currentPlayingData.Size = new System.Drawing.Size(116, 15);
+            this.label_currentPlayingData.TabIndex = 7;
+            this.label_currentPlayingData.Text = "Current Playing Data";
             // 
             // textBox_CurrentPlayData
             // 
@@ -367,7 +368,18 @@
             this.label_map.Size = new System.Drawing.Size(31, 15);
             this.label_map.TabIndex = 32;
             this.label_map.Text = "Map";
-            this.label_map.Click += new System.EventHandler(this.label1_Click);
+            // 
+            // checkBox_submitIfSS
+            // 
+            this.checkBox_submitIfSS.AutoSize = true;
+            this.checkBox_submitIfSS.Location = new System.Drawing.Point(297, 375);
+            this.checkBox_submitIfSS.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            this.checkBox_submitIfSS.Name = "checkBox_submitIfSS";
+            this.checkBox_submitIfSS.Size = new System.Drawing.Size(89, 19);
+            this.checkBox_submitIfSS.TabIndex = 33;
+            this.checkBox_submitIfSS.Text = "Submit if SS";
+            this.checkBox_submitIfSS.UseVisualStyleBackColor = true;
+            this.checkBox_submitIfSS.CheckedChanged += new System.EventHandler(this.CheckBox_submitIfSS_CheckedChanged);
             // 
             // osuEscape
             // 
@@ -375,6 +387,7 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(426, 427);
             this.ControlBox = false;
+            this.Controls.Add(this.checkBox_submitIfSS);
             this.Controls.Add(this.label_map);
             this.Controls.Add(this.checkBox_topMost);
             this.Controls.Add(this.checkBox_systemTray);
@@ -390,7 +403,7 @@
             this.Controls.Add(this.textBox_time);
             this.Controls.Add(this.numericUpDown_readDelay);
             this.Controls.Add(this.label_refreshRate);
-            this.Controls.Add(this.label_currentPlay);
+            this.Controls.Add(this.label_currentPlayingData);
             this.Controls.Add(this.textBox_CurrentPlayData);
             this.Controls.Add(this.label_status);
             this.Controls.Add(this.textBox_Status);
@@ -416,7 +429,7 @@
         private System.Windows.Forms.TextBox textBox_strings;
         private System.Windows.Forms.Label label_status;
         private System.Windows.Forms.TextBox textBox_Status;
-        private System.Windows.Forms.Label label_currentPlay;
+        private System.Windows.Forms.Label label_currentPlayingData;
         private System.Windows.Forms.TextBox textBox_CurrentPlayData;
         private System.Windows.Forms.Label label_refreshRate;
         private System.Windows.Forms.NumericUpDown numericUpDown_readDelay;
@@ -443,6 +456,7 @@
         private System.Windows.Forms.ToolStripMenuItem statusToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem connectingToolStripMenuItem;
         private System.Windows.Forms.Label label_map;
+        private System.Windows.Forms.CheckBox checkBox_submitIfSS;
     }
 }
 
