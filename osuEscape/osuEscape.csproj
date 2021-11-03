@@ -1,19 +1,19 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
   <PropertyGroup>
-    <TargetFrameworks>net472</TargetFrameworks>
+    <TargetFrameworks>netcoreapp3.1;net472;net471;net5.0-windows</TargetFrameworks>
     <Platforms>x86;x64;AnyCPU</Platforms>
     <OutputType>WinExe</OutputType>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <UseWindowsForms>true</UseWindowsForms>
     <StartupObject>osuEscape.Program</StartupObject>
-    <AutoGenerateBindingRedirects>false</AutoGenerateBindingRedirects>
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <ApplicationIcon>osuEscape-small.ico</ApplicationIcon>
     <Win32Resource />
     <AssemblyName>osuEscape</AssemblyName>
     <RootNamespace>osuEscape</RootNamespace>
     <Authors>Koltay, Shion Maker</Authors>
-    <EnforceCodeStyleInBuild>false</EnforceCodeStyleInBuild>
-    <EnableNETAnalyzers>false</EnableNETAnalyzers>
+    <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
+    <EnableNETAnalyzers>true</EnableNETAnalyzers>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
     <OutputPath>bin\x86\Debug\</OutputPath>

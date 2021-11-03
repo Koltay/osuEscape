@@ -35,6 +35,10 @@ namespace osuEscape
 
         private bool isAllowConnection = true;
 
+        private Size originalSize;
+
+        private Task runningTask;
+
         #region Initialize and OnLoad
         public osuEscape(string osuWindowTitleHint)
         {
@@ -145,7 +149,7 @@ namespace osuEscape
         private async void RealTimeDataDisplayAsync()
         {
             if (!string.IsNullOrEmpty(_osuWindowTitleHint)) Text += $": {_osuWindowTitleHint}";
-            _ = Task.Run(async () =>
+            runningTask = Task.Run(async () =>
             {
                 try
                 {
@@ -231,7 +235,6 @@ namespace osuEscape
                             if (status == OsuMemoryStatus.Playing && patternsToRead.PlayContainer)
                             {
                                 playReseted = false;
-
                                 _reader.GetPlayData(playContainer);
                                 hp = _reader.ReadPlayerHp();
                                 playerName = _reader.PlayerName();
@@ -239,13 +242,10 @@ namespace osuEscape
                                 playingMods = _reader.GetPlayingMods();
                                 displayedPlayerHp = _reader.ReadDisplayedPlayerHp();
                                 scoreV2 = _reader.ReadScoreV2();
-
-                                // for ResultsScreen
-                                // to show the final score
                                 resultsScreenScoreV2 = scoreV2;
 
 
-                                ////Connect again if the score is an SS
+                                //Connect again if the score is an SS
                                 if (checkBox_submitIfSS.Checked)
                                 {
                                     // if not connecting and the score is SS, then upload it through reconnecting
@@ -255,6 +255,7 @@ namespace osuEscape
                                         isAllowConnection = true;
                                     }
                                 }
+
                             }
                             else if (status == OsuMemoryStatus.ResultsScreen)
                             {
@@ -263,11 +264,6 @@ namespace osuEscape
 
                                 //to be implemented: api detect submission -> block submission
                             }
-                            //else if (status == OsuMemoryStatus.GameShutdownAnimation)
-                            //{
-                            //    textBox_strings.Clear();
-                            //    textBox_currentMapTime.Clear();
-                            //}
                             else if (status == OsuMemoryStatus.NotRunning)
                             {
                                 textBox_strings.Clear();
@@ -310,10 +306,10 @@ namespace osuEscape
                         lock (_minMaxLock)
                         {
 
-                            if (readTimeMs < _memoryReadTimeMin)
+                            if (readTimeMs < _memoryReadTimeMin) 
                                 _memoryReadTimeMin = readTimeMs;
 
-                            if (readTimeMs > _memoryReadTimeMax)
+                            if (readTimeMs > _memoryReadTimeMax) 
                                 _memoryReadTimeMax = readTimeMs;
 
                             // copy value since we're inside lock
@@ -323,7 +319,6 @@ namespace osuEscape
 
                         Invoke((MethodInvoker)(() =>
                         {
-
                             //textBox_mapId.Text = $"Id:{mapId} {Environment.NewLine}" +
                             //                     $"setId:{mapSetId} {Environment.NewLine}";
 
@@ -346,8 +341,7 @@ namespace osuEscape
 
                             textBox_CurrentPlayData.Text =
                                 playContainer + Environment.NewLine +
-                                $"Score: {scoreV2} {Environment.NewLine}" // actually scorev2, but it works on both cases
-
+                                $"Score: {scoreV2} {Environment.NewLine}"
                                 //$"IsReplay: {isReplay} {Environment.NewLine}" +
                                 //$"hp________: {hp:00.##} {Environment.NewLine}" +
                                 //$"displayedHp: {displayedPlayerHp:00.##} {Environment.NewLine}" +
@@ -359,10 +353,9 @@ namespace osuEscape
                             if (status != OsuMemoryStatus.Playing && status != OsuMemoryStatus.ResultsScreen)
                             {
                                 textBox_CurrentPlayData.Clear();
-                                textBox_strings.Clear();
                             }
-                           
-                        }));                        
+                        }));
+                        await Task.Delay(_readDelay);
                     }
                 }
                 catch (ThreadAbortException)
@@ -370,10 +363,9 @@ namespace osuEscape
 
                 }
             });
-            await Task.Delay(_readDelay);
         }
 
-
+       
 
         public class PlayContainerEx : PlayContainer
         {
@@ -701,10 +693,10 @@ namespace osuEscape
             else
             {
                 // reset cts and resume
-                cts.Dispose();
-                cts = new CancellationTokenSource();
+                //cts.Dispose();
+                //cts = new CancellationTokenSource();
                 
-                RealTimeDataDisplayAsync();
+                //RealTimeDataDisplayAsync();
 
                 groupBox_Data.Visible = true;
                 groupBox_hideData.Location = new Point(8, 335);
