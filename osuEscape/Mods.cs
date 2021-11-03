@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace OsuMemoryDataProviderTester
+namespace osuEscape
 {
     [Flags]
     public enum Mods
