@@ -37,12 +37,18 @@ namespace osuEscape_2
         private enum Connection
         {
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
+=======
+>>>>>>> parent of 71cdd4c (added submit if ss button (not working))
             Allow = 1,
             Block = -1
         }
 
         private int toggle = -1;
+<<<<<<< HEAD
+>>>>>>> parent of 71cdd4c (added submit if ss button (not working))
+=======
 >>>>>>> parent of 71cdd4c (added submit if ss button (not working))
 
 
