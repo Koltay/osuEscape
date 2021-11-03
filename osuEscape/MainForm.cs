@@ -37,8 +37,6 @@ namespace osuEscape
 
         private Size originalSize;
 
-        private Task runningTask;
-
         #region Initialize and OnLoad
         public osuEscape(string osuWindowTitleHint)
         {
@@ -77,6 +75,11 @@ namespace osuEscape
             checkBox_hideData.Checked = Properties.Settings.Default.isHideData;
 
             numericUpDown_readDelay.Value = Properties.Settings.Default.refreshRate;    
+
+            // UI fixed size 
+            this.MaximumSize = this.Size;
+            this.MinimumSize = this.Size;
+            originalSize = this.Size;
         }
 
         private void OsuEscape_Load(object sender, EventArgs e)
@@ -149,7 +152,7 @@ namespace osuEscape
         private async void RealTimeDataDisplayAsync()
         {
             if (!string.IsNullOrEmpty(_osuWindowTitleHint)) Text += $": {_osuWindowTitleHint}";
-            runningTask = Task.Run(async () =>
+            _ = Task.Run(async () =>
             {
                 try
                 {
@@ -158,13 +161,13 @@ namespace osuEscape
                     var playContainer = new PlayContainerEx();
                     var playReseted = false;
                     var baseAddresses = new OsuBaseAddresses();
-
                     while (true)
                     {
                         if (cts.IsCancellationRequested)
                             return;
 
                         var patternsToRead = GetPatternsToRead();
+
 
                         stopwatch = Stopwatch.StartNew();
 
@@ -221,6 +224,16 @@ namespace osuEscape
 
                         #endregion
 
+                        #region IsReplay
+
+                        bool isReplay = false;
+                        if (status == OsuMemoryStatus.Playing && patternsToRead.IsReplay)
+                        {
+                            isReplay = _reader.IsReplay();
+                        }
+
+                        #endregion
+
                         #region PlayContainer
 
                         double hp = 0;
@@ -251,7 +264,7 @@ namespace osuEscape
                                     // if not connecting and the score is SS, then upload it through reconnecting
                                     if (!isAllowConnection && playContainer.Acc == 100)
                                     {
-                                        ToggleFirewall();
+                                        AllowConnection(true);
                                         isAllowConnection = true;
                                     }
                                 }
@@ -305,13 +318,8 @@ namespace osuEscape
                         readTimeMs = stopwatch.ElapsedTicks / (double)TimeSpan.TicksPerMillisecond;
                         lock (_minMaxLock)
                         {
-
-                            if (readTimeMs < _memoryReadTimeMin) 
-                                _memoryReadTimeMin = readTimeMs;
-
-                            if (readTimeMs > _memoryReadTimeMax) 
-                                _memoryReadTimeMax = readTimeMs;
-
+                            if (readTimeMs < _memoryReadTimeMin) _memoryReadTimeMin = readTimeMs;
+                            if (readTimeMs > _memoryReadTimeMax) _memoryReadTimeMax = readTimeMs;
                             // copy value since we're inside lock
                             readTimeMsMin = _memoryReadTimeMin;
                             readTimeMsMax = _memoryReadTimeMax;
@@ -525,10 +533,14 @@ namespace osuEscape
                     "advfirewall firewall add rule name=\"osu block\" dir=out action=block program=" + filename;
                 cmd.Start();
 
-                // Disable block rule at start
-                // To avoid unneeded disconnection
-                isAllowConnection = false;
-                ToggleFirewall();
+                // disable at first to avoid unneeded disconnection
+                cmd.StartInfo.Arguments =
+                    "advfirewall firewall set rule name=\"osu block\" new enable=no"; ;
+                cmd.Start();
+                cmd.WaitForExit();
+
+                button_toggle.Text = "Connecting";
+                button_toggle.ForeColor = System.Drawing.Color.Green;
             }
         }
 
@@ -644,7 +656,7 @@ namespace osuEscape
 
             contextMenuStrip_osu.Items[1].Click += new EventHandler(Item_quit_Click);
 
-            notifyIcon_osuEscape.Icon = (button_toggle.Text == "Connecting" ? Properties.Resources.osuEscapeConnecting : Properties.Resources.osuEscapeBlocking);
+            //notifyIcon_osuEscape.Icon = (button_toggle.Text == "Connecting" ? Properties.Resources. : Properties.Resources.osuEscapeBlocking);
         }
         private void Item_quit_Click(object sender, EventArgs e)
         {
@@ -669,7 +681,6 @@ namespace osuEscape
         {
             Properties.Settings.Default.isSubmitIfSS = checkBox_submitIfSS.Checked;
         }
-
         #endregion
 
         #region Hide Data
@@ -682,10 +693,8 @@ namespace osuEscape
                 // pause updating data 
                 cts.Cancel();
 
-                // hide data, smaller ui
                 this.MinimumSize = new Size(426, 215);
-                this.Size = this.MinimumSize;
-                this.MaximumSize = this.Size;
+                this.Size = new Size(426,215);
 
                 groupBox_hideData.Location = new Point(8,120);
                 groupBox_Data.Visible = false;
@@ -693,18 +702,15 @@ namespace osuEscape
             else
             {
                 // reset cts and resume
-                //cts.Dispose();
-                //cts = new CancellationTokenSource();
-                
-                //RealTimeDataDisplayAsync();
+                cts = new CancellationTokenSource();
+                RealTimeDataDisplayAsync();
 
                 groupBox_Data.Visible = true;
                 groupBox_hideData.Location = new Point(8, 335);
 
-                // reset ui with fixed size
-                this.MaximumSize = new Size (426,427);
-                this.Size = this.MaximumSize;
-                this.MinimumSize = this.Size;
+                this.MaximumSize = originalSize;
+                this.Size = originalSize;
+                this.MinimumSize = originalSize;
             }
         }
         #endregion
