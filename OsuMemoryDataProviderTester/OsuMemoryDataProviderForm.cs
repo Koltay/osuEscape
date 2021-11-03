@@ -38,7 +38,6 @@ namespace osuEscape_2
         #region Initialize and OnLoad
         public osuEscape(string osuWindowTitleHint)
         {
-            ApiHelper.InitializeClient();
 
             _osuWindowTitleHint = osuWindowTitleHint;
 
