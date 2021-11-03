@@ -106,17 +106,5 @@ namespace osuEscape_2.Properties {
                 this["refreshRate"] = value;
             }
         }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("False")]
-        public bool isSubmitIfSS {
-            get {
-                return ((bool)(this["isSubmitIfSS"]));
-            }
-            set {
-                this["isSubmitIfSS"] = value;
-            }
-        }
     }
 }

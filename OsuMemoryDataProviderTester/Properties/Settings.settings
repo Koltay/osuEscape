@@ -23,8 +23,5 @@
     <Setting Name="refreshRate" Type="System.Int32" Scope="User">
       <Value Profile="(Default)">33</Value>
     </Setting>
-    <Setting Name="isSubmitIfSS" Type="System.Boolean" Scope="User">
-      <Value Profile="(Default)">False</Value>
-    </Setting>
   </Settings>
 </SettingsFile>

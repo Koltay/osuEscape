@@ -33,12 +33,22 @@ namespace osuEscape_2
 
         public int resultsScreenScoreV2 = 0;
 
-        private bool isAllowConnection = true;
 
-        #region Initialize and OnLoad
+        private enum Connection
+        {
+<<<<<<< HEAD
+=======
+            Allow = 1,
+            Block = -1
+        }
+
+        private int toggle = -1;
+>>>>>>> parent of 71cdd4c (added submit if ss button (not working))
+
+
         public osuEscape(string osuWindowTitleHint)
         {
-
+            System.Diagnostics.Debug.WriteLine("arguments: " + osuWindowTitleHint);
             _osuWindowTitleHint = osuWindowTitleHint;
 
             InitializeComponent();
@@ -71,8 +81,6 @@ namespace osuEscape_2
             checkBox_toggleSound.Checked = Properties.Settings.Default.isToggleSound;
             checkBox_systemTray.Checked = Properties.Settings.Default.isSystemTray;
             checkBox_topMost.Checked = Properties.Settings.Default.isTopMost;
-            checkBox_submitIfSS.Checked = Properties.Settings.Default.isSubmitIfSS;
-
             numericUpDown_readDelay.Value = Properties.Settings.Default.refreshRate;
     
 
@@ -118,8 +126,6 @@ namespace osuEscape_2
 
             notifyIcon_osuEscape.Visible = false;
         }
-
-        #endregion
 
 
         private void NumericUpDownReadDelayOnValueChanged(object sender, EventArgs eventArgs)
@@ -171,7 +177,6 @@ namespace osuEscape_2
                     return;
 
                 var patternsToRead = GetPatternsToRead();
-                
 
                 stopwatch = Stopwatch.StartNew();
 
@@ -246,55 +251,29 @@ namespace osuEscape_2
                 var playingMods = -1;
                 double displayedPlayerHp = 0;
                 int scoreV2 = -1;
-                Invoke((MethodInvoker)(() =>
+                if (status == OsuMemoryStatus.Playing && patternsToRead.PlayContainer)
                 {
-                    if (status == OsuMemoryStatus.Playing && patternsToRead.PlayContainer)
-                    {
-                        playReseted = false;
-                        _reader.GetPlayData(playContainer);
-                        hp = _reader.ReadPlayerHp();
-                        playerName = _reader.PlayerName();
-                        hitErrorCount = _reader.HitErrors()?.Count ?? -2;
-                        playingMods = _reader.GetPlayingMods();
-                        displayedPlayerHp = _reader.ReadDisplayedPlayerHp();
-                        scoreV2 = _reader.ReadScoreV2();
-                        resultsScreenScoreV2 = scoreV2;
-
-
-                        //Connect again if the score is an SS
-                        if (checkBox_submitIfSS.Checked)
-                        {
-                            // if not connecting and the score is SS, then upload it through reconnecting
-                            if (!isAllowConnection && playContainer.Acc == 100)
-                            {
-                                AllowConnection(true);
-                                isAllowConnection = true;
-                            }
-                        }
-
-                    }
-                    else if (status == OsuMemoryStatus.ResultsScreen)
-                    {
-                        playReseted = false;
-                        scoreV2 = resultsScreenScoreV2;
-                    }
-                    else if (status == OsuMemoryStatus.GameShutdownAnimation)
-                    {
-                        //not working, tries retrack after game shut down
-                        cts.Cancel();
-                        cts.Dispose();
-                        cts = new CancellationTokenSource();
-                    }
-                    else if (status == OsuMemoryStatus.NotRunning)
-                    {
-                        textBox_strings.Clear();
-                    }
-                    else if (!playReseted)
-                    {
-                        playReseted = true;
-                        playContainer.Reset();
-                    }
-                }));
+                    playReseted = false;
+                    _reader.GetPlayData(playContainer);
+                    hp = _reader.ReadPlayerHp();
+                    playerName = _reader.PlayerName();
+                    hitErrorCount = _reader.HitErrors()?.Count ?? -2;
+                    playingMods = _reader.GetPlayingMods();
+                    displayedPlayerHp = _reader.ReadDisplayedPlayerHp();
+                    scoreV2 = _reader.ReadScoreV2();
+                    resultsScreenScoreV2 = scoreV2;
+                }
+                else if (status == OsuMemoryStatus.ResultsScreen && patternsToRead.PlayContainer)
+                {
+                    playReseted = false;
+                    scoreV2 = resultsScreenScoreV2;
+                    
+                }
+                else if (!playReseted)
+                {
+                    playReseted = true;
+                    playContainer.Reset();
+                }
 
                 #endregion
 
@@ -379,8 +358,6 @@ namespace osuEscape_2
 
             public int Sliderbreak { get; private set; } = 0;
 
-            public double Accuracy { get; private set; }
-
             public override string ToString()
             {
                 if (C100 - PreviousC100 == 1 && Score != 0)
@@ -393,7 +370,8 @@ namespace osuEscape_2
 
                 PreviousC100 = C100;
 
-                Accuracy = Acc;
+
+
 
                 var nl = Environment.NewLine;
                 return $"300: {C300}, 100: {C100}, 50: {C50}, Miss: {CMiss}" + nl +
@@ -423,6 +401,29 @@ namespace osuEscape_2
             }
         }
 
+        private void ChangeConnection(bool isAllow)
+        {
+            Process cmd = new Process();
+            cmd.StartInfo.FileName = "netsh";
+            cmd.StartInfo.Arguments =
+            //    @"advfirewall firewall set rule name=""osu block"" new enable=" + (isAllow == Connection.Allow ? "no" : "yes");
+                  @"advfirewall firewall set rule name=""osu block"" new enable=" + (isAllow ? "no" : "yes");
+            cmd.StartInfo.Verb = "runas";
+            cmd.StartInfo.UseShellExecute = true;
+            cmd.StartInfo.CreateNoWindow = true;
+            cmd.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
+            cmd.Start();
+
+            ToggleButtonUpdate(isAllow);
+
+            ContextMenuStripUpdate();
+        }
+
+        private void ToggleButtonUpdate(bool isAllow)
+        {
+            button_toggle.Text = isAllow ? "Connecting" : "Blocked";
+            button_toggle.ForeColor = isAllow ? System.Drawing.Color.Green : System.Drawing.Color.Red;
+        }
 
         #region Panel Buttons
         private void Button_exit_Click(object sender, EventArgs e)
@@ -445,16 +446,15 @@ namespace osuEscape_2
 
         #endregion
 
-        #region ToggleConnection 
         private void Button_toggle_Click(object sender, EventArgs e)
         {
-            if (Properties.Settings.Default.osuLocation == "")
+            if (Properties.Settings.Default.osuLocation != "")
             {
-                MessageBox.Show("Invalid Location");
+                ToggleFirewall();
             }
             else
             {
-                ToggleFirewall();
+                MessageBox.Show("Invalid Location");
             }
         }
 
@@ -462,49 +462,33 @@ namespace osuEscape_2
 
         private void ToggleFirewall()
         {
-            // toggle the connection status
-            isAllowConnection = !isAllowConnection;
-
-            AllowConnection(isAllowConnection);
+            ChangeConnection(toggle == 1); // isAllow
+            toggle *= -1;
 
             if (checkBox_toggleSound.Checked)
                 System.Media.SystemSounds.Asterisk.Play();
         }
 
-
-        private void AllowConnection(bool isAllow)
+        private void Button_findLocation_Click(object sender, EventArgs e) // select osu!.exe
         {
-            Process cmd = new Process();
-            cmd.StartInfo.FileName = "netsh";
-            cmd.StartInfo.Arguments =
-                  @"advfirewall firewall set rule name=""osu block"" new enable=" + (isAllow ? "no" : "yes");
-            cmd.StartInfo.Verb = "runas";
-            cmd.StartInfo.UseShellExecute = true;
-            cmd.StartInfo.CreateNoWindow = true;
-            cmd.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
-            cmd.Start();
-
-            ToggleButtonUpdate(isAllow);
-
-            ContextMenuStripUpdate();
+            FindOsuLocation();
         }
 
-
-        private void ToggleButtonUpdate(bool isAllow)
+        private void FindOsuLocation()
         {
-            if (button_toggle.InvokeRequired)
+            OpenFileDialog ofd = new OpenFileDialog();
+            if (ofd.ShowDialog() == DialogResult.OK)
             {
-                button_toggle.Invoke(new MethodInvoker(delegate
+                if (ofd.FileName.Contains("osu!.exe"))
                 {
-                    button_toggle.Text = isAllow ? "Connecting" : "Blocked";
-                    button_toggle.ForeColor = isAllow ? System.Drawing.Color.Green : System.Drawing.Color.Red;
-                }));                               
+                    FirewallRuleSetUp(ofd.FileName);
+                }
+                else
+                {
+                    // run again until user finds osu.exe or user cancelled the action
+                    FindOsuLocation();
+                }
             }
-            else
-            {
-                button_toggle.Text = isAllow ? "Connecting" : "Blocked";
-                button_toggle.ForeColor = isAllow ? System.Drawing.Color.Green : System.Drawing.Color.Red;
-            }            
         }
 
         private void FirewallRuleSetUp(string filename)
@@ -542,46 +526,15 @@ namespace osuEscape_2
             }
         }
 
-        #endregion
-
-        #region Find osu! location
-        private void Button_findLocation_Click(object sender, EventArgs e) // select osu!.exe
-        {
-            FindOsuLocation();
-        }
-
-        private void FindOsuLocation()
-        {
-            OpenFileDialog ofd = new OpenFileDialog();
-            if (ofd.ShowDialog() == DialogResult.OK)
-            {
-                if (ofd.FileName.Contains("osu!.exe"))
-                {
-                    FirewallRuleSetUp(ofd.FileName);
-                }
-                else
-                {
-                    // run again until user finds osu.exe or user cancelled the action
-                    FindOsuLocation();
-                }
-            }
-        }
-        
         private void UpdateOsuLocationText()
         {
             textBox_osuPath.Text = "osu! Path: " + String.Join("\\", Properties.Settings.Default.osuLocation.Split('\\').Reverse().Skip(1).Reverse()) + "\\";
-        } 
-        
-        private static string GetOsuPath()
-        {
-            return (Process.GetProcessesByName("osu!").Count() == 0 ? "" : Process.GetProcessesByName("osu!").FirstOrDefault().MainModule.FileName);
         }
 
+        
 
-        #endregion
-                   
         #region CheckBox Settings
-        // Include: startup, toggle with sound, minimize to system tray, top most, submit if ss
+        
         #region Run at Startup
         private void CheckBox_startUp_CheckedChanged(object sender, EventArgs e)
         {
@@ -619,7 +572,7 @@ namespace osuEscape_2
 
         #endregion
 
-        #region NotifyIcon, SystemTray, ContextMenuStrip
+        #region NotifyIcon and SystemTray
         private void NotifyIcon_osuEscape_MouseDoubleClick(object sender, MouseEventArgs e)
         {
             this.WindowState = FormWindowState.Normal;
@@ -640,25 +593,6 @@ namespace osuEscape_2
             this.ShowInTaskbar = !enabled;
         }
 
-        #region ContextMenuStrip
-        private void ContextMenuStripUpdate()
-        {
-            notifyIcon_osuEscape.ContextMenuStrip = contextMenuStrip_osu;
-
-            //Status Update
-            contextMenuStrip_osu.Items[0].Text = "Status: " + button_toggle.Text;
-
-            contextMenuStrip_osu.Items[1].Click += new EventHandler(Item_quit_Click);
-
-            //notifyIcon_osuEscape.Icon = (button_toggle.Text == "Connecting" ? Properties.Resources. : Properties.Resources.osuEscapeBlocking);
-        }
-        private void Item_quit_Click(object sender, EventArgs e)
-        {
-            this.Close();
-        }
-
-        #endregion
-
         #endregion
 
         #region TopMost
@@ -668,13 +602,6 @@ namespace osuEscape_2
             this.TopMost = checkBox_topMost.Checked;
         }
 
-        #endregion
-
-        #region Submit If SS
-        private void CheckBox_submitIfSS_CheckedChanged(object sender, EventArgs e)
-        {
-            Properties.Settings.Default.isSubmitIfSS = checkBox_submitIfSS.Checked;
-        }
         #endregion
 
         #endregion
@@ -743,7 +670,12 @@ namespace osuEscape_2
         }
 
         #endregion
-       
+
+        private static string GetOsuPath()
+        {
+            return (Process.GetProcessesByName("osu!").Count() == 0 ? "" : Process.GetProcessesByName("osu!").FirstOrDefault().MainModule.FileName);
+        }
+
         #region HotKey
         private void HandleHotkey()
         {
@@ -770,7 +702,26 @@ namespace osuEscape_2
 
         #endregion
 
-        
+        private void ContextMenuStripUpdate()
+        {
+            notifyIcon_osuEscape.ContextMenuStrip = contextMenuStrip_osu;
+
+            //Status Update
+            contextMenuStrip_osu.Items[0].Text = "Status: " + button_toggle.Text;
+
+            contextMenuStrip_osu.Items[1].Click += new EventHandler(Item_quit_Click);
+
+            //notifyIcon_osuEscape.Icon = (button_toggle.Text == "Connecting" ? Properties.Resources. : Properties.Resources.osuEscapeBlocking);
+        }
+        private void Item_quit_Click(object sender, EventArgs e)
+        {
+            this.Close();
+        }
+
+        private void label1_Click(object sender, EventArgs e)
+        {
+
+        }
     }
 
     #region internal struct PatternsToRead
