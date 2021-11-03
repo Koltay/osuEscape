@@ -5,11 +5,11 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("osuEscape")]
+[assembly: AssemblyTitle("osu Escape")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("osuEscape")]
+[assembly: AssemblyProduct("osu Escape")]
 [assembly: AssemblyCopyright("Copyright ©  2021")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
@@ -20,7 +20,7 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid("58aeb465-56c5-472f-8fac-07ab7c40d696")]
+[assembly: Guid("2450525d-627d-4aba-acf0-fa1aa76ce4a0")]
 
 // Version information for an assembly consists of the following four values:
 //
