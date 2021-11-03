@@ -38,7 +38,10 @@ namespace osuEscape_2
         {
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
+=======
+>>>>>>> parent of 71cdd4c (added submit if ss button (not working))
 =======
 >>>>>>> parent of 71cdd4c (added submit if ss button (not working))
             Allow = 1,
@@ -47,6 +50,9 @@ namespace osuEscape_2
 
         private int toggle = -1;
 <<<<<<< HEAD
+<<<<<<< HEAD
+>>>>>>> parent of 71cdd4c (added submit if ss button (not working))
+=======
 >>>>>>> parent of 71cdd4c (added submit if ss button (not working))
 =======
 >>>>>>> parent of 71cdd4c (added submit if ss button (not working))
