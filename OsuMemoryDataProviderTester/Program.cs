@@ -2,7 +2,7 @@
 using System.Linq;
 using System.Windows.Forms;
 
-namespace osuEscape_2
+namespace OsuMemoryDataProviderTester
 {
     static class Program
     {
@@ -14,7 +14,7 @@ namespace osuEscape_2
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new osuEscape(args.FirstOrDefault()));
+            Application.Run(new OsuMemoryDataProviderForm(args.FirstOrDefault()));
         }
     }
 }

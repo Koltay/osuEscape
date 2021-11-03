@@ -1,5 +1,5 @@
 ﻿
-namespace osuEscape_2
+namespace osuEscape
 {
     partial class MainForm
     {

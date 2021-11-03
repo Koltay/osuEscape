@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Runtime.InteropServices;
 
-namespace osuEscape_2
+namespace osuEscape
 {
     public class KeyHandler
     {

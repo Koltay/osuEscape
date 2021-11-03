@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace osuEscape_2.Properties {
+namespace OsuMemoryDataProviderTester.Properties {
     
     
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
@@ -20,90 +20,6 @@ namespace osuEscape_2.Properties {
         public static Settings Default {
             get {
                 return defaultInstance;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("")]
-        public string osuLocation {
-            get {
-                return ((string)(this["osuLocation"]));
-            }
-            set {
-                this["osuLocation"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("False")]
-        public bool isStartUp {
-            get {
-                return ((bool)(this["isStartUp"]));
-            }
-            set {
-                this["isStartUp"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("False")]
-        public bool isSystemTray {
-            get {
-                return ((bool)(this["isSystemTray"]));
-            }
-            set {
-                this["isSystemTray"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("False")]
-        public bool isToggleSound {
-            get {
-                return ((bool)(this["isToggleSound"]));
-            }
-            set {
-                this["isToggleSound"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("0, 0")]
-        public global::System.Drawing.Point appLocation {
-            get {
-                return ((global::System.Drawing.Point)(this["appLocation"]));
-            }
-            set {
-                this["appLocation"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("False")]
-        public bool isTopMost {
-            get {
-                return ((bool)(this["isTopMost"]));
-            }
-            set {
-                this["isTopMost"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("33")]
-        public int refreshRate {
-            get {
-                return ((int)(this["refreshRate"]));
-            }
-            set {
-                this["refreshRate"] = value;
             }
         }
     }

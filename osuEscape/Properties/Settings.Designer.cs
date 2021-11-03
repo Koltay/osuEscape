@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace osuEscape_2.Properties {
+namespace osuEscape.Properties {
     
     
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
