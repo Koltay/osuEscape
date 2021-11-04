@@ -8,6 +8,8 @@ using System.Diagnostics;
 using System.Drawing;
 using System.Globalization;
 using System.Linq;
+using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -34,15 +36,19 @@ namespace osuEscape
         public int resultsScreenScoreV2 = 0;
 
         private bool isAllowConnection = true;
+        public class Beatmap
+        {
+            // api v2
+            public string BeatmapSet { get; set; }
+            public int FailTimes { get; set; }
+            public int Max_Combo { get; set; }
+        }
 
-        private Size originalSize;
-
-        private Task runningTask;
+        private static HttpClient client = new HttpClient();
 
         #region Initialize and OnLoad
         public osuEscape(string osuWindowTitleHint)
         {
-            //ApiHelper.InitializeClient();
 
             _osuWindowTitleHint = osuWindowTitleHint;
 
@@ -76,7 +82,9 @@ namespace osuEscape
             checkBox_submitIfSS.Checked = Properties.Settings.Default.isSubmitIfSS;
             checkBox_hideData.Checked = Properties.Settings.Default.isHideData;
 
-            numericUpDown_readDelay.Value = Properties.Settings.Default.refreshRate;    
+            numericUpDown_readDelay.Value = Properties.Settings.Default.refreshRate;
+
+            textBox_apiKey.Text = Properties.Settings.Default.userApiKey;
         }
 
         private void OsuEscape_Load(object sender, EventArgs e)
@@ -103,21 +111,22 @@ namespace osuEscape
             }
             else
             {
-                // if there is no user settings saved, initialize it
                 if (Properties.Settings.Default.osuLocation.Contains("osu!"))
-                {
+                {                    
                     FirewallRuleSetUp(Properties.Settings.Default.osuLocation);
                 }
                 else
                 {
-                    FindOsuLocation(); // trigger select folder function since there is no any record
+                    // if there is no saved osu location at user settings,
+                    // initialize this function to find osu! location
+                    FindOsuLocation(); 
                 }
             }
 
             ghk = new KeyHandler(Keys.F6, this);
             ghk.Register();
 
-            // hide notifyIcon until it's minimized to system tray
+            // hide notifyIcon until user settings allows minimizing to system tray
             notifyIcon_osuEscape.Visible = false;
         }
 
@@ -149,7 +158,7 @@ namespace osuEscape
         private async void RealTimeDataDisplayAsync()
         {
             if (!string.IsNullOrEmpty(_osuWindowTitleHint)) Text += $": {_osuWindowTitleHint}";
-            runningTask = Task.Run(async () =>
+            _ = Task.Run(async () =>
             {
                 try
                 {
@@ -157,7 +166,7 @@ namespace osuEscape
                     double readTimeMs, readTimeMsMin, readTimeMsMax;
                     var playContainer = new PlayContainerEx();
                     var playReseted = false;
-                    var baseAddresses = new OsuBaseAddresses();
+                    var baseAddresses = new OsuBaseAddresses();                    
 
                     while (true)
                     {
@@ -182,6 +191,8 @@ namespace osuEscape
                         var status = OsuMemoryStatus.Unknown;
                         var statusNum = -1;
                         var playTime = -1;
+
+                        var max_combo = 0;
 
                         if (patternsToRead.OsuBase)
                         {
@@ -223,57 +234,67 @@ namespace osuEscape
 
                         #region PlayContainer
 
-                        double hp = 0;
-                        var playerName = string.Empty;
-                        var hitErrorCount = -1;
-                        var playingMods = -1;
-                        double displayedPlayerHp = 0;
                         int scoreV2 = -1;
 
                         Invoke((MethodInvoker)(() =>
                         {
+                            // waiting for fix: playing status
                             if (status == OsuMemoryStatus.Playing && patternsToRead.PlayContainer)
                             {
-                                playReseted = false;
-                                _reader.GetPlayData(playContainer);
-                                hp = _reader.ReadPlayerHp();
-                                playerName = _reader.PlayerName();
-                                hitErrorCount = _reader.HitErrors()?.Count ?? -2;
-                                playingMods = _reader.GetPlayingMods();
-                                displayedPlayerHp = _reader.ReadDisplayedPlayerHp();
-                                scoreV2 = _reader.ReadScoreV2();
-                                resultsScreenScoreV2 = scoreV2;
+  
 
+                                _ = Task.Run(async () =>
+                                {
+                                    playReseted = false;
 
-                                //Connect again if the score is an SS
+                                    _reader.GetPlayData(playContainer);
+
+                                    scoreV2 = _reader.ReadScoreV2();
+
+                                    resultsScreenScoreV2 = scoreV2;
+
+                                });  
+
+                                // this method is placed at playing status
+                                // as resultsscreen connection is too slow for an instant score submission
                                 if (checkBox_submitIfSS.Checked)
                                 {
-                                    // if not connecting and the score is SS, then upload it through reconnecting
                                     if (!isAllowConnection && playContainer.Acc == 100)
                                     {
                                         ToggleFirewall();
                                         isAllowConnection = true;
                                     }
-                                }
+                                }                           
+                            }
+                            else if (status == OsuMemoryStatus.SongSelect)
+                            {
+                                // if there is an valid api key
+                                // find maximum combo to achieve submit for fc scores
 
+                                // api not fixed
+
+                                if (Properties.Settings.Default.userApiKey != null)
+                                    _ = Task.Run(async() => RunAsync(mapId, max_combo).GetAwaiter().GetResult());
                             }
                             else if (status == OsuMemoryStatus.ResultsScreen)
                             {
+                                // to keep the data on screen
                                 playReseted = false;
                                 scoreV2 = resultsScreenScoreV2;
 
-                                //to be implemented: api detect submission -> block submission
-                            }
-                            else if (status == OsuMemoryStatus.NotRunning)
-                            {
-                                textBox_strings.Clear();
-                                textBox_currentMapTime.Clear();
+                                // ***to be implemented: api detect submission -> block submission
                             }
                             else if (!playReseted)
                             {
                                 playReseted = true;
                                 playContainer.Reset();
                             }
+
+                            bool enabled = 
+                                status == OsuMemoryStatus.NotRunning
+                            ||  status == OsuMemoryStatus.GameShutdownAnimation ? false : true;
+                            
+                            ToggleOsuDataTextBox(enabled);
                         }));
 
                         #endregion
@@ -322,32 +343,21 @@ namespace osuEscape
                             //textBox_mapId.Text = $"Id:{mapId} {Environment.NewLine}" +
                             //                     $"setId:{mapSetId} {Environment.NewLine}";
 
-                            textBox_strings.Text = $"Now Playing: {songString} {Environment.NewLine}" +
-                                                   //$"md5: \"{mapMd5}\" {Environment.NewLine}" +
+                            textBox_strings.Text = $"Now Playing: {songString} {Environment.NewLine}" +   
                                                    //$"mapFolder: \"{mapFolderName}\" {Environment.NewLine}" +
                                                    //$"fileName: \"{osuFileName}\" {Environment.NewLine}" +
-                                                   //$"Retrys:{retrys} {Environment.NewLine}" +
-                                                   $"Mods: {(Mods)mods}"
-                                                   // + "({mods}) {Environment.NewLine}";
-                                                   // + $"SkinName: \"{skinFolderName}\""
+                                                   $"Mods: {(Mods)mods} {Environment.NewLine}" +
+                                                   $"Max Combo: {max_combo}"
                                                    ;
 
                             textBox_currentMapTime.Text = playTime.ToString();
 
-                            //textBox_mapData.Text = mapData;
-
                             textBox_Status.Text = status + " ";
-                            // + statusNum + " " + gameMode;
 
                             textBox_CurrentPlayData.Text =
                                 playContainer + Environment.NewLine +
                                 $"Score: {scoreV2} {Environment.NewLine}"
-                                //$"IsReplay: {isReplay} {Environment.NewLine}" +
-                                //$"hp________: {hp:00.##} {Environment.NewLine}" +
-                                //$"displayedHp: {displayedPlayerHp:00.##} {Environment.NewLine}" +
-                                //$"Mods: {(Mods)playingMods}, " 
                                 //$"PlayerName: {playerName}{Environment.NewLine}" +
-                                //$"HitErrorCount: {hitErrorCount} ";
                                 ;
 
                             if (status != OsuMemoryStatus.Playing && status != OsuMemoryStatus.ResultsScreen)
@@ -575,7 +585,8 @@ namespace osuEscape
         #endregion
                    
         #region CheckBox Settings
-        // Include: startup, toggle with sound, minimize to system tray, top most, submit if ss
+        // Include: startup, toggle with sound
+        // - minimize to system tray, top most, submit if ss
         #region Run at Startup
         private void CheckBox_startUp_CheckedChanged(object sender, EventArgs e)
         {
@@ -693,16 +704,16 @@ namespace osuEscape
             else
             {
                 // reset cts and resume
-                //cts.Dispose();
-                //cts = new CancellationTokenSource();
+                cts.Dispose();
+                cts = new CancellationTokenSource();
                 
-                //RealTimeDataDisplayAsync();
+                RealTimeDataDisplayAsync();
 
                 groupBox_Data.Visible = true;
-                groupBox_hideData.Location = new Point(8, 335);
+                groupBox_hideData.Location = new Point(8, 374);
 
                 // reset ui with fixed size
-                this.MaximumSize = new Size (426,427);
+                this.MaximumSize = new Size (426,467);
                 this.Size = this.MaximumSize;
                 this.MinimumSize = this.Size;
             }
@@ -803,7 +814,81 @@ namespace osuEscape
 
         #endregion
 
-        
+        #region Get Beatmap Maximum Combo from api key
+        static int ShowBeatmapMaxCombo(Beatmap beatmap)
+        {
+            //test
+            MessageBox.Show(beatmap.Max_Combo.ToString());
+
+            return beatmap.Max_Combo;
+        }
+        static async Task<Beatmap> GetBeatmapAsync(string path)
+        {
+            Beatmap beatmap = null;
+
+            HttpResponseMessage response = await client.GetAsync(path);
+            if (response.IsSuccessStatusCode)
+            {
+                beatmap = await response.Content.ReadAsAsync<Beatmap>();
+            }
+
+            return beatmap;
+        }
+
+        private static async Task RunAsync(int beatmapId, int max_combo)
+        {
+            // Update port # in the following line.
+            client.BaseAddress = new Uri("http://localhost:64195/");
+            client.DefaultRequestHeaders.Accept.Clear();
+            client.DefaultRequestHeaders.Accept.Add(
+                new MediaTypeWithQualityHeaderValue("application/json"));
+            //      new MediaTypeWithQualityHeaderValue("text/html"));
+
+            try
+            {
+                //-k: api key
+                //-b: beatmap_id
+
+                // Get user api key from user settings / textbox's text
+                // Get recent beatmap id from _reader
+
+                var url = "https://osu.ppy.sh/api/get_beatmaps" 
+                    + "?k=" + Properties.Settings.Default.userApiKey
+                    + "&b=" + beatmapId;
+
+                // Get the beatmap
+                Beatmap beatmap = await GetBeatmapAsync(url);
+                max_combo = ShowBeatmapMaxCombo(beatmap);
+                
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show(e.Message);
+            }
+        }
+
+
+        #endregion
+
+        private void Button_checkApiKey_Click(object sender, EventArgs e)
+        {
+            //verify api
+
+            Properties.Settings.Default.userApiKey = textBox_apiKey.Text;
+        }
+
+        private void ToggleOsuDataTextBox(bool enabled)
+        {
+            List<TextBox> textBoxList = new List<TextBox>();
+            textBoxList.Add(textBox_CurrentPlayData);
+            textBoxList.Add(textBox_currentMapTime);
+            textBoxList.Add(textBox_strings);
+
+            foreach (TextBox tb in textBoxList)
+            {
+                tb.Enabled = enabled ? true : false;
+            }            
+        }
     }
 
     #region internal struct PatternsToRead

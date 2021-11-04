@@ -61,6 +61,9 @@
             this.checkBox_hideData = new System.Windows.Forms.CheckBox();
             this.groupBox_hideData = new System.Windows.Forms.GroupBox();
             this.groupBox_Data = new System.Windows.Forms.GroupBox();
+            this.textBox_apiKey = new System.Windows.Forms.TextBox();
+            this.label_apiKey = new System.Windows.Forms.Label();
+            this.button_checkApiKey = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown_readDelay)).BeginInit();
             this.panel_top.SuspendLayout();
             this.contextMenuStrip_osu.SuspendLayout();
@@ -408,7 +411,7 @@
             this.groupBox_hideData.Controls.Add(this.checkBox_toggleSound);
             this.groupBox_hideData.Controls.Add(this.checkBox_startUp);
             this.groupBox_hideData.Controls.Add(this.textBox_osuPath);
-            this.groupBox_hideData.Location = new System.Drawing.Point(8, 335);
+            this.groupBox_hideData.Location = new System.Drawing.Point(8, 374);
             this.groupBox_hideData.Name = "groupBox_hideData";
             this.groupBox_hideData.Size = new System.Drawing.Size(381, 87);
             this.groupBox_hideData.TabIndex = 35;
@@ -433,12 +436,45 @@
             this.groupBox_Data.TabIndex = 36;
             this.groupBox_Data.TabStop = false;
             // 
+            // textBox_apiKey
+            // 
+            this.textBox_apiKey.Location = new System.Drawing.Point(11, 353);
+            this.textBox_apiKey.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            this.textBox_apiKey.Name = "textBox_apiKey";
+            this.textBox_apiKey.Size = new System.Drawing.Size(201, 23);
+            this.textBox_apiKey.TabIndex = 33;
+            this.textBox_apiKey.UseSystemPasswordChar = true;
+            // 
+            // label_apiKey
+            // 
+            this.label_apiKey.AutoSize = true;
+            this.label_apiKey.Location = new System.Drawing.Point(11, 337);
+            this.label_apiKey.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label_apiKey.Name = "label_apiKey";
+            this.label_apiKey.Size = new System.Drawing.Size(107, 15);
+            this.label_apiKey.TabIndex = 34;
+            this.label_apiKey.Text = "Input your API key:";
+            // 
+            // button_checkApiKey
+            // 
+            this.button_checkApiKey.Location = new System.Drawing.Point(220, 352);
+            this.button_checkApiKey.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            this.button_checkApiKey.Name = "button_checkApiKey";
+            this.button_checkApiKey.Size = new System.Drawing.Size(75, 23);
+            this.button_checkApiKey.TabIndex = 33;
+            this.button_checkApiKey.Text = "Check";
+            this.button_checkApiKey.UseVisualStyleBackColor = true;
+            this.button_checkApiKey.Click += new System.EventHandler(this.Button_checkApiKey_Click);
+            // 
             // osuEscape
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(426, 427);
+            this.ClientSize = new System.Drawing.Size(426, 467);
             this.ControlBox = false;
+            this.Controls.Add(this.button_checkApiKey);
+            this.Controls.Add(this.label_apiKey);
+            this.Controls.Add(this.textBox_apiKey);
             this.Controls.Add(this.groupBox_Data);
             this.Controls.Add(this.groupBox_hideData);
             this.Controls.Add(this.button_findLocation);
@@ -450,7 +486,7 @@
             this.MaximizeBox = false;
             this.MinimizeBox = false;
             this.Name = "osuEscape";
-            this.Text = "osu!Escape MainForm";
+            this.Text = "osu!Escape";
             this.Load += new System.EventHandler(this.OsuEscape_Load);
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown_readDelay)).EndInit();
             this.panel_top.ResumeLayout(false);
@@ -461,6 +497,7 @@
             this.groupBox_Data.ResumeLayout(false);
             this.groupBox_Data.PerformLayout();
             this.ResumeLayout(false);
+            this.PerformLayout();
 
         }
 
@@ -496,6 +533,9 @@
         private System.Windows.Forms.TextBox textBox_currentMapTime;
         private System.Windows.Forms.GroupBox groupBox_hideData;
         private System.Windows.Forms.GroupBox groupBox_Data;
+        private System.Windows.Forms.TextBox textBox_apiKey;
+        private System.Windows.Forms.Label label_apiKey;
+        private System.Windows.Forms.Button button_checkApiKey;
     }
 }
 

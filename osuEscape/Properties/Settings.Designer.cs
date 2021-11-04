@@ -130,5 +130,17 @@ namespace osuEscape.Properties {
                 this["isHideData"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string userApiKey {
+            get {
+                return ((string)(this["userApiKey"]));
+            }
+            set {
+                this["userApiKey"] = value;
+            }
+        }
     }
 }
