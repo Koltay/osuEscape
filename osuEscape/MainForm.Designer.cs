@@ -30,11 +30,11 @@
         {
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(osuEscape));
-            this.textBox_strings = new System.Windows.Forms.TextBox();
+            this.textBox_mapData = new System.Windows.Forms.TextBox();
             this.label_status = new System.Windows.Forms.Label();
             this.textBox_Status = new System.Windows.Forms.TextBox();
             this.label_currentPlayingData = new System.Windows.Forms.Label();
-            this.textBox_CurrentPlayData = new System.Windows.Forms.TextBox();
+            this.textBox_currentPlayData = new System.Windows.Forms.TextBox();
             this.label_refreshRate = new System.Windows.Forms.Label();
             this.numericUpDown_readDelay = new System.Windows.Forms.NumericUpDown();
             this.textBox_currentMapTime = new System.Windows.Forms.TextBox();
@@ -71,14 +71,14 @@
             this.groupBox_Data.SuspendLayout();
             this.SuspendLayout();
             // 
-            // textBox_strings
+            // textBox_mapData
             // 
-            this.textBox_strings.Location = new System.Drawing.Point(5, 18);
-            this.textBox_strings.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
-            this.textBox_strings.Multiline = true;
-            this.textBox_strings.Name = "textBox_strings";
-            this.textBox_strings.Size = new System.Drawing.Size(280, 82);
-            this.textBox_strings.TabIndex = 1;
+            this.textBox_mapData.Location = new System.Drawing.Point(5, 18);
+            this.textBox_mapData.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            this.textBox_mapData.Multiline = true;
+            this.textBox_mapData.Name = "textBox_mapData";
+            this.textBox_mapData.Size = new System.Drawing.Size(280, 82);
+            this.textBox_mapData.TabIndex = 1;
             // 
             // label_status
             // 
@@ -109,14 +109,14 @@
             this.label_currentPlayingData.TabIndex = 7;
             this.label_currentPlayingData.Text = "Current Playing Data";
             // 
-            // textBox_CurrentPlayData
+            // textBox_currentPlayData
             // 
-            this.textBox_CurrentPlayData.Location = new System.Drawing.Point(6, 116);
-            this.textBox_CurrentPlayData.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
-            this.textBox_CurrentPlayData.Multiline = true;
-            this.textBox_CurrentPlayData.Name = "textBox_CurrentPlayData";
-            this.textBox_CurrentPlayData.Size = new System.Drawing.Size(279, 103);
-            this.textBox_CurrentPlayData.TabIndex = 6;
+            this.textBox_currentPlayData.Location = new System.Drawing.Point(6, 116);
+            this.textBox_currentPlayData.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            this.textBox_currentPlayData.Multiline = true;
+            this.textBox_currentPlayData.Name = "textBox_currentPlayData";
+            this.textBox_currentPlayData.Size = new System.Drawing.Size(279, 103);
+            this.textBox_currentPlayData.TabIndex = 6;
             // 
             // label_refreshRate
             // 
@@ -426,10 +426,10 @@
             this.groupBox_Data.Controls.Add(this.numericUpDown_readDelay);
             this.groupBox_Data.Controls.Add(this.label_refreshRate);
             this.groupBox_Data.Controls.Add(this.label_currentPlayingData);
-            this.groupBox_Data.Controls.Add(this.textBox_CurrentPlayData);
+            this.groupBox_Data.Controls.Add(this.textBox_currentPlayData);
             this.groupBox_Data.Controls.Add(this.label_status);
             this.groupBox_Data.Controls.Add(this.textBox_Status);
-            this.groupBox_Data.Controls.Add(this.textBox_strings);
+            this.groupBox_Data.Controls.Add(this.textBox_mapData);
             this.groupBox_Data.Location = new System.Drawing.Point(8, 111);
             this.groupBox_Data.Name = "groupBox_Data";
             this.groupBox_Data.Size = new System.Drawing.Size(409, 227);
@@ -506,7 +506,7 @@
         private System.Windows.Forms.Label label_status;
         private System.Windows.Forms.TextBox textBox_Status;
         private System.Windows.Forms.Label label_currentPlayingData;
-        private System.Windows.Forms.TextBox textBox_CurrentPlayData;
+        private System.Windows.Forms.TextBox textBox_currentPlayData;
         private System.Windows.Forms.Label label_refreshRate;
         private System.Windows.Forms.NumericUpDown numericUpDown_readDelay;
         private System.Windows.Forms.Button button_ResetReadTimeMinMax;
@@ -536,6 +536,7 @@
         private System.Windows.Forms.TextBox textBox_apiKey;
         private System.Windows.Forms.Label label_apiKey;
         private System.Windows.Forms.Button button_checkApiKey;
+        private System.Windows.Forms.TextBox textBox_mapData;
     }
 }
 

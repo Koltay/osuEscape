@@ -1,6 +1,9 @@
-using Microsoft.Win32;
+﻿using Microsoft.Win32;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using OsuMemoryDataProvider;
 using OsuMemoryDataProvider.OsuMemoryModels;
+using OsuMemoryDataProvider.OsuMemoryModels.Direct;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -10,6 +13,7 @@ using System.Globalization;
 using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -24,27 +28,21 @@ namespace osuEscape
         private double _memoryReadTimeMin = double.PositiveInfinity;
         private double _memoryReadTimeMax = double.NegativeInfinity;
         private readonly ISet<string> _patternsToSkip = new HashSet<string>();
-        private readonly IOsuMemoryReader _reader;
         private readonly StructuredOsuMemoryReader _sreader;
         private CancellationTokenSource cts = new CancellationTokenSource();
 
         private KeyHandler ghk;
         public const int WM_HOTKEY_MSG_ID = 0x0312;
 
-        public int previousCombo = 0;
-
         public int resultsScreenScoreV2 = 0;
 
         private bool isAllowConnection = true;
-        public class Beatmap
-        {
-            // api v2
-            public string BeatmapSet { get; set; }
-            public int FailTimes { get; set; }
-            public int Max_Combo { get; set; }
-        }
 
         private static HttpClient client = new HttpClient();
+
+        public int previousBeatmapId = 0;
+
+        public int BeatmapMaxCombo = 0;
 
         #region Initialize and OnLoad
         public osuEscape(string osuWindowTitleHint)
@@ -54,7 +52,6 @@ namespace osuEscape
 
             InitializeComponent();
 
-            _reader = OsuMemoryReader.Instance.GetInstanceForWindowTitleHint(osuWindowTitleHint);
             _sreader = StructuredOsuMemoryReader.Instance.GetInstanceForWindowTitleHint(osuWindowTitleHint);
 
             Shown += OnShown;
@@ -70,6 +67,38 @@ namespace osuEscape
 
             UIUpdate();
         }
+
+        #region Structured Reader
+
+        private T ReadProperty<T>(object readObj, string propName, T defaultValue = default) where T : struct
+        {
+            if (_sreader.TryReadProperty(readObj, propName, out var readResult))
+                return (T)readResult;
+
+            return defaultValue;
+        }
+
+        private T ReadClassProperty<T>(object readObj, string propName, T defaultValue = default) where T : class
+        {
+            if (_sreader.TryReadProperty(readObj, propName, out var readResult))
+                return (T)readResult;
+
+            return defaultValue;
+        }
+
+        private int ReadInt(object readObj, string propName)
+            => ReadProperty<int>(readObj, propName, -5);
+        private short ReadShort(object readObj, string propName)
+            => ReadProperty<short>(readObj, propName, -5);
+
+        private float ReadFloat(object readObj, string propName)
+            => ReadProperty<float>(readObj, propName, -5f);
+
+        private string ReadString(object readObj, string propName)
+            => ReadClassProperty<string>(readObj, propName, "INVALID READ");
+
+
+        #endregion
 
 
         private void UIUpdate()
@@ -150,265 +179,204 @@ namespace osuEscape
             cts.Cancel();
         }
 
-        private void OnShown(object sender, EventArgs eventArgs)
+        private async void OnShown(object sender, EventArgs eventArgs)
         {
-            RealTimeDataDisplayAsync();
-        }
+            //RealTimeDataDisplayAsync();
 
-        private async void RealTimeDataDisplayAsync()
-        {
             if (!string.IsNullOrEmpty(_osuWindowTitleHint)) Text += $": {_osuWindowTitleHint}";
-            _ = Task.Run(async () =>
+            Text += $" ({(Environment.Is64BitProcess ? "x64" : "x86")})";
+            _sreader.InvalidRead += SreaderOnInvalidRead;
+            await Task.Run(async () =>
             {
-                try
-                {
-                    Stopwatch stopwatch;
-                    double readTimeMs, readTimeMsMin, readTimeMsMax;
-                    var playContainer = new PlayContainerEx();
-                    var playReseted = false;
-                    var baseAddresses = new OsuBaseAddresses();                    
+                Stopwatch stopwatch;
 
-                    while (true)
+                double readTimeMs, readTimeMsMin, readTimeMsMax;
+
+                _sreader.WithTimes = true;
+
+                var readUsingProperty = false;
+
+                var baseAddresses = new OsuBaseAddresses();
+
+                while (true)
+                {
+                    if (cts.IsCancellationRequested)
+                        return;
+
+                    if (!_sreader.CanRead)
                     {
-                        if (cts.IsCancellationRequested)
-                            return;
-
-                        var patternsToRead = GetPatternsToRead();
-
-                        stopwatch = Stopwatch.StartNew();
-
-                        #region OsuBase
-
-                        var mapId = -1;
-                        var mapSetId = -1;
-                        var songString = string.Empty;
-                        var mapMd5 = string.Empty;
-                        var mapFolderName = string.Empty;
-                        var osuFileName = string.Empty;
-                        var retrys = -1;
-                        var gameMode = -1;
-                        var mapData = string.Empty;
-                        var status = OsuMemoryStatus.Unknown;
-                        var statusNum = -1;
-                        var playTime = -1;
-
-                        var max_combo = 0;
-
-                        if (patternsToRead.OsuBase)
-                        {
-                            mapId = _reader.GetMapId();
-                            mapSetId = _reader.GetMapSetId();
-                            songString = _reader.GetSongString();
-                            mapMd5 = _reader.GetMapMd5();
-                            mapFolderName = _reader.GetMapFolderName();
-                            osuFileName = _reader.GetOsuFileName();
-                            retrys = _reader.GetRetrys();
-                            gameMode = _reader.ReadSongSelectGameMode();
-                            mapData =
-                                $"HP:{_reader.GetMapHp()} OD:{_reader.GetMapOd()}, CS:{_reader.GetMapCs()}, AR:{_reader.GetMapAr()}, setId:{_reader.GetMapSetId()}";
-                            status = _reader.GetCurrentStatus(out statusNum);
-                            playTime = _reader.ReadPlayTime();
-                        }
-
-                        #endregion
-
-                        #region Mods
-
-                        var mods = -1;
-                        if (patternsToRead.Mods)
-                        {
-                            mods = _reader.GetMods();
-                        }
-
-                        #endregion
-
-                        #region CurrentSkinData
-
-                        var skinFolderName = string.Empty;
-                        if (patternsToRead.CurrentSkinData)
-                        {
-                            skinFolderName = _reader.GetSkinFolderName();
-                        }
-
-                        #endregion
-
-                        #region PlayContainer
-
-                        int scoreV2 = -1;
-
                         Invoke((MethodInvoker)(() =>
                         {
-                            // waiting for fix: playing status
-                            if (status == OsuMemoryStatus.Playing && patternsToRead.PlayContainer)
-                            {
-  
-
-                                _ = Task.Run(async () =>
-                                {
-                                    playReseted = false;
-
-                                    _reader.GetPlayData(playContainer);
-
-                                    scoreV2 = _reader.ReadScoreV2();
-
-                                    resultsScreenScoreV2 = scoreV2;
-
-                                });  
-
-                                // this method is placed at playing status
-                                // as resultsscreen connection is too slow for an instant score submission
-                                if (checkBox_submitIfSS.Checked)
-                                {
-                                    if (!isAllowConnection && playContainer.Acc == 100)
-                                    {
-                                        ToggleFirewall();
-                                        isAllowConnection = true;
-                                    }
-                                }                           
-                            }
-                            else if (status == OsuMemoryStatus.SongSelect)
-                            {
-                                // if there is an valid api key
-                                // find maximum combo to achieve submit for fc scores
-
-                                // api not fixed
-
-                                if (Properties.Settings.Default.userApiKey != null)
-                                    _ = Task.Run(async() => RunAsync(mapId, max_combo).GetAwaiter().GetResult());
-                            }
-                            else if (status == OsuMemoryStatus.ResultsScreen)
-                            {
-                                // to keep the data on screen
-                                playReseted = false;
-                                scoreV2 = resultsScreenScoreV2;
-
-                                // ***to be implemented: api detect submission -> block submission
-                            }
-                            else if (!playReseted)
-                            {
-                                playReseted = true;
-                                playContainer.Reset();
-                            }
-
-                            bool enabled = 
-                                status == OsuMemoryStatus.NotRunning
-                            ||  status == OsuMemoryStatus.GameShutdownAnimation ? false : true;
-                            
-                            ToggleOsuDataTextBox(enabled);
+                            textBox_Status.Text = "Not Running";
                         }));
 
-                        #endregion
-
-                        #region TourneyBase
-
-                        // TourneyBase
-                        var tourneyIpcState = TourneyIpcState.Unknown;
-                        var tourneyIpcStateNumber = -1;
-                        var tourneyLeftStars = -1;
-                        var tourneyRightStars = -1;
-                        var tourneyBO = -1;
-                        var tourneyStarsVisible = false;
-                        var tourneyScoreVisible = false;
-                        if (status == OsuMemoryStatus.Tourney && patternsToRead.TourneyBase)
-                        {
-                            tourneyIpcState = _reader.GetTourneyIpcState(out tourneyIpcStateNumber);
-                            tourneyLeftStars = _reader.ReadTourneyLeftStars();
-                            tourneyRightStars = _reader.ReadTourneyRightStars();
-                            tourneyBO = _reader.ReadTourneyBO();
-                            tourneyStarsVisible = _reader.ReadTourneyStarsVisible();
-                            tourneyScoreVisible = _reader.ReadTourneyScoreVisible();
-                        }
-
-                        #endregion
-
-                        stopwatch.Stop();
-
-                        readTimeMs = stopwatch.ElapsedTicks / (double)TimeSpan.TicksPerMillisecond;
-                        lock (_minMaxLock)
-                        {
-
-                            if (readTimeMs < _memoryReadTimeMin) 
-                                _memoryReadTimeMin = readTimeMs;
-
-                            if (readTimeMs > _memoryReadTimeMax) 
-                                _memoryReadTimeMax = readTimeMs;
-
-                            // copy value since we're inside lock
-                            readTimeMsMin = _memoryReadTimeMin;
-                            readTimeMsMax = _memoryReadTimeMax;
-                        }
-
-                        Invoke((MethodInvoker)(() =>
-                        {
-                            //textBox_mapId.Text = $"Id:{mapId} {Environment.NewLine}" +
-                            //                     $"setId:{mapSetId} {Environment.NewLine}";
-
-                            textBox_strings.Text = $"Now Playing: {songString} {Environment.NewLine}" +   
-                                                   //$"mapFolder: \"{mapFolderName}\" {Environment.NewLine}" +
-                                                   //$"fileName: \"{osuFileName}\" {Environment.NewLine}" +
-                                                   $"Mods: {(Mods)mods} {Environment.NewLine}" +
-                                                   $"Max Combo: {max_combo}"
-                                                   ;
-
-                            textBox_currentMapTime.Text = playTime.ToString();
-
-                            textBox_Status.Text = status + " ";
-
-                            textBox_CurrentPlayData.Text =
-                                playContainer + Environment.NewLine +
-                                $"Score: {scoreV2} {Environment.NewLine}"
-                                //$"PlayerName: {playerName}{Environment.NewLine}" +
-                                ;
-
-                            if (status != OsuMemoryStatus.Playing && status != OsuMemoryStatus.ResultsScreen)
-                            {
-                                textBox_CurrentPlayData.Clear();
-                            }
-                        }));
                         await Task.Delay(_readDelay);
+
+                        continue;
                     }
-                }
-                catch (ThreadAbortException)
-                {
 
+                    stopwatch = Stopwatch.StartNew();
+                    if (readUsingProperty)
+                    {
+                        baseAddresses.Beatmap.Id = ReadInt(baseAddresses.Beatmap, nameof(CurrentBeatmap.Id));
+                        baseAddresses.Beatmap.SetId = ReadInt(baseAddresses.Beatmap, nameof(CurrentBeatmap.SetId));
+                        baseAddresses.Beatmap.MapString = ReadString(baseAddresses.Beatmap, nameof(CurrentBeatmap.MapString));
+                        baseAddresses.Beatmap.FolderName = ReadString(baseAddresses.Beatmap, nameof(CurrentBeatmap.FolderName));
+                        baseAddresses.Beatmap.OsuFileName = ReadString(baseAddresses.Beatmap, nameof(CurrentBeatmap.OsuFileName));
+                        baseAddresses.Beatmap.Md5 = ReadString(baseAddresses.Beatmap, nameof(CurrentBeatmap.Md5));
+                        baseAddresses.Beatmap.Ar = ReadFloat(baseAddresses.Beatmap, nameof(CurrentBeatmap.Ar));
+                        baseAddresses.Beatmap.Cs = ReadFloat(baseAddresses.Beatmap, nameof(CurrentBeatmap.Cs));
+                        baseAddresses.Beatmap.Hp = ReadFloat(baseAddresses.Beatmap, nameof(CurrentBeatmap.Hp));
+                        baseAddresses.Beatmap.Od = ReadFloat(baseAddresses.Beatmap, nameof(CurrentBeatmap.Od));
+                        baseAddresses.Beatmap.Status = ReadShort(baseAddresses.Beatmap, nameof(CurrentBeatmap.Status));
+                        baseAddresses.Skin.Folder = ReadString(baseAddresses.Skin, nameof(Skin.Folder));
+                        baseAddresses.GeneralData.RawStatus = ReadInt(baseAddresses.GeneralData, nameof(GeneralData.RawStatus));
+                        baseAddresses.GeneralData.GameMode = ReadInt(baseAddresses.GeneralData, nameof(GeneralData.GameMode));
+                        baseAddresses.GeneralData.Retries = ReadInt(baseAddresses.GeneralData, nameof(GeneralData.Retries));
+                        baseAddresses.GeneralData.AudioTime = ReadInt(baseAddresses.GeneralData, nameof(GeneralData.AudioTime));
+                        baseAddresses.GeneralData.Mods = ReadInt(baseAddresses.GeneralData, nameof(GeneralData.Mods));
+                    }
+                    else
+                    {
+                        _sreader.TryRead(baseAddresses.Beatmap);
+                        _sreader.TryRead(baseAddresses.Skin);
+                        _sreader.TryRead(baseAddresses.GeneralData);
+                    }
+
+                    if (baseAddresses.GeneralData.OsuStatus == OsuMemoryStatus.SongSelect)
+                        _sreader.TryRead(baseAddresses.SongSelectionScores);
+                    else
+                        baseAddresses.SongSelectionScores.Scores.Clear();
+
+                    if (baseAddresses.GeneralData.OsuStatus == OsuMemoryStatus.ResultsScreen)
+                        _sreader.TryRead(baseAddresses.ResultsScreen);
+
+                    if (baseAddresses.GeneralData.OsuStatus == OsuMemoryStatus.Playing)
+                    {
+                        _sreader.TryRead(baseAddresses.Player);
+                        //TODO: flag needed for single/multi player detection (should be read once per play in singleplayer)
+                        _sreader.TryRead(baseAddresses.LeaderBoard);
+                        _sreader.TryRead(baseAddresses.KeyOverlay);
+
+                        if (readUsingProperty)
+                        {
+                            //Testing reading of reference types(other than string)
+                            _sreader.TryReadProperty(baseAddresses.Player, nameof(Player.Mods), out var dummyResult);
+                        }
+
+                        if (textBox_apiKey.Text != null)
+                        {
+                            // First GET
+                            if (BeatmapMaxCombo == 0)
+                            {
+                                BeatmapMaxCombo = await RunAsync(baseAddresses.Beatmap.Id);
+                            }
+                            else if (previousBeatmapId != baseAddresses.Beatmap.Id) // loaded new beatmap
+                            {
+                                BeatmapMaxCombo = await RunAsync(baseAddresses.Beatmap.Id);
+                            }                                
+                        }
+                        
+                        //Submit if FC / SS
+                        if (Properties.Settings.Default.isSubmitIfSS)
+                        {
+                            if (BeatmapMaxCombo != 0) // Already gets the max combo from osu! api
+                            {
+                                if (BeatmapMaxCombo == baseAddresses.Player.MaxCombo) // FC 
+                                {
+                                    if (baseAddresses.Player.Accuracy == 100) // SS
+                                    {
+                                        if (!isAllowConnection) // if there is block connection, disable it
+                                        {
+                                            ToggleFirewall();
+                                        }
+                                    }
+                                }
+                            }
+                        }                        
+
+                        previousBeatmapId = baseAddresses.Beatmap.Id;
+                    }
+                    else
+                    {
+                        baseAddresses.LeaderBoard.Players.Clear();
+                    }
+
+                    var hitErrors = baseAddresses.Player?.HitErrors;
+                    if (hitErrors != null)
+                    {
+                        var hitErrorsCount = hitErrors.Count;
+                        hitErrors.Clear();
+                        hitErrors.Add(hitErrorsCount);
+                    }
+
+                    stopwatch.Stop();
+                    readTimeMs = stopwatch.ElapsedTicks / (double)TimeSpan.TicksPerMillisecond;
+                    lock (_minMaxLock)
+                    {
+                        if (readTimeMs < _memoryReadTimeMin) _memoryReadTimeMin = readTimeMs;
+                        if (readTimeMs > _memoryReadTimeMax) _memoryReadTimeMax = readTimeMs;
+                        // copy value since we're inside lock
+                        readTimeMsMin = _memoryReadTimeMin;
+                        readTimeMsMax = _memoryReadTimeMax;
+                    }
+
+                    try
+                    {
+                        Invoke((MethodInvoker)(() =>
+                        {
+                            //full data
+                            //textBox_Data.Text = JsonConvert.SerializeObject(baseAddresses, Formatting.Indented); 
+
+                            textBox_mapData.Text =
+                                $"Map: {baseAddresses.Beatmap.MapString}{Environment.NewLine}" +
+                                $"AR: {baseAddresses.Beatmap.Ar} CS: {baseAddresses.Beatmap.Cs} HP: {baseAddresses.Beatmap.Hp} OD: {baseAddresses.Beatmap.Od} ";
+
+                            textBox_currentPlayData.Text =
+                                $"Your Best Combo: {baseAddresses.Player.MaxCombo}{Environment.NewLine}" +
+                                $"Beatmap Max Combo: {BeatmapMaxCombo}{Environment.NewLine}" +
+                                $"Accuracy: {baseAddresses.Player.Accuracy}{Environment.NewLine}";
+
+                            textBox_currentMapTime.Text = $"{baseAddresses.GeneralData.AudioTime}";
+                            textBox_Status.Text = $"{baseAddresses.GeneralData.OsuStatus}";
+
+
+                        }));
+                    }
+                    catch (ObjectDisposedException)
+                    {
+                        return;
+                    }
+
+                    _sreader.ReadTimes.Clear();
+                    await Task.Delay(_readDelay);
                 }
-            });
+            }, cts.Token);
         }
 
-       
-
-        public class PlayContainerEx : PlayContainer
+        private void SreaderOnInvalidRead(object sender, (object readObject, string propPath) e)
         {
-            private int PreviousC100 { get; set; }
-
-            public int Sliderbreak { get; private set; } = 0;
-
-            public double Accuracy { get; private set; }
-
-            public override string ToString()
+            try
             {
-                if (C100 - PreviousC100 == 1 && Score != 0)
+                if (InvokeRequired)
                 {
-                    Sliderbreak += 1;
+                    //Async call to not impact memory read times(too much)
+                    BeginInvoke((MethodInvoker)(() => SreaderOnInvalidRead(sender, e)));
+                    return;
                 }
 
-                if (Score == 0)
-                    Sliderbreak = 0;
+                //listBox_logs.Items.Add($"{DateTime.Now:T} Error reading {e.propPath}{Environment.NewLine}");
+                //if (listBox_logs.Items.Count > 500)
+                //    listBox_logs.Items.RemoveAt(0);
 
-                PreviousC100 = C100;
-
-                Accuracy = Acc;
-
-                var nl = Environment.NewLine;
-                return $"300: {C300}, 100: {C100}, 50: {C50}, Miss: {CMiss}" + nl +
-                       $"Accuracy: {Acc}" + nl +
-                       $"Recent Combo: {Combo}, Max Combo: {MaxCombo}" + nl +
-                       $"Sliderbreak: {Sliderbreak} " 
-                       //$"Score: {scoreV2} {Environment.NewLine}"
-                       //+ $"Score: {Score}"
-                       ;
+                //listBox_logs.SelectedIndex = listBox_logs.Items.Count - 1;
+                //listBox_logs.ClearSelected();
             }
-        }
+            catch (ObjectDisposedException)
+            {
+
+            }
+        }       
 
         private void Button_ResetReadTimeMinMax_Click(object sender, EventArgs e)
         {
@@ -707,7 +675,7 @@ namespace osuEscape
                 cts.Dispose();
                 cts = new CancellationTokenSource();
                 
-                RealTimeDataDisplayAsync();
+                //RealTimeDataDisplayAsync();
 
                 groupBox_Data.Visible = true;
                 groupBox_hideData.Location = new Point(8, 374);
@@ -814,57 +782,42 @@ namespace osuEscape
 
         #endregion
 
-        #region Get Beatmap Maximum Combo from api key
-        static int ShowBeatmapMaxCombo(Beatmap beatmap)
-        {
-            //test
-            MessageBox.Show(beatmap.Max_Combo.ToString());
+        #region Get Beatmap Maximum Combo from api key     
 
-            return beatmap.Max_Combo;
-        }
-        static async Task<Beatmap> GetBeatmapAsync(string path)
+        private static async Task<int> RunAsync(int beatmapId)
         {
-            Beatmap beatmap = null;
+            var url = $"https://osu.ppy.sh/api/get_beatmaps?k={Properties.Settings.Default.userApiKey}&b={beatmapId}";
 
-            HttpResponseMessage response = await client.GetAsync(path);
+            var request = new HttpRequestMessage(HttpMethod.Get, url);
+            request.Headers.Accept.Clear();
+            request.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer");
+            request.Content = new StringContent("{...}", Encoding.UTF8, "application/json");
+            var response = await client.SendAsync(request, CancellationToken.None);
+
+
+
             if (response.IsSuccessStatusCode)
             {
-                beatmap = await response.Content.ReadAsAsync<Beatmap>();
+                var JsonString = await response.Content.ReadAsStringAsync();
+
+                dynamic deserialized = JsonConvert.DeserializeObject<dynamic>(JsonString);
+
+                //MessageBox.Show(JsonString);
+
+                //return deserialized.max_combo;
+
+                JArray arr = (JArray)JsonConvert.DeserializeObject(JsonString);
+
+
+                return (int)arr[0]["max_combo"];
             }
-
-            return beatmap;
-        }
-
-        private static async Task RunAsync(int beatmapId, int max_combo)
-        {
-            // Update port # in the following line.
-            client.BaseAddress = new Uri("http://localhost:64195/");
-            client.DefaultRequestHeaders.Accept.Clear();
-            client.DefaultRequestHeaders.Accept.Add(
-                new MediaTypeWithQualityHeaderValue("application/json"));
-            //      new MediaTypeWithQualityHeaderValue("text/html"));
-
-            try
+            else
             {
-                //-k: api key
-                //-b: beatmap_id
+                MessageBox.Show("Internal server Error/ Incorrect API!");
+            }                      
 
-                // Get user api key from user settings / textbox's text
-                // Get recent beatmap id from _reader
-
-                var url = "https://osu.ppy.sh/api/get_beatmaps" 
-                    + "?k=" + Properties.Settings.Default.userApiKey
-                    + "&b=" + beatmapId;
-
-                // Get the beatmap
-                Beatmap beatmap = await GetBeatmapAsync(url);
-                max_combo = ShowBeatmapMaxCombo(beatmap);
-                
-            }
-            catch (Exception e)
-            {
-                MessageBox.Show(e.Message);
-            }
+            return -1;
         }
 
 
@@ -877,10 +830,10 @@ namespace osuEscape
             Properties.Settings.Default.userApiKey = textBox_apiKey.Text;
         }
 
-        private void ToggleOsuDataTextBox(bool enabled)
+        private void EnableOsuDataTextBox(bool enabled)
         {
             List<TextBox> textBoxList = new List<TextBox>();
-            textBoxList.Add(textBox_CurrentPlayData);
+            textBoxList.Add(textBox_currentPlayData);
             textBoxList.Add(textBox_currentMapTime);
             textBoxList.Add(textBox_strings);
 
@@ -889,6 +842,7 @@ namespace osuEscape
                 tb.Enabled = enabled ? true : false;
             }            
         }
+
     }
 
     #region internal struct PatternsToRead

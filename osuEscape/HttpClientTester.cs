@@ -7,20 +7,13 @@ using System.Windows.Forms;
 
 namespace osuEscape
 {
-    public class Beatmap
-    {
-        public string BeatmapSet { get; set; }
-        public string FailTimes { get; set; }
-        public string Max_Combo { get; set; }
-    }
-
     public class HttpClientTester    
     {
         private static HttpClient client = new HttpClient();
 
         static void ShowBeatmap(Beatmap beatmap)
         {
-            MessageBox.Show($"Max Combo: {beatmap.Max_Combo}");
+            MessageBox.Show($"Max Combo: {beatmap.max_combo}");
         }
 
         static async Task<Beatmap> GetBeatmapAsync(string path)
