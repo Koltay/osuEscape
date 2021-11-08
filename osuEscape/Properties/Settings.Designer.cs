@@ -142,5 +142,17 @@ namespace osuEscape.Properties {
                 this["userApiKey"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("100")]
+        public int submitAcc {
+            get {
+                return ((int)(this["submitAcc"]));
+            }
+            set {
+                this["submitAcc"] = value;
+            }
+        }
     }
 }

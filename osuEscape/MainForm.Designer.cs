@@ -60,6 +60,7 @@
             this.checkBox_submitIfSS = new System.Windows.Forms.CheckBox();
             this.checkBox_hideData = new System.Windows.Forms.CheckBox();
             this.groupBox_hideData = new System.Windows.Forms.GroupBox();
+            this.textBox_submitAcc = new System.Windows.Forms.TextBox();
             this.groupBox_Data = new System.Windows.Forms.GroupBox();
             this.textBox_apiKey = new System.Windows.Forms.TextBox();
             this.label_apiKey = new System.Windows.Forms.Label();
@@ -380,19 +381,19 @@
             // checkBox_submitIfSS
             // 
             this.checkBox_submitIfSS.AutoSize = true;
-            this.checkBox_submitIfSS.Location = new System.Drawing.Point(289, 40);
+            this.checkBox_submitIfSS.Location = new System.Drawing.Point(5, 90);
             this.checkBox_submitIfSS.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.checkBox_submitIfSS.Name = "checkBox_submitIfSS";
-            this.checkBox_submitIfSS.Size = new System.Drawing.Size(89, 19);
+            this.checkBox_submitIfSS.Size = new System.Drawing.Size(235, 19);
             this.checkBox_submitIfSS.TabIndex = 33;
-            this.checkBox_submitIfSS.Text = "Submit if SS";
+            this.checkBox_submitIfSS.Text = "Submit if the acc is ≥          (API needed)";
             this.checkBox_submitIfSS.UseVisualStyleBackColor = true;
             this.checkBox_submitIfSS.CheckedChanged += new System.EventHandler(this.CheckBox_submitIfSS_CheckedChanged);
             // 
             // checkBox_hideData
             // 
             this.checkBox_hideData.AutoSize = true;
-            this.checkBox_hideData.Location = new System.Drawing.Point(289, 65);
+            this.checkBox_hideData.Location = new System.Drawing.Point(290, 42);
             this.checkBox_hideData.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.checkBox_hideData.Name = "checkBox_hideData";
             this.checkBox_hideData.Size = new System.Drawing.Size(78, 19);
@@ -403,6 +404,7 @@
             // 
             // groupBox_hideData
             // 
+            this.groupBox_hideData.Controls.Add(this.textBox_submitAcc);
             this.groupBox_hideData.Controls.Add(this.textBox_hotkey);
             this.groupBox_hideData.Controls.Add(this.checkBox_hideData);
             this.groupBox_hideData.Controls.Add(this.checkBox_submitIfSS);
@@ -413,9 +415,19 @@
             this.groupBox_hideData.Controls.Add(this.textBox_osuPath);
             this.groupBox_hideData.Location = new System.Drawing.Point(8, 374);
             this.groupBox_hideData.Name = "groupBox_hideData";
-            this.groupBox_hideData.Size = new System.Drawing.Size(381, 87);
+            this.groupBox_hideData.Size = new System.Drawing.Size(381, 115);
             this.groupBox_hideData.TabIndex = 35;
             this.groupBox_hideData.TabStop = false;
+            // 
+            // textBox_submitAcc
+            // 
+            this.textBox_submitAcc.Location = new System.Drawing.Point(136, 88);
+            this.textBox_submitAcc.MaxLength = 3;
+            this.textBox_submitAcc.Name = "textBox_submitAcc";
+            this.textBox_submitAcc.Size = new System.Drawing.Size(25, 23);
+            this.textBox_submitAcc.TabIndex = 35;
+            this.textBox_submitAcc.Text = "100";
+            this.textBox_submitAcc.TextChanged += new System.EventHandler(this.TextBox_submitAcc_TextChanged);
             // 
             // groupBox_Data
             // 
@@ -470,7 +482,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(426, 467);
+            this.ClientSize = new System.Drawing.Size(426, 491);
             this.ControlBox = false;
             this.Controls.Add(this.button_checkApiKey);
             this.Controls.Add(this.label_apiKey);
@@ -502,7 +514,6 @@
         }
 
         #endregion
-        private System.Windows.Forms.TextBox textBox_strings;
         private System.Windows.Forms.Label label_status;
         private System.Windows.Forms.TextBox textBox_Status;
         private System.Windows.Forms.Label label_currentPlayingData;
@@ -537,6 +548,7 @@
         private System.Windows.Forms.Label label_apiKey;
         private System.Windows.Forms.Button button_checkApiKey;
         private System.Windows.Forms.TextBox textBox_mapData;
+        private System.Windows.Forms.TextBox textBox_submitAcc;
     }
 }
 
