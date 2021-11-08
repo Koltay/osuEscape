@@ -266,41 +266,62 @@ namespace osuEscape
                     {
                         _sreader.TryRead(baseAddresses.ResultsScreen);
 
-                        // Connection should be enabled because of meeting the requirement of submitting
-                        if (isAllowConnection)
+                        // the reader starts at result screen
+                        if (baseAddresses.Player.MaxCombo != 0)
                         {
-                            // delay the task for 1s to let the score submitted first
-                            await Task.Delay(1000);
+                            // Connection should be enabled because of meeting the requirement of submitting
+                            if (isAllowConnection)
+                            {
 
-                            MessageBox.Show("ready to get recent score");
 
-                            // GET Method of user's recent score (osu! api v1)
-                            // get the recent 3 scores, even though there is multiple submissions at one connection
-                            // the recent score could still be recognized
-                            recentUploadScoreList = await GetUserRecentScoreAsync(baseAddresses.Player.Username, 3);
+                                // Running on the worker thread
+                                label_submissionStatus.Invoke((MethodInvoker)delegate {
+                                    // Running on the UI thread
+                                    label_submissionStatus.Text = "Ready to get recent score";
+                                });
+                                // Back on the worker thread
 
-                            bool isUploaded = false;
+                                // delay the task for 1s to let the score submitted first
+                                await Task.Delay(2500);
 
-                            foreach (int recentUploadScore in recentUploadScoreList)
-                            {                            
-                                // the score player recently submitted
-                                if (recentUploadScore == baseAddresses.Player.Score)
+                                // GET Method of user's recent score (osu! api v1)
+                                // get the recent 3 scores, even though there is multiple submissions at one connection
+                                // the recent score could still be recognized
+                                recentUploadScoreList = await GetUserRecentScoreAsync(baseAddresses.Player.Username, 3);
+
+                                bool isUploaded = false;
+
+                                foreach (int recentUploadScore in recentUploadScoreList)
                                 {
-                                    isUploaded = true;
+                                    // the score player recently submitted
+                                    if (recentUploadScore == baseAddresses.Player.Score)
+                                    {
+                                        isUploaded = true;
 
-                                    ToggleFirewall();
+                                        ToggleFirewall();
 
-                                    // to avoid toggling twice for same score submission
-                                    return;
-                                }  
-                            }        
-                            
-                            if (isUploaded)
-                                MessageBox.Show("Score successfully uploaded! Now blocking the connection");
-                            else
-                                MessageBox.Show($"FAILED: Score Did not upload.");
-                        }
-                        //*** isReplay not fixed                        
+                                        // to avoid toggling twice for same score submission
+                                        return;
+                                    }
+                                }
+
+                                label_submissionStatus.Invoke((MethodInvoker) delegate 
+                                {
+                                    // Running on the UI thread
+                                    if (isUploaded)
+                                    {
+                                        label_submissionStatus.Text = "Score successfully uploaded! Now blocking the connection";
+                                    }
+                                    else
+                                    {
+                                        label_submissionStatus.Text = "FAILED: Score Did not upload.";
+                                    }                                    
+                                });
+
+                                await Task.Delay(3000);
+                            }
+                            //*** isReplay not fixed (add after the function is done)     
+                        }             
                     }
 
 
@@ -854,7 +875,6 @@ namespace osuEscape
 
                 JArray arr = (JArray)JsonConvert.DeserializeObject(JsonString);
 
-
                 return (int)arr[0]["max_combo"];
             }
             else
@@ -896,7 +916,7 @@ namespace osuEscape
                     {
                         result.Add((int)arr[i]["score"]);
 
-                        MessageBox.Show($"Score: {arr[i]["score"]}");
+                        //MessageBox.Show($"Score: {arr[i]["score"]}");
                     }
                 }
             }

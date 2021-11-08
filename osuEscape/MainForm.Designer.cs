@@ -65,6 +65,7 @@
             this.textBox_apiKey = new System.Windows.Forms.TextBox();
             this.label_apiKey = new System.Windows.Forms.Label();
             this.button_checkApiKey = new System.Windows.Forms.Button();
+            this.label_submissionStatus = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown_readDelay)).BeginInit();
             this.panel_top.SuspendLayout();
             this.contextMenuStrip_osu.SuspendLayout();
@@ -478,12 +479,23 @@
             this.button_checkApiKey.UseVisualStyleBackColor = true;
             this.button_checkApiKey.Click += new System.EventHandler(this.Button_checkApiKey_Click);
             // 
+            // label_submissionStatus
+            // 
+            this.label_submissionStatus.AutoSize = true;
+            this.label_submissionStatus.Location = new System.Drawing.Point(8, 492);
+            this.label_submissionStatus.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label_submissionStatus.Name = "label_submissionStatus";
+            this.label_submissionStatus.Size = new System.Drawing.Size(105, 15);
+            this.label_submissionStatus.TabIndex = 38;
+            this.label_submissionStatus.Text = "Submission status:";
+            // 
             // osuEscape
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(426, 491);
+            this.ClientSize = new System.Drawing.Size(426, 514);
             this.ControlBox = false;
+            this.Controls.Add(this.label_submissionStatus);
             this.Controls.Add(this.button_checkApiKey);
             this.Controls.Add(this.label_apiKey);
             this.Controls.Add(this.textBox_apiKey);
@@ -549,6 +561,7 @@
         private System.Windows.Forms.Button button_checkApiKey;
         private System.Windows.Forms.TextBox textBox_mapData;
         private System.Windows.Forms.TextBox textBox_submitAcc;
+        private System.Windows.Forms.Label label_submissionStatus;
     }
 }
 
