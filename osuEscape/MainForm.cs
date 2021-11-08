@@ -259,21 +259,19 @@ namespace osuEscape
                     {
                         _sreader.TryRead(baseAddresses.SongSelectionScores);
                     }
-                    else
-                        baseAddresses.SongSelectionScores.Scores.Clear();
+                    //else
+                    //    baseAddresses.SongSelectionScores.Scores.Clear();
 
                     if (baseAddresses.GeneralData.OsuStatus == OsuMemoryStatus.ResultsScreen)
                     {
                         _sreader.TryRead(baseAddresses.ResultsScreen);
 
                         // the reader starts at result screen
-                        if (baseAddresses.Player.MaxCombo != 0)
+                        if(baseAddresses.Player.MaxCombo != 0)
                         {
                             // Connection should be enabled because of meeting the requirement of submitting
                             if (isAllowConnection)
                             {
-
-
                                 // Running on the worker thread
                                 label_submissionStatus.Invoke((MethodInvoker)delegate {
                                     // Running on the UI thread
@@ -297,11 +295,11 @@ namespace osuEscape
                                     if (recentUploadScore == baseAddresses.Player.Score)
                                     {
                                         isUploaded = true;
-
+                                        isAllowConnection = true;
                                         ToggleFirewall();
 
                                         // to avoid toggling twice for same score submission
-                                        return;
+                                        // return;
                                     }
                                 }
 
@@ -327,6 +325,7 @@ namespace osuEscape
 
                     if (baseAddresses.GeneralData.OsuStatus == OsuMemoryStatus.Playing)
                     {
+                        baseAddresses.Player.MaxCombo = 0;
                         _sreader.TryRead(baseAddresses.Player);
                         //TODO: flag needed for single/multi player detection (should be read once per play in singleplayer)
                         _sreader.TryRead(baseAddresses.LeaderBoard);
@@ -356,9 +355,9 @@ namespace osuEscape
                         {
                             if (BeatmapMaxCombo != 0) // Already gets the max combo from osu! api
                             {
-                                if (BeatmapMaxCombo == baseAddresses.Player.MaxCombo) // FC 
+                                if (BeatmapMaxCombo == baseAddresses.Player.MaxCombo) // FC //if (baseAddresses.Player.MaxCombo == 1)//
                                 {
-                                    if (baseAddresses.Player.Accuracy >= Properties.Settings.Default.submitAcc) // above or equal to the required acc
+                                    if (baseAddresses.Player.Accuracy >= Convert.ToInt32(textBox_submitAcc.Text)) // above or equal to the required acc
                                     {
                                         if (!isAllowConnection) // if there is block connection, disable it
                                         {
@@ -944,6 +943,7 @@ namespace osuEscape
 
         private void TextBox_submitAcc_TextChanged(object sender, EventArgs e)
         {
+            if(textBox_submitAcc.Text.Equals("")) { textBox_submitAcc.Text = "0"; }
             if (Convert.ToInt32(textBox_submitAcc.Text) > 100)
             {
                 Properties.Settings.Default.submitAcc = 100;
