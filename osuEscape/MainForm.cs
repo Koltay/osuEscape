@@ -62,7 +62,8 @@ namespace osuEscape
 
             _sreader = StructuredOsuMemoryReader.Instance.GetInstanceForWindowTitleHint(osuWindowTitleHint);
 
-            Shown += OnShown;
+            osuDataReaderAsync();
+
             Closing += OnClosing;
             numericUpDown_readDelay.ValueChanged += NumericUpDownReadDelayOnValueChanged;
 
@@ -443,12 +444,6 @@ namespace osuEscape
                 }
             }, cts.Token);
         }
-
-        private async void OnShown(object sender, EventArgs eventArgs)
-        {
-            osuDataReaderAsync();
-        }
-
         private void SreaderOnInvalidRead(object sender, (object readObject, string propPath) e)
         {
             try
