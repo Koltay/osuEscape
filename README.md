@@ -1,29 +1,32 @@
 # osu! Escape
- ![osuEscape-ico](https://user-images.githubusercontent.com/44802618/136822823-9cb9b9e1-6d9b-429e-b4b4-ef791d369d9f.png)
 
- # WARNING: IT IS UNKNOWN IF THE APPLICATION IS BANNABLE SO KEEP EVERYTHING SAFE AND CLEAN BEFORE RELEASE
+![image](https://user-images.githubusercontent.com/73950784/140847268-7e44ffc3-bf63-4ba8-aff6-c2622d75877a.png)
  
- This project is a Score Submission Block Application, inspired by:
+ an osu! Score Submission Block Application
  
- 1E308 (Nameless player)'s score submitting [video](https://www.youtube.com/watch?v=D7x7OXpUmss&t=647s&ab_channel=RoriSanbyaku)
-
- DigitalHypno's disable score submission [video](https://www.youtube.com/watch?v=lusAZ1fiph8&ab_channel=DigitalHypno)
+ Inspired by:
  
- Currently available on all modes, but not for osu!lazer
+ [1E308 (Nameless player)'s score submission video](https://www.youtube.com/watch?v=D7x7OXpUmss&t=647s&ab_channel=RoriSanbyaku)
  
- ![image](https://user-images.githubusercontent.com/73950784/137898101-da1b265c-395b-4d2b-b80a-d299027cd09d.png)
-
+ [DigitalHypno's disable score submission ](https://www.youtube.com/watch?v=lusAZ1fiph8&ab_channel=DigitalHypno)
  
- Basic features:
+ Why offline? 
  
- - File icon: Locate the osu! file to initiate the blocking rule on advanced firewall
-
- - Global Toggle Key: Toggle the connection using F6 Key
+ - [Spazza17's Fix Negative Mindset in osu! — Start Doing THIS](https://www.youtube.com/watch?v=cEyVSiY9ohU&ab_channel=Spazza17)
  
- These methods are conducted through adding rules on Advanced Firewall
+ - Perform better while being able to upload scores
+ 
+ Currently available on all modes of osu! except osu! lazer 
+ 
+ 
+ - Global Toggle Key: Toggle the connection using the F6 Key
+ - Auto submission: Submit full combo scores with user-inputted accuracy (API needed)
+ - Auto block submission: Disconnect from the server after uploading the recent score
+ 
+ Score submission blocking is conducted by adding blocking rule in Advanced Firewall
  
  Thank you to those who contributed to this project:
  
- Testing: Hellotomlol225, Takanashi Ako;
+ Testing: Hellotomlol225, Takanashi Ako, Muji
  
  Coding: Shion Maker
