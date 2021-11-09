@@ -59,7 +59,7 @@
             this.label_map = new System.Windows.Forms.Label();
             this.checkBox_submitIfFC = new System.Windows.Forms.CheckBox();
             this.checkBox_hideData = new System.Windows.Forms.CheckBox();
-            this.groupBox_hideData = new System.Windows.Forms.GroupBox();
+            this.groupBox_checkBoxes = new System.Windows.Forms.GroupBox();
             this.checkBox_autoDisconnect = new System.Windows.Forms.CheckBox();
             this.textBox_submitAcc = new System.Windows.Forms.TextBox();
             this.groupBox_Data = new System.Windows.Forms.GroupBox();
@@ -70,7 +70,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown_readDelay)).BeginInit();
             this.panel_top.SuspendLayout();
             this.contextMenuStrip_osu.SuspendLayout();
-            this.groupBox_hideData.SuspendLayout();
+            this.groupBox_checkBoxes.SuspendLayout();
             this.groupBox_Data.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -404,23 +404,23 @@
             this.checkBox_hideData.UseVisualStyleBackColor = true;
             this.checkBox_hideData.CheckedChanged += new System.EventHandler(this.CheckBox_hideData_CheckedChanged);
             // 
-            // groupBox_hideData
+            // groupBox_checkBoxes
             // 
-            this.groupBox_hideData.Controls.Add(this.checkBox_autoDisconnect);
-            this.groupBox_hideData.Controls.Add(this.textBox_submitAcc);
-            this.groupBox_hideData.Controls.Add(this.textBox_hotkey);
-            this.groupBox_hideData.Controls.Add(this.checkBox_hideData);
-            this.groupBox_hideData.Controls.Add(this.checkBox_submitIfFC);
-            this.groupBox_hideData.Controls.Add(this.checkBox_topMost);
-            this.groupBox_hideData.Controls.Add(this.checkBox_systemTray);
-            this.groupBox_hideData.Controls.Add(this.checkBox_toggleSound);
-            this.groupBox_hideData.Controls.Add(this.checkBox_startUp);
-            this.groupBox_hideData.Controls.Add(this.textBox_osuPath);
-            this.groupBox_hideData.Location = new System.Drawing.Point(8, 394);
-            this.groupBox_hideData.Name = "groupBox_hideData";
-            this.groupBox_hideData.Size = new System.Drawing.Size(381, 139);
-            this.groupBox_hideData.TabIndex = 35;
-            this.groupBox_hideData.TabStop = false;
+            this.groupBox_checkBoxes.Controls.Add(this.checkBox_autoDisconnect);
+            this.groupBox_checkBoxes.Controls.Add(this.textBox_submitAcc);
+            this.groupBox_checkBoxes.Controls.Add(this.textBox_hotkey);
+            this.groupBox_checkBoxes.Controls.Add(this.checkBox_hideData);
+            this.groupBox_checkBoxes.Controls.Add(this.checkBox_submitIfFC);
+            this.groupBox_checkBoxes.Controls.Add(this.checkBox_topMost);
+            this.groupBox_checkBoxes.Controls.Add(this.checkBox_systemTray);
+            this.groupBox_checkBoxes.Controls.Add(this.checkBox_toggleSound);
+            this.groupBox_checkBoxes.Controls.Add(this.checkBox_startUp);
+            this.groupBox_checkBoxes.Controls.Add(this.textBox_osuPath);
+            this.groupBox_checkBoxes.Location = new System.Drawing.Point(8, 394);
+            this.groupBox_checkBoxes.Name = "groupBox_checkBoxes";
+            this.groupBox_checkBoxes.Size = new System.Drawing.Size(381, 139);
+            this.groupBox_checkBoxes.TabIndex = 35;
+            this.groupBox_checkBoxes.TabStop = false;
             // 
             // checkBox_autoDisconnect
             // 
@@ -514,7 +514,7 @@
             this.Controls.Add(this.label_apiKey);
             this.Controls.Add(this.textBox_apiKey);
             this.Controls.Add(this.groupBox_Data);
-            this.Controls.Add(this.groupBox_hideData);
+            this.Controls.Add(this.groupBox_checkBoxes);
             this.Controls.Add(this.button_findLocation);
             this.Controls.Add(this.panel_top);
             this.Controls.Add(this.button_toggle);
@@ -530,8 +530,8 @@
             this.panel_top.ResumeLayout(false);
             this.panel_top.PerformLayout();
             this.contextMenuStrip_osu.ResumeLayout(false);
-            this.groupBox_hideData.ResumeLayout(false);
-            this.groupBox_hideData.PerformLayout();
+            this.groupBox_checkBoxes.ResumeLayout(false);
+            this.groupBox_checkBoxes.PerformLayout();
             this.groupBox_Data.ResumeLayout(false);
             this.groupBox_Data.PerformLayout();
             this.ResumeLayout(false);
@@ -568,7 +568,7 @@
         private System.Windows.Forms.CheckBox checkBox_submitIfFC;
         private System.Windows.Forms.CheckBox checkBox_hideData;
         private System.Windows.Forms.TextBox textBox_currentMapTime;
-        private System.Windows.Forms.GroupBox groupBox_hideData;
+        private System.Windows.Forms.GroupBox groupBox_checkBoxes;
         private System.Windows.Forms.GroupBox groupBox_Data;
         private System.Windows.Forms.TextBox textBox_apiKey;
         private System.Windows.Forms.Label label_apiKey;

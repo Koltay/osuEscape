@@ -46,7 +46,9 @@ namespace osuEscape
 
         public static List<int> recentUploadScoreList = new List<int>();
 
-        private Size originalSize;
+        private Size originalFormSize;
+        private Point originalGroupBoxLocation;
+        private Point originalLabelSSLocation;
 
         public static string userName;
 
@@ -71,7 +73,9 @@ namespace osuEscape
                 this.Close();
             }
 
-            originalSize = this.Size;
+            originalFormSize = this.Size;
+            originalGroupBoxLocation = groupBox_checkBoxes.Location;
+            originalLabelSSLocation = label_submissionStatus.Location;
 
             UIUserSettingsUpdate();
         }
@@ -189,7 +193,7 @@ namespace osuEscape
             cts.Cancel();
         }
 
-        private async void OnShown(object sender, EventArgs eventArgs)
+        private async void osuDataReaderAsync()
         {
             if (!string.IsNullOrEmpty(_osuWindowTitleHint)) Text += $": {_osuWindowTitleHint}";
             Text += $" ({(Environment.Is64BitProcess ? "x64" : "x86")})";
@@ -323,7 +327,7 @@ namespace osuEscape
                                     }
                                 }
                             }
-                        }                      
+                        }
                     }
 
 
@@ -438,6 +442,11 @@ namespace osuEscape
                     await Task.Delay(_readDelay);
                 }
             }, cts.Token);
+        }
+
+        private async void OnShown(object sender, EventArgs eventArgs)
+        {
+            osuDataReaderAsync();
         }
 
         private void SreaderOnInvalidRead(object sender, (object readObject, string propPath) e)
@@ -748,12 +757,13 @@ namespace osuEscape
                 cts.Cancel();
 
                 // hide data, smaller ui
-                this.MinimumSize = new Size(426, 240);
+                this.MinimumSize = new Size(426, 280);
                 this.Size = this.MinimumSize;
                 this.MaximumSize = this.Size;
 
-                groupBox_hideData.Location = new Point(8, 120);
                 groupBox_Data.Visible = false;
+                groupBox_checkBoxes.Location = new Point(8,120);
+                label_submissionStatus.Location = new Point(8,260);
             }
             else
             {
@@ -761,15 +771,16 @@ namespace osuEscape
                 cts.Dispose();
                 cts = new CancellationTokenSource();
 
-                //RealTimeDataDisplayAsync();
+                osuDataReaderAsync();
 
                 groupBox_Data.Visible = true;
-                groupBox_hideData.Location = new Point(8, 374);
+                groupBox_checkBoxes.Location = originalGroupBoxLocation;
+                label_submissionStatus.Location = originalLabelSSLocation;
 
                 // reset ui with fixed size
-                this.MaximumSize = originalSize;
-                this.Size = originalSize;
-                this.MinimumSize = originalSize;
+                this.MaximumSize = originalFormSize;
+                this.Size = originalFormSize;
+                this.MinimumSize = originalFormSize;
             }
         }
         #endregion
