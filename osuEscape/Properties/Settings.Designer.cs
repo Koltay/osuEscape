@@ -12,7 +12,7 @@ namespace osuEscape.Properties {
     
     
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "16.10.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "17.1.0.0")]
     internal sealed partial class Settings : global::System.Configuration.ApplicationSettingsBase {
         
         private static Settings defaultInstance = ((Settings)(global::System.Configuration.ApplicationSettingsBase.Synchronized(new Settings())));
@@ -110,12 +110,12 @@ namespace osuEscape.Properties {
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("False")]
-        public bool isSubmitIfSS {
+        public bool isSubmitIfFC {
             get {
-                return ((bool)(this["isSubmitIfSS"]));
+                return ((bool)(this["isSubmitIfFC"]));
             }
             set {
-                this["isSubmitIfSS"] = value;
+                this["isSubmitIfFC"] = value;
             }
         }
         
@@ -152,6 +152,18 @@ namespace osuEscape.Properties {
             }
             set {
                 this["submitAcc"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool isAutoDisconnect {
+            get {
+                return ((bool)(this["isAutoDisconnect"]));
+            }
+            set {
+                this["isAutoDisconnect"] = value;
             }
         }
     }

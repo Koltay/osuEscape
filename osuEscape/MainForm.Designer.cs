@@ -57,9 +57,10 @@
             this.statusToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.connectingToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.label_map = new System.Windows.Forms.Label();
-            this.checkBox_submitIfSS = new System.Windows.Forms.CheckBox();
+            this.checkBox_submitIfFC = new System.Windows.Forms.CheckBox();
             this.checkBox_hideData = new System.Windows.Forms.CheckBox();
             this.groupBox_hideData = new System.Windows.Forms.GroupBox();
+            this.checkBox_autoDisconnect = new System.Windows.Forms.CheckBox();
             this.textBox_submitAcc = new System.Windows.Forms.TextBox();
             this.groupBox_Data = new System.Windows.Forms.GroupBox();
             this.textBox_apiKey = new System.Windows.Forms.TextBox();
@@ -79,7 +80,7 @@
             this.textBox_mapData.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.textBox_mapData.Multiline = true;
             this.textBox_mapData.Name = "textBox_mapData";
-            this.textBox_mapData.Size = new System.Drawing.Size(280, 82);
+            this.textBox_mapData.Size = new System.Drawing.Size(280, 97);
             this.textBox_mapData.TabIndex = 1;
             // 
             // label_status
@@ -104,7 +105,7 @@
             // 
             this.label_currentPlayingData.AutoSize = true;
             this.label_currentPlayingData.Cursor = System.Windows.Forms.Cursors.No;
-            this.label_currentPlayingData.Location = new System.Drawing.Point(0, 100);
+            this.label_currentPlayingData.Location = new System.Drawing.Point(-1, 118);
             this.label_currentPlayingData.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label_currentPlayingData.Name = "label_currentPlayingData";
             this.label_currentPlayingData.Size = new System.Drawing.Size(116, 15);
@@ -113,7 +114,7 @@
             // 
             // textBox_currentPlayData
             // 
-            this.textBox_currentPlayData.Location = new System.Drawing.Point(6, 116);
+            this.textBox_currentPlayData.Location = new System.Drawing.Point(5, 134);
             this.textBox_currentPlayData.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.textBox_currentPlayData.Multiline = true;
             this.textBox_currentPlayData.Name = "textBox_currentPlayData";
@@ -379,17 +380,17 @@
             this.label_map.TabIndex = 32;
             this.label_map.Text = "Map";
             // 
-            // checkBox_submitIfSS
+            // checkBox_submitIfFC
             // 
-            this.checkBox_submitIfSS.AutoSize = true;
-            this.checkBox_submitIfSS.Location = new System.Drawing.Point(5, 90);
-            this.checkBox_submitIfSS.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
-            this.checkBox_submitIfSS.Name = "checkBox_submitIfSS";
-            this.checkBox_submitIfSS.Size = new System.Drawing.Size(235, 19);
-            this.checkBox_submitIfSS.TabIndex = 33;
-            this.checkBox_submitIfSS.Text = "Submit if the acc is ≥          (API needed)";
-            this.checkBox_submitIfSS.UseVisualStyleBackColor = true;
-            this.checkBox_submitIfSS.CheckedChanged += new System.EventHandler(this.CheckBox_submitIfSS_CheckedChanged);
+            this.checkBox_submitIfFC.AutoSize = true;
+            this.checkBox_submitIfFC.Location = new System.Drawing.Point(5, 90);
+            this.checkBox_submitIfFC.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            this.checkBox_submitIfFC.Name = "checkBox_submitIfFC";
+            this.checkBox_submitIfFC.Size = new System.Drawing.Size(247, 19);
+            this.checkBox_submitIfFC.TabIndex = 33;
+            this.checkBox_submitIfFC.Text = "Submit if FC with ≥          acc (API needed)";
+            this.checkBox_submitIfFC.UseVisualStyleBackColor = true;
+            this.checkBox_submitIfFC.CheckedChanged += new System.EventHandler(this.CheckBox_submitIfFC_CheckedChanged);
             // 
             // checkBox_hideData
             // 
@@ -405,24 +406,37 @@
             // 
             // groupBox_hideData
             // 
+            this.groupBox_hideData.Controls.Add(this.checkBox_autoDisconnect);
             this.groupBox_hideData.Controls.Add(this.textBox_submitAcc);
             this.groupBox_hideData.Controls.Add(this.textBox_hotkey);
             this.groupBox_hideData.Controls.Add(this.checkBox_hideData);
-            this.groupBox_hideData.Controls.Add(this.checkBox_submitIfSS);
+            this.groupBox_hideData.Controls.Add(this.checkBox_submitIfFC);
             this.groupBox_hideData.Controls.Add(this.checkBox_topMost);
             this.groupBox_hideData.Controls.Add(this.checkBox_systemTray);
             this.groupBox_hideData.Controls.Add(this.checkBox_toggleSound);
             this.groupBox_hideData.Controls.Add(this.checkBox_startUp);
             this.groupBox_hideData.Controls.Add(this.textBox_osuPath);
-            this.groupBox_hideData.Location = new System.Drawing.Point(8, 374);
+            this.groupBox_hideData.Location = new System.Drawing.Point(8, 394);
             this.groupBox_hideData.Name = "groupBox_hideData";
-            this.groupBox_hideData.Size = new System.Drawing.Size(381, 115);
+            this.groupBox_hideData.Size = new System.Drawing.Size(381, 139);
             this.groupBox_hideData.TabIndex = 35;
             this.groupBox_hideData.TabStop = false;
             // 
+            // checkBox_autoDisconnect
+            // 
+            this.checkBox_autoDisconnect.AutoSize = true;
+            this.checkBox_autoDisconnect.Location = new System.Drawing.Point(5, 114);
+            this.checkBox_autoDisconnect.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            this.checkBox_autoDisconnect.Name = "checkBox_autoDisconnect";
+            this.checkBox_autoDisconnect.Size = new System.Drawing.Size(228, 19);
+            this.checkBox_autoDisconnect.TabIndex = 36;
+            this.checkBox_autoDisconnect.Text = "Automatically disconnect after upload";
+            this.checkBox_autoDisconnect.UseVisualStyleBackColor = true;
+            this.checkBox_autoDisconnect.CheckedChanged += new System.EventHandler(this.checkBox_autoDisconnect_CheckedChanged);
+            // 
             // textBox_submitAcc
             // 
-            this.textBox_submitAcc.Location = new System.Drawing.Point(136, 88);
+            this.textBox_submitAcc.Location = new System.Drawing.Point(127, 88);
             this.textBox_submitAcc.MaxLength = 3;
             this.textBox_submitAcc.Name = "textBox_submitAcc";
             this.textBox_submitAcc.Size = new System.Drawing.Size(25, 23);
@@ -445,13 +459,13 @@
             this.groupBox_Data.Controls.Add(this.textBox_mapData);
             this.groupBox_Data.Location = new System.Drawing.Point(8, 111);
             this.groupBox_Data.Name = "groupBox_Data";
-            this.groupBox_Data.Size = new System.Drawing.Size(409, 227);
+            this.groupBox_Data.Size = new System.Drawing.Size(409, 243);
             this.groupBox_Data.TabIndex = 36;
             this.groupBox_Data.TabStop = false;
             // 
             // textBox_apiKey
             // 
-            this.textBox_apiKey.Location = new System.Drawing.Point(11, 353);
+            this.textBox_apiKey.Location = new System.Drawing.Point(11, 373);
             this.textBox_apiKey.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.textBox_apiKey.Name = "textBox_apiKey";
             this.textBox_apiKey.Size = new System.Drawing.Size(201, 23);
@@ -461,7 +475,7 @@
             // label_apiKey
             // 
             this.label_apiKey.AutoSize = true;
-            this.label_apiKey.Location = new System.Drawing.Point(11, 337);
+            this.label_apiKey.Location = new System.Drawing.Point(11, 357);
             this.label_apiKey.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label_apiKey.Name = "label_apiKey";
             this.label_apiKey.Size = new System.Drawing.Size(107, 15);
@@ -470,7 +484,7 @@
             // 
             // button_checkApiKey
             // 
-            this.button_checkApiKey.Location = new System.Drawing.Point(220, 352);
+            this.button_checkApiKey.Location = new System.Drawing.Point(220, 372);
             this.button_checkApiKey.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.button_checkApiKey.Name = "button_checkApiKey";
             this.button_checkApiKey.Size = new System.Drawing.Size(75, 23);
@@ -482,7 +496,7 @@
             // label_submissionStatus
             // 
             this.label_submissionStatus.AutoSize = true;
-            this.label_submissionStatus.Location = new System.Drawing.Point(8, 492);
+            this.label_submissionStatus.Location = new System.Drawing.Point(8, 536);
             this.label_submissionStatus.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label_submissionStatus.Name = "label_submissionStatus";
             this.label_submissionStatus.Size = new System.Drawing.Size(105, 15);
@@ -493,7 +507,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(426, 514);
+            this.ClientSize = new System.Drawing.Size(426, 559);
             this.ControlBox = false;
             this.Controls.Add(this.label_submissionStatus);
             this.Controls.Add(this.button_checkApiKey);
@@ -551,7 +565,7 @@
         private System.Windows.Forms.ToolStripMenuItem statusToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem connectingToolStripMenuItem;
         private System.Windows.Forms.Label label_map;
-        private System.Windows.Forms.CheckBox checkBox_submitIfSS;
+        private System.Windows.Forms.CheckBox checkBox_submitIfFC;
         private System.Windows.Forms.CheckBox checkBox_hideData;
         private System.Windows.Forms.TextBox textBox_currentMapTime;
         private System.Windows.Forms.GroupBox groupBox_hideData;
@@ -562,6 +576,7 @@
         private System.Windows.Forms.TextBox textBox_mapData;
         private System.Windows.Forms.TextBox textBox_submitAcc;
         private System.Windows.Forms.Label label_submissionStatus;
+        private System.Windows.Forms.CheckBox checkBox_autoDisconnect;
     }
 }
 
