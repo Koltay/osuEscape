@@ -22,6 +22,8 @@ namespace osuEscape
 {
     public partial class osuEscape : Form
     {
+        #region Initialize and OnLoad
+
         private readonly string _osuWindowTitleHint;
         private int _readDelay = 33;
         private readonly object _minMaxLock = new object();
@@ -51,8 +53,6 @@ namespace osuEscape
         private Point originalLabelSSLocation;
 
         public static string userName;
-
-        #region Initialize and OnLoad
         public osuEscape(string osuWindowTitleHint)
         {
 
@@ -176,23 +176,9 @@ namespace osuEscape
 
         #endregion
 
+        #region Main Functions
 
-        private void NumericUpDownReadDelayOnValueChanged(object sender, EventArgs eventArgs)
-        {
-            if (int.TryParse(numericUpDown_readDelay.Value.ToString(CultureInfo.InvariantCulture), out var value))
-            {
-                _readDelay = value;
-            }
-            else
-            {
-                numericUpDown_readDelay.Value = 33;
-            }
-        }
-
-        private void OnClosing(object sender, CancelEventArgs cancelEventArgs)
-        {
-            cts.Cancel();
-        }
+        #region osu data reader
 
         private async void osuDataReaderAsync()
         {
@@ -265,8 +251,8 @@ namespace osuEscape
                     {
                         _sreader.TryRead(baseAddresses.SongSelectionScores);
                     }
-                    //else
-                    //    baseAddresses.SongSelectionScores.Scores.Clear();
+                    else
+                        baseAddresses.SongSelectionScores.Scores.Clear();
 
                     if (baseAddresses.GeneralData.OsuStatus == OsuMemoryStatus.ResultsScreen)
                     {
@@ -332,7 +318,7 @@ namespace osuEscape
                                     }
                                 }
                             }
-                        }                  
+                        }
                     }
 
 
@@ -448,41 +434,8 @@ namespace osuEscape
                 }
             }, cts.Token);
         }
-        private void SreaderOnInvalidRead(object sender, (object readObject, string propPath) e)
-        {
-            try
-            {
-                if (InvokeRequired)
-                {
-                    //Async call to not impact memory read times(too much)
-                    BeginInvoke((MethodInvoker)(() => SreaderOnInvalidRead(sender, e)));
-                    return;
-                }
 
-                // *not showing any invalid read recently
-
-                //listBox_logs.Items.Add($"{DateTime.Now:T} Error reading {e.propPath}{Environment.NewLine}");
-                //if (listBox_logs.Items.Count > 500)
-                //    listBox_logs.Items.RemoveAt(0);
-
-                //listBox_logs.SelectedIndex = listBox_logs.Items.Count - 1;
-                //listBox_logs.ClearSelected();
-            }
-            catch (ObjectDisposedException)
-            {
-
-            }
-        }
-
-        private void Button_ResetReadTimeMinMax_Click(object sender, EventArgs e)
-        {
-            lock (_minMaxLock)
-            {
-                _memoryReadTimeMin = double.PositiveInfinity;
-                _memoryReadTimeMax = double.NegativeInfinity;
-            }
-        }
-
+        #endregion 
 
         #region Panel Buttons
         private void Button_exit_Click(object sender, EventArgs e)
@@ -600,6 +553,9 @@ namespace osuEscape
 
         #endregion
 
+        #endregion
+        
+
         #region Find osu! location
         private void Button_findLocation_Click(object sender, EventArgs e) // select osu!.exe
         {
@@ -640,7 +596,7 @@ namespace osuEscape
 
         #endregion
 
-        #region CheckBox Settings
+        #region CheckBox/ numericUpDown/ minor buttons Settings
         // Include:
         // - startup
         // - toggle with sound
@@ -785,6 +741,35 @@ namespace osuEscape
 
         #endregion
 
+        #region numericUpDown
+
+        private void NumericUpDownReadDelayOnValueChanged(object sender, EventArgs eventArgs)
+        {
+            if (int.TryParse(numericUpDown_readDelay.Value.ToString(CultureInfo.InvariantCulture), out var value))
+            {
+                _readDelay = value;
+            }
+            else
+            {
+                numericUpDown_readDelay.Value = 33;
+            }
+        }
+
+        #endregion
+
+        #region minor buttons
+
+        private void Button_ResetReadTimeMinMax_Click(object sender, EventArgs e)
+        {
+            lock (_minMaxLock)
+            {
+                _memoryReadTimeMin = double.PositiveInfinity;
+                _memoryReadTimeMax = double.NegativeInfinity;
+            }
+        }
+
+        #endregion
+
         #endregion
 
         #region Panel Dragging
@@ -850,9 +835,14 @@ namespace osuEscape
             Properties.Settings.Default.Save();
         }
 
+        private void OnClosing(object sender, CancelEventArgs cancelEventArgs)
+        {
+            cts.Cancel();
+        }
+
         #endregion
 
-        #region HotKey
+        #region Global HotKey
         private void HandleHotkey()
         {
             ToggleFirewall();
@@ -975,18 +965,38 @@ namespace osuEscape
                 Properties.Settings.Default.submitAcc = 100;
                 textBox_submitAcc.Text = "100";
             }
-            if (Convert.ToInt32(textBox_submitAcc.Text) < 0) // reset the accuracy to 100 to avoid unneeded submission
+            // reset the accuracy to 100 to avoid unneeded submission
+            if (Convert.ToInt32(textBox_submitAcc.Text) < 0) 
             {
                 Properties.Settings.Default.submitAcc = 100;
                 textBox_submitAcc.Text = "100";
             }
         }
 
-        private void TextBox_enableToggle(bool isEnabled)
+        private void SreaderOnInvalidRead(object sender, (object readObject, string propPath) e)
         {
-            textBox_currentMapTime.Enabled = isEnabled;
-            textBox_currentPlayData.Enabled = isEnabled;
-            textBox_mapData.Enabled = isEnabled;
+            try
+            {
+                if (InvokeRequired)
+                {
+                    //Async call to not impact memory read times(too much)
+                    BeginInvoke((MethodInvoker)(() => SreaderOnInvalidRead(sender, e)));
+                    return;
+                }
+
+                // *not showing any invalid read recently
+
+                //listBox_logs.Items.Add($"{DateTime.Now:T} Error reading {e.propPath}{Environment.NewLine}");
+                //if (listBox_logs.Items.Count > 500)
+                //    listBox_logs.Items.RemoveAt(0);
+
+                //listBox_logs.SelectedIndex = listBox_logs.Items.Count - 1;
+                //listBox_logs.ClearSelected();
+            }
+            catch (ObjectDisposedException)
+            {
+
+            }
         }
 
         private void Label_SubmissionStatus_TextChanged(string str)
