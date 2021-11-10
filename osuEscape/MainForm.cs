@@ -752,8 +752,7 @@ namespace osuEscape
 
             if (checkBox_hideData.Checked)
             {
-                // pause updating data 
-                cts.Cancel();
+                //* Hiding data now DOES NOT stop osu memory reading
 
                 // hide data, smaller ui
                 this.MinimumSize = new Size(426, 280);
@@ -766,12 +765,6 @@ namespace osuEscape
             }
             else
             {
-                // reset cts and resume
-                cts.Dispose();
-                cts = new CancellationTokenSource();
-
-                osuDataReaderAsync();
-
                 groupBox_Data.Visible = true;
                 groupBox_checkBoxes.Location = originalGroupBoxLocation;
                 label_submissionStatus.Location = originalLabelSSLocation;

@@ -428,9 +428,9 @@
             this.checkBox_autoDisconnect.Location = new System.Drawing.Point(5, 114);
             this.checkBox_autoDisconnect.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.checkBox_autoDisconnect.Name = "checkBox_autoDisconnect";
-            this.checkBox_autoDisconnect.Size = new System.Drawing.Size(230, 19);
+            this.checkBox_autoDisconnect.Size = new System.Drawing.Size(301, 19);
             this.checkBox_autoDisconnect.TabIndex = 36;
-            this.checkBox_autoDisconnect.Text = "Automatically Disconnect after Upload";
+            this.checkBox_autoDisconnect.Text = "Automatically Disconnect after Upload (API needed)";
             this.checkBox_autoDisconnect.UseVisualStyleBackColor = true;
             this.checkBox_autoDisconnect.CheckedChanged += new System.EventHandler(this.checkBox_autoDisconnect_CheckedChanged);
             // 
