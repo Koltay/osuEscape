@@ -40,7 +40,7 @@ namespace osuEscape
 
         private static HttpClient client = new HttpClient();
 
-        public int previousBeatmapId = 0;
+        public static int previousBeatmapId = 0;
 
         public int BeatmapMaxCombo = 0;
 
@@ -61,9 +61,7 @@ namespace osuEscape
             InitializeComponent();
 
             _sreader = StructuredOsuMemoryReader.Instance.GetInstanceForWindowTitleHint(osuWindowTitleHint);
-
-            osuDataReaderAsync();
-
+            
             Closing += OnClosing;
             numericUpDown_readDelay.ValueChanged += NumericUpDownReadDelayOnValueChanged;
 
@@ -117,7 +115,7 @@ namespace osuEscape
         private void UIUserSettingsUpdate()
         {
             // UI Update with saved user settings
-            checkBox_startUp.Checked = Properties.Settings.Default.isStartUp;
+            checkBox_startup.Checked = Properties.Settings.Default.isStartup;
             checkBox_toggleSound.Checked = Properties.Settings.Default.isToggleSound;
             checkBox_systemTray.Checked = Properties.Settings.Default.isSystemTray;
             checkBox_topMost.Checked = Properties.Settings.Default.isTopMost;
@@ -134,8 +132,10 @@ namespace osuEscape
         private void OsuEscape_Load(object sender, EventArgs e)
         {
             // check if osu!Escape is already opened 
-            if (Process.GetProcessesByName("osuEscape").Length > 1)
+            if (Process.GetProcessesByName(this.Name).Length > 1)
                 this.Close();
+
+            osuDataReaderAsync();
 
             Application.ApplicationExit += new EventHandler(Application_ApplicationExit);
 
@@ -272,63 +272,67 @@ namespace osuEscape
                     {
                         _sreader.TryRead(baseAddresses.ResultsScreen);
 
-                        //upload if only it is not a replay
-                        if (!baseAddresses.Player.IsReplay)
+
+                        if (Properties.Settings.Default.isAutoDisconnect)
                         {
-                            //upload if only the map is ranked or loved
-                            if (baseAddresses.Beatmap.Status == ((short)BeatmapStatus.Ranked) || baseAddresses.Beatmap.Status == ((short)BeatmapStatus.Loved))
+                            //upload if only it is not a replay
+                            if (!baseAddresses.Player.IsReplay)
                             {
-                                if (baseAddresses.Player.MaxCombo != 0)
+                                //upload if only the map is ranked or loved
+                                if (baseAddresses.Beatmap.Status == ((short)BeatmapStatus.Ranked) || baseAddresses.Beatmap.Status == ((short)BeatmapStatus.Loved))
                                 {
-                                    // Connection should be enabled because of meeting the requirement of submitting
-                                    if (isAllowConnection)
+                                    if (baseAddresses.Player.MaxCombo != 0)
                                     {
-                                        label_submissionStatus.Invoke((MethodInvoker)delegate {
-                                            Label_SubmissionStatus_TextChanged("Ready to upload recent score.");
-                                        });
-
-                                        // delay the task for 1.5s to let the score submitted first
-                                        await Task.Delay(1500);
-
-                                        // GET Method of user's recent score (osu! api v1)
-                                        // get the recent 3 scores, even though there is multiple submissions at one connection
-                                        // the recent score could still be recognized
-                                        recentUploadScoreList = await GetUserRecentScoreAsync(baseAddresses.Player.Username, 3);
-
-                                        bool isUploaded = false;
-
-                                        foreach (int responseScore in recentUploadScoreList)
+                                        // Connection should be enabled because of meeting the requirement of submitting
+                                        if (isAllowConnection)
                                         {
-                                            // the score player recently submitted
-                                            if (responseScore == baseAddresses.Player.Score)
+                                            label_submissionStatus.BeginInvoke((MethodInvoker)delegate {
+                                                Label_SubmissionStatus_TextChanged("Ready to upload recent score.");
+                                            });
+
+                                            // delay the task for 1.5s to let the score submitted first
+                                            await Task.Delay(1500);
+
+                                            // GET Method of user's recent score (osu! api v1)
+                                            // get the recent 3 scores, even though there is multiple submissions at one connection
+                                            // the recent score could still be recognized
+                                            recentUploadScoreList = await GetUserRecentScoreAsync(baseAddresses.Player.Username, 3);
+
+                                            bool isUploaded = false;
+
+                                            foreach (int responseScore in recentUploadScoreList)
                                             {
-                                                isUploaded = true;
+                                                // the score player recently submitted
+                                                if (responseScore == baseAddresses.Player.Score)
+                                                {
+                                                    isUploaded = true;
 
-                                                isAllowConnection = true;
+                                                    isAllowConnection = true;
 
-                                                ToggleFirewall();
-                                                // to avoid toggling twice for same score submission
+                                                    ToggleFirewall();
+                                                    // to avoid toggling twice for same score submission
+                                                }
                                             }
+
+                                            label_submissionStatus.BeginInvoke((MethodInvoker)delegate
+                                            {
+                                                if (isUploaded)
+                                                {
+                                                    Label_SubmissionStatus_TextChanged("SUCCESS: Uploaded recent score.");
+                                                }
+                                                else
+                                                {
+                                                    Label_SubmissionStatus_TextChanged("FAILED: Did not upload recent score.");
+                                                }
+                                            });
+
+                                            // 3s for displaying label message
+                                            await Task.Delay(3000);
                                         }
-
-                                        label_submissionStatus.Invoke((MethodInvoker)delegate
-                                        {
-                                            if (isUploaded)
-                                            {
-                                                Label_SubmissionStatus_TextChanged("SUCCESS: Uploaded recent score.");
-                                            }
-                                            else
-                                            {
-                                                Label_SubmissionStatus_TextChanged("FAILED: Did not upload recent score.");
-                                            }
-                                        });
-
-                                        // 3s for displaying label message
-                                        await Task.Delay(3000);
                                     }
                                 }
                             }
-                        }
+                        }                  
                     }
 
 
@@ -378,7 +382,7 @@ namespace osuEscape
                         }
 
                         userName = baseAddresses.Player.Username;
-                        previousBeatmapId = baseAddresses.Beatmap.Id;
+                        //previousBeatmapId = baseAddresses.Beatmap.Id;
                     }
                     else
                     {
@@ -648,9 +652,9 @@ namespace osuEscape
         #region Run at Startup
         private void CheckBox_startUp_CheckedChanged(object sender, EventArgs e)
         {
-            SetRunAtStartup(checkBox_startUp.Checked);
+            SetRunAtStartup(checkBox_startup.Checked);
 
-            Properties.Settings.Default.isStartUp = checkBox_startUp.Checked;
+            Properties.Settings.Default.isStartup = checkBox_startup.Checked;
         }
         private static void SetRunAtStartup(bool enabled)
         {
@@ -901,6 +905,9 @@ namespace osuEscape
                 var JsonString = await response.Content.ReadAsStringAsync();
 
                 JArray arr = (JArray)JsonConvert.DeserializeObject(JsonString);
+
+                // to avoid getting the same beatmap's max combo multiple times while retrying
+                previousBeatmapId = beatmapId;
 
                 return (int)arr[0]["max_combo"];
             }

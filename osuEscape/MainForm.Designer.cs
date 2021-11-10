@@ -49,7 +49,7 @@
             this.checkBox_topMost = new System.Windows.Forms.CheckBox();
             this.checkBox_systemTray = new System.Windows.Forms.CheckBox();
             this.checkBox_toggleSound = new System.Windows.Forms.CheckBox();
-            this.checkBox_startUp = new System.Windows.Forms.CheckBox();
+            this.checkBox_startup = new System.Windows.Forms.CheckBox();
             this.textBox_osuPath = new System.Windows.Forms.TextBox();
             this.textBox_hotkey = new System.Windows.Forms.TextBox();
             this.notifyIcon_osuEscape = new System.Windows.Forms.NotifyIcon(this.components);
@@ -301,23 +301,23 @@
             this.checkBox_toggleSound.Location = new System.Drawing.Point(5, 65);
             this.checkBox_toggleSound.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.checkBox_toggleSound.Name = "checkBox_toggleSound";
-            this.checkBox_toggleSound.Size = new System.Drawing.Size(123, 19);
+            this.checkBox_toggleSound.Size = new System.Drawing.Size(124, 19);
             this.checkBox_toggleSound.TabIndex = 29;
-            this.checkBox_toggleSound.Text = "Toggle with sound";
+            this.checkBox_toggleSound.Text = "Toggle with Sound";
             this.checkBox_toggleSound.UseVisualStyleBackColor = true;
             this.checkBox_toggleSound.CheckedChanged += new System.EventHandler(this.CheckBox_toggleSound_CheckedChanged);
             // 
-            // checkBox_startUp
+            // checkBox_startup
             // 
-            this.checkBox_startUp.AutoSize = true;
-            this.checkBox_startUp.Location = new System.Drawing.Point(5, 40);
-            this.checkBox_startUp.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
-            this.checkBox_startUp.Name = "checkBox_startUp";
-            this.checkBox_startUp.Size = new System.Drawing.Size(103, 19);
-            this.checkBox_startUp.TabIndex = 28;
-            this.checkBox_startUp.Text = "Run at start up";
-            this.checkBox_startUp.UseVisualStyleBackColor = true;
-            this.checkBox_startUp.CheckedChanged += new System.EventHandler(this.CheckBox_startUp_CheckedChanged);
+            this.checkBox_startup.AutoSize = true;
+            this.checkBox_startup.Location = new System.Drawing.Point(5, 40);
+            this.checkBox_startup.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            this.checkBox_startup.Name = "checkBox_startup";
+            this.checkBox_startup.Size = new System.Drawing.Size(101, 19);
+            this.checkBox_startup.TabIndex = 28;
+            this.checkBox_startup.Text = "Run at Startup";
+            this.checkBox_startup.UseVisualStyleBackColor = true;
+            this.checkBox_startup.CheckedChanged += new System.EventHandler(this.CheckBox_startUp_CheckedChanged);
             // 
             // textBox_osuPath
             // 
@@ -386,9 +386,9 @@
             this.checkBox_submitIfFC.Location = new System.Drawing.Point(5, 90);
             this.checkBox_submitIfFC.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.checkBox_submitIfFC.Name = "checkBox_submitIfFC";
-            this.checkBox_submitIfFC.Size = new System.Drawing.Size(247, 19);
+            this.checkBox_submitIfFC.Size = new System.Drawing.Size(278, 19);
             this.checkBox_submitIfFC.TabIndex = 33;
-            this.checkBox_submitIfFC.Text = "Submit if FC with ≥          acc (API needed)";
+            this.checkBox_submitIfFC.Text = "Submit if FC with ≥          Accuracy (API needed)";
             this.checkBox_submitIfFC.UseVisualStyleBackColor = true;
             this.checkBox_submitIfFC.CheckedChanged += new System.EventHandler(this.CheckBox_submitIfFC_CheckedChanged);
             // 
@@ -414,7 +414,7 @@
             this.groupBox_checkBoxes.Controls.Add(this.checkBox_topMost);
             this.groupBox_checkBoxes.Controls.Add(this.checkBox_systemTray);
             this.groupBox_checkBoxes.Controls.Add(this.checkBox_toggleSound);
-            this.groupBox_checkBoxes.Controls.Add(this.checkBox_startUp);
+            this.groupBox_checkBoxes.Controls.Add(this.checkBox_startup);
             this.groupBox_checkBoxes.Controls.Add(this.textBox_osuPath);
             this.groupBox_checkBoxes.Location = new System.Drawing.Point(8, 394);
             this.groupBox_checkBoxes.Name = "groupBox_checkBoxes";
@@ -428,9 +428,9 @@
             this.checkBox_autoDisconnect.Location = new System.Drawing.Point(5, 114);
             this.checkBox_autoDisconnect.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.checkBox_autoDisconnect.Name = "checkBox_autoDisconnect";
-            this.checkBox_autoDisconnect.Size = new System.Drawing.Size(228, 19);
+            this.checkBox_autoDisconnect.Size = new System.Drawing.Size(230, 19);
             this.checkBox_autoDisconnect.TabIndex = 36;
-            this.checkBox_autoDisconnect.Text = "Automatically disconnect after upload";
+            this.checkBox_autoDisconnect.Text = "Automatically Disconnect after Upload";
             this.checkBox_autoDisconnect.UseVisualStyleBackColor = true;
             this.checkBox_autoDisconnect.CheckedChanged += new System.EventHandler(this.checkBox_autoDisconnect_CheckedChanged);
             // 
@@ -557,7 +557,7 @@
         private System.Windows.Forms.CheckBox checkBox_topMost;
         private System.Windows.Forms.CheckBox checkBox_systemTray;
         private System.Windows.Forms.CheckBox checkBox_toggleSound;
-        private System.Windows.Forms.CheckBox checkBox_startUp;
+        private System.Windows.Forms.CheckBox checkBox_startup;
         private System.Windows.Forms.TextBox textBox_osuPath;
         private System.Windows.Forms.TextBox textBox_hotkey;
         private System.Windows.Forms.NotifyIcon notifyIcon_osuEscape;

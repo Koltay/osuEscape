@@ -38,12 +38,12 @@ namespace osuEscape.Properties {
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("False")]
-        public bool isStartUp {
+        public bool isStartup {
             get {
-                return ((bool)(this["isStartUp"]));
+                return ((bool)(this["isStartup"]));
             }
             set {
-                this["isStartUp"] = value;
+                this["isStartup"] = value;
             }
         }
         
