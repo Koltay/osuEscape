@@ -166,5 +166,17 @@ namespace osuEscape.Properties {
                 this["isAutoDisconnect"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string osuPath {
+            get {
+                return ((string)(this["osuPath"]));
+            }
+            set {
+                this["osuPath"] = value;
+            }
+        }
     }
 }

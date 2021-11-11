@@ -10,6 +10,7 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.Drawing;
 using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
@@ -29,9 +30,8 @@ namespace osuEscape
         private readonly object _minMaxLock = new object();
         private double _memoryReadTimeMin = double.PositiveInfinity;
         private double _memoryReadTimeMax = double.NegativeInfinity;
-        private readonly ISet<string> _patternsToSkip = new HashSet<string>();
         private readonly StructuredOsuMemoryReader _sreader;
-        private CancellationTokenSource cts = new CancellationTokenSource();
+        private readonly CancellationTokenSource cts = new CancellationTokenSource();
 
         private KeyHandler ghk;
         public const int WM_HOTKEY_MSG_ID = 0x0312;
@@ -40,19 +40,17 @@ namespace osuEscape
 
         private bool isAllowConnection = true;
 
-        private static HttpClient client = new HttpClient();
-
-        public static int previousBeatmapId = 0;
+        private static readonly HttpClient client = new HttpClient();
 
         public int BeatmapMaxCombo = 0;
+
+        private static int lastNoteOffset = -1;
 
         public static List<int> recentUploadScoreList = new List<int>();
 
         private Size originalFormSize;
         private Point originalGroupBoxLocation;
         private Point originalLabelSSLocation;
-
-        public static string userName;
         public osuEscape(string osuWindowTitleHint)
         {
 
@@ -250,9 +248,14 @@ namespace osuEscape
                     if (baseAddresses.GeneralData.OsuStatus == OsuMemoryStatus.SongSelect)
                     {
                         _sreader.TryRead(baseAddresses.SongSelectionScores);
+
+                        lastNoteOffset = -1;
                     }
                     else
+                    {
                         baseAddresses.SongSelectionScores.Scores.Clear();
+                    }
+                        
 
                     if (baseAddresses.GeneralData.OsuStatus == OsuMemoryStatus.ResultsScreen)
                     {
@@ -324,7 +327,6 @@ namespace osuEscape
 
                     if (baseAddresses.GeneralData.OsuStatus == OsuMemoryStatus.Playing)
                     {
-                        baseAddresses.Player.MaxCombo = 0;
                         _sreader.TryRead(baseAddresses.Player);
                         //TODO: flag needed for single/multi player detection (should be read once per play in singleplayer)
                         _sreader.TryRead(baseAddresses.LeaderBoard);
@@ -336,39 +338,39 @@ namespace osuEscape
                             _sreader.TryReadProperty(baseAddresses.Player, nameof(Player.Mods), out var dummyResult);
                         }
 
-                        if (textBox_apiKey.Text != null)
+                        // only read the audio offset of this map if it is a new loaded beatmap
+                        if (lastNoteOffset == -1)
                         {
-                            // First GET
-                            if (BeatmapMaxCombo == 0)
-                            {
-                                BeatmapMaxCombo = await GetBeatmapIdAsync(baseAddresses.Beatmap.Id);
-                            }
-                            else if (previousBeatmapId != baseAddresses.Beatmap.Id) // loaded new beatmap
-                            {
-                                BeatmapMaxCombo = await GetBeatmapIdAsync(baseAddresses.Beatmap.Id);
-                            }
+                            string beatmapLocation = $"{Properties.Settings.Default.osuPath}\\Songs\\{baseAddresses.Beatmap.FolderName}\\{baseAddresses.Beatmap.OsuFileName}";
+
+                            string lastLine = File.ReadLines(beatmapLocation).Last();
+
+                            string[] substring = lastLine.Split(',');
+
+                            lastNoteOffset = Convert.ToInt32(substring[2]); // 0: x-coordinate, 1: y-coordinate, 2: audio offset
                         }
 
-                        //Submit if FC / SS
+                        // * new method, does not need api
                         if (Properties.Settings.Default.isSubmitIfFC)
                         {
-                            if (BeatmapMaxCombo != 0) // Already gets the max combo from osu! api
+                            // using last note offset to determine if the map ended, after that we determine if it is an "FC"
+                            if (baseAddresses.GeneralData.AudioTime >= lastNoteOffset)
                             {
-                                if (BeatmapMaxCombo == baseAddresses.Player.MaxCombo) // FC //if (baseAddresses.Player.MaxCombo == 1)//
+                                if (baseAddresses.Player.Combo == baseAddresses.Player.MaxCombo) // This method ignores sliderbreak score
                                 {
-                                    if (baseAddresses.Player.Accuracy >= Convert.ToInt32(textBox_submitAcc.Text)) // above or equal to the required acc
+                                    if (baseAddresses.Player.HitMiss == 0) // full combo / dropped some sliderends
                                     {
-                                        if (!isAllowConnection) // if there is block connection, disable it
+                                        if (baseAddresses.Player.Accuracy >= Convert.ToInt32(textBox_submitAcc.Text)) // above or equal to the required acc
                                         {
-                                            ToggleFirewall();
+                                            if (!isAllowConnection) // if there is block connection, disable it
+                                            {
+                                                ToggleFirewall();
+                                            }
                                         }
                                     }
                                 }
-                            }
+                            }                    
                         }
-
-                        userName = baseAddresses.Player.Username;
-                        //previousBeatmapId = baseAddresses.Beatmap.Id;
                     }
                     else
                     {
@@ -396,33 +398,34 @@ namespace osuEscape
 
                     try
                     {
-                        Invoke((MethodInvoker)(() =>
-                        {
+                        _ = Invoke((MethodInvoker)(() =>
+                          {
                             //full data
                             //textBox_Data.Text = JsonConvert.SerializeObject(baseAddresses, Formatting.Indented); 
 
                             textBox_mapData.Text =
-                                $"Map: {baseAddresses.Beatmap.MapString}{Environment.NewLine}" +
-                                $"AR: {baseAddresses.Beatmap.Ar} CS: {baseAddresses.Beatmap.Cs} HP: {baseAddresses.Beatmap.Hp} OD: {baseAddresses.Beatmap.Od}{Environment.NewLine}" +
-                                $"Gamemode: {(Gamemode)baseAddresses.GeneralData.GameMode}{Environment.NewLine}" +
-                                $"Map Status: {(BeatmapStatus)baseAddresses.Beatmap.Status}{Environment.NewLine}" +
-                                $"Mods: {(Mods)baseAddresses.GeneralData.Mods}"
-                                ;
+                                  $"Map: {baseAddresses.Beatmap.MapString}{Environment.NewLine}" +
+                                  $"AR: {baseAddresses.Beatmap.Ar} CS: {baseAddresses.Beatmap.Cs} HP: {baseAddresses.Beatmap.Hp} OD: {baseAddresses.Beatmap.Od}{Environment.NewLine}" +
+                                  $"Gamemode: {(Gamemode)baseAddresses.GeneralData.GameMode}{Environment.NewLine}" +
+                                  $"Map Status: {(BeatmapStatus)baseAddresses.Beatmap.Status}{Environment.NewLine}" +
+                                  $"Mods: {(Mods)baseAddresses.GeneralData.Mods}" 
+                                  ;
 
-                            textBox_currentPlayData.Text =
-                                $"Player: {baseAddresses.Player.Username}{Environment.NewLine}" +
-                                $"Score: {baseAddresses.Player.Score}{Environment.NewLine}" +
-                                $"Your Best Combo: {baseAddresses.Player.MaxCombo}{Environment.NewLine}" +
-                                $"Beatmap Max Combo: {BeatmapMaxCombo}{Environment.NewLine}" +
-                                $"Accuracy: {baseAddresses.Player.Accuracy.ToString("0.00")}{Environment.NewLine}" +
-                                $"300: {baseAddresses.Player.Hit300} 100: {baseAddresses.Player.Hit100} 50: {baseAddresses.Player.Hit50} Miss: {baseAddresses.Player.HitMiss}"
-                                ;
+                              textBox_currentPlayData.Text =
+                                  $"Player: {baseAddresses.Player.Username}{Environment.NewLine}" +
+                                  $"Score: {baseAddresses.Player.Score}{Environment.NewLine}" +
+                                  $"Recent Combo: {baseAddresses.Player.Combo}{Environment.NewLine}" +
+                                  //$"Beatmap Max Combo: {BeatmapMaxCombo}{Environment.NewLine}" +
+                                  $"Best Combo: {baseAddresses.Player.MaxCombo}{Environment.NewLine}" +
+                                  $"Accuracy: {baseAddresses.Player.Accuracy:0.00}{Environment.NewLine}" +
+                                  $"300: {baseAddresses.Player.Hit300} 100: {baseAddresses.Player.Hit100} 50: {baseAddresses.Player.Hit50} Miss: {baseAddresses.Player.HitMiss}"
+                                  ;
 
-                            textBox_currentMapTime.Text = $"{baseAddresses.GeneralData.AudioTime}";
-                            textBox_Status.Text = $"{baseAddresses.GeneralData.OsuStatus}";
+                              textBox_currentMapTime.Text = $"{baseAddresses.GeneralData.AudioTime}";
+                              textBox_Status.Text = $"{baseAddresses.GeneralData.OsuStatus}";
 
 
-                        }));
+                          }));
                     }
                     catch (ObjectDisposedException)
                     {
@@ -585,7 +588,11 @@ namespace osuEscape
 
         private void UpdateOsuLocationText()
         {
-            textBox_osuPath.Text = "osu! Path: " + String.Join("\\", Properties.Settings.Default.osuLocation.Split('\\').Reverse().Skip(1).Reverse()) + "\\";
+            string osuPath = String.Join("\\", Properties.Settings.Default.osuLocation.Split('\\').Reverse().Skip(1).Reverse()) + "\\";
+
+            Properties.Settings.Default.osuPath = osuPath;
+
+            textBox_osuPath.Text = "osu! Path: " + osuPath;
         }
 
         private static string GetOsuPath()
@@ -870,39 +877,6 @@ namespace osuEscape
         #endregion
 
         #region GET Method from osu! api   
-
-        private static async Task<int> GetBeatmapIdAsync(int beatmapId)
-        {
-            var url = $"https://osu.ppy.sh/api/get_beatmaps?k={Properties.Settings.Default.userApiKey}&b={beatmapId}";
-
-            var request = new HttpRequestMessage(HttpMethod.Get, url);
-            request.Headers.Accept.Clear();
-            request.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer");
-            request.Content = new StringContent("{...}", Encoding.UTF8, "application/json");
-
-            var response = await client.SendAsync(request, CancellationToken.None);
-
-            if (response.IsSuccessStatusCode)
-            {
-                var JsonString = await response.Content.ReadAsStringAsync();
-
-                JArray arr = (JArray)JsonConvert.DeserializeObject(JsonString);
-
-                // to avoid getting the same beatmap's max combo multiple times while retrying
-                previousBeatmapId = beatmapId;
-
-                return (int)arr[0]["max_combo"];
-            }
-            else
-            {
-                MessageBox.Show(
-                    $"Internal server Error/ Incorrect API! {Environment.NewLine} " +
-                    $"Please restart the application")
-                    ;
-            }
-            return -1;
-        }
 
         private static async Task<List<int>> GetUserRecentScoreAsync(string userName, int recentScoreLimits)
         {
