@@ -21,7 +21,7 @@ using System.Windows.Forms;
 
 namespace osuEscape
 {
-    public partial class osuEscape : Form
+    public partial class MainForm : Form
     {
         #region Initialize and OnLoad
 
@@ -51,7 +51,7 @@ namespace osuEscape
         private Size originalFormSize;
         private Point originalGroupBoxLocation;
         private Point originalLabelSSLocation;
-        public osuEscape(string osuWindowTitleHint)
+        public MainForm(string osuWindowTitleHint)
         {
 
             _osuWindowTitleHint = osuWindowTitleHint;
@@ -182,7 +182,6 @@ namespace osuEscape
         {
             if (!string.IsNullOrEmpty(_osuWindowTitleHint)) Text += $": {_osuWindowTitleHint}";
             Text += $" ({(Environment.Is64BitProcess ? "x64" : "x86")})";
-            _sreader.InvalidRead += SreaderOnInvalidRead;
             await Task.Run(async () =>
             {
                 Stopwatch stopwatch;
@@ -341,16 +340,20 @@ namespace osuEscape
                         // only read the audio offset of this map if it is a new loaded beatmap
                         if (lastNoteOffset == -1)
                         {
-                            string beatmapLocation = $"{Properties.Settings.Default.osuPath}\\Songs\\{baseAddresses.Beatmap.FolderName}\\{baseAddresses.Beatmap.OsuFileName}";
+                            string beatmapLocation = $"{Properties.Settings.Default.osuPath}\\Songs\\{baseAddresses.Beatmap.FolderName}\\{baseAddresses.Beatmap.OsuFileName}";                           
 
-                            string lastLine = File.ReadLines(beatmapLocation).Last();
+                            try
+                            {
+                                string lastLine = File.ReadLines(beatmapLocation).Last();
 
-                            string[] substring = lastLine.Split(',');
-
-                            lastNoteOffset = Convert.ToInt32(substring[2]); // 0: x-coordinate, 1: y-coordinate, 2: audio offset
+                                lastNoteOffset = Convert.ToInt32(lastLine.Split(',')[2]); // 0: x-coordinate, 1: y-coordinate, 2: audio offset
+                            }
+                            catch (Exception ex) // random exceptions happening
+                            {
+                                Console.WriteLine(ex.Message);
+                            }
                         }
 
-                        // * new method, does not need api
                         if (Properties.Settings.Default.isSubmitIfFC)
                         {
                             // using last note offset to determine if the map ended, after that we determine if it is an "FC"
@@ -619,7 +622,7 @@ namespace osuEscape
 
             Properties.Settings.Default.isStartup = checkBox_startup.Checked;
         }
-        private static void SetRunAtStartup(bool enabled)
+        public static void SetRunAtStartup(bool enabled)
         {
             try
             {
@@ -977,6 +980,52 @@ namespace osuEscape
         {
             label_submissionStatus.Text = "Submission Status: " + str;
         }
+
+        public void HideData()
+        {
+
+            if (Properties.Settings.Default.isHideData)
+            {
+                //* Hiding data now DOES NOT stop osu memory reading
+
+                // hide data, smaller ui
+                this.MinimumSize = new Size(426, 280);
+                this.Size = this.MinimumSize;
+                this.MaximumSize = this.Size;
+
+                groupBox_Data.Visible = false;
+                groupBox_checkBoxes.Location = new Point(8, 120);
+                label_submissionStatus.Location = new Point(8, 260);
+            }
+            else
+            {
+                groupBox_Data.Visible = true;
+                groupBox_checkBoxes.Location = originalGroupBoxLocation;
+                label_submissionStatus.Location = originalLabelSSLocation;
+
+                // reset ui with fixed size
+                this.MaximumSize = originalFormSize;
+                this.Size = originalFormSize;
+                this.MinimumSize = originalFormSize;
+            }
+        }
+
+        private void materialButton_openSettings_Click(object sender, EventArgs e)
+        {
+            SettingForm settingForm = new SettingForm();   
+            
+            settingForm.TopMost = true;
+
+            settingForm.StartPosition = FormStartPosition.Manual;
+
+            settingForm.Location = this.Location;
+
+            this.Hide();
+
+            settingForm.ShowDialog();
+
+            this.Show();
+        }  
     }
 
     #region internal struct PatternsToRead

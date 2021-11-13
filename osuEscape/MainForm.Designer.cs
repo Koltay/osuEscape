@@ -1,6 +1,6 @@
 ﻿namespace osuEscape
 {
-    partial class osuEscape
+    partial class MainForm
     {
         /// <summary>
         /// Required designer variable.
@@ -29,7 +29,7 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(osuEscape));
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
             this.textBox_mapData = new System.Windows.Forms.TextBox();
             this.label_status = new System.Windows.Forms.Label();
             this.textBox_Status = new System.Windows.Forms.TextBox();
@@ -67,6 +67,7 @@
             this.label_apiKey = new System.Windows.Forms.Label();
             this.button_checkApiKey = new System.Windows.Forms.Button();
             this.label_submissionStatus = new System.Windows.Forms.Label();
+            this.materialButton_openSettings = new MaterialSkin.Controls.MaterialButton();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown_readDelay)).BeginInit();
             this.panel_top.SuspendLayout();
             this.contextMenuStrip_osu.SuspendLayout();
@@ -173,6 +174,7 @@
             this.panel_top.AllowDrop = true;
             this.panel_top.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(70)))), ((int)(((byte)(70)))), ((int)(((byte)(70)))));
             this.panel_top.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.panel_top.Controls.Add(this.materialButton_openSettings);
             this.panel_top.Controls.Add(this.button_exit);
             this.panel_top.Controls.Add(this.button_minimize);
             this.panel_top.Controls.Add(this.label_title);
@@ -386,9 +388,9 @@
             this.checkBox_submitIfFC.Location = new System.Drawing.Point(5, 90);
             this.checkBox_submitIfFC.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.checkBox_submitIfFC.Name = "checkBox_submitIfFC";
-            this.checkBox_submitIfFC.Size = new System.Drawing.Size(278, 19);
+            this.checkBox_submitIfFC.Size = new System.Drawing.Size(207, 19);
             this.checkBox_submitIfFC.TabIndex = 33;
-            this.checkBox_submitIfFC.Text = "Submit if FC with ≥          Accuracy (API needed)";
+            this.checkBox_submitIfFC.Text = "Submit if FC with ≥          Accuracy";
             this.checkBox_submitIfFC.UseVisualStyleBackColor = true;
             this.checkBox_submitIfFC.CheckedChanged += new System.EventHandler(this.CheckBox_submitIfFC_CheckedChanged);
             // 
@@ -503,7 +505,26 @@
             this.label_submissionStatus.TabIndex = 38;
             this.label_submissionStatus.Text = "Submission status:";
             // 
-            // osuEscape
+            // materialButton_openSettings
+            // 
+            this.materialButton_openSettings.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.materialButton_openSettings.Density = MaterialSkin.Controls.MaterialButton.MaterialButtonDensity.Default;
+            this.materialButton_openSettings.Depth = 0;
+            this.materialButton_openSettings.HighEmphasis = true;
+            this.materialButton_openSettings.Icon = null;
+            this.materialButton_openSettings.Location = new System.Drawing.Point(290, -1);
+            this.materialButton_openSettings.Margin = new System.Windows.Forms.Padding(4, 6, 4, 6);
+            this.materialButton_openSettings.MouseState = MaterialSkin.MouseState.HOVER;
+            this.materialButton_openSettings.Name = "materialButton_openSettings";
+            this.materialButton_openSettings.NoAccentTextColor = System.Drawing.Color.Empty;
+            this.materialButton_openSettings.Size = new System.Drawing.Size(64, 36);
+            this.materialButton_openSettings.TabIndex = 39;
+            this.materialButton_openSettings.Type = MaterialSkin.Controls.MaterialButton.MaterialButtonType.Contained;
+            this.materialButton_openSettings.UseAccentColor = false;
+            this.materialButton_openSettings.UseVisualStyleBackColor = true;
+            this.materialButton_openSettings.Click += new System.EventHandler(this.materialButton_openSettings_Click);
+            // 
+            // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
@@ -523,7 +544,7 @@
             this.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.MaximizeBox = false;
             this.MinimizeBox = false;
-            this.Name = "osuEscape";
+            this.Name = "MainForm";
             this.Text = "osu!Escape";
             this.Load += new System.EventHandler(this.OsuEscape_Load);
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown_readDelay)).EndInit();
@@ -577,6 +598,7 @@
         private System.Windows.Forms.TextBox textBox_submitAcc;
         private System.Windows.Forms.Label label_submissionStatus;
         private System.Windows.Forms.CheckBox checkBox_autoDisconnect;
+        private MaterialSkin.Controls.MaterialButton materialButton_openSettings;
     }
 }
 
