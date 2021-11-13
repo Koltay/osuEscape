@@ -32,10 +32,19 @@
  
  - This application uses osu! API v1 to get your recent uploaded score (get_user_recent) and automatically disconnect after uploading
  - For users who is concerned about the API usage, please feel free to not use it :D
- 
- 
+
+## 
  Thank you to those who contributed to this project (Listed in ascending order by osu! IGN):
  
- Testing: Hellotomlol225, Muji, Surac, Takanashi Ako
+ Testing: 
+ - Hellotomlol225
+ - Muji
+ - Surac
+ - Takanashi Ako
  
- Coding: Shion Maker
+ Coding: 
+ - Shion Maker
+ 
+ ## Licenses
+ The following projects are used in osu!Escape:
+ - [ProcessMemoryDataFinder](https://github.com/Piotrekol/ProcessMemoryDataFinder), [GPL-3.0](https://github.com/Piotrekol/ProcessMemoryDataFinder/blob/master/LICENSE)
