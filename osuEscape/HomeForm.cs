@@ -29,63 +29,6 @@ namespace osuEscape
     public partial class HomeForm : MaterialForm
     {
 
-        readonly MaterialSkinManager materialSkinManager;
-        public HomeForm()
-        {
-            InitializeComponent();
-            materialSkinManager = MaterialSkin.MaterialSkinManager.Instance;
-            materialSkinManager.EnforceBackcolorOnAllComponents = true;
-            materialSkinManager.AddFormToManage(this);
-            materialSkinManager.Theme = MaterialSkin.MaterialSkinManager.Themes.LIGHT;
-            materialSkinManager.ColorScheme = new MaterialSkin.ColorScheme
-                (MaterialSkin.Primary.Indigo500, MaterialSkin.Primary.Indigo700, MaterialSkin.Primary.Indigo100, MaterialSkin.Accent.Pink200, MaterialSkin.TextShade.WHITE);
-        }
-
-        private void materialCheckbox_autoDisconnect_CheckedChanged(object sender, EventArgs e)
-        {
-            Properties.Settings.Default.isAutoDisconnect = materialCheckbox_autoDisconnect.Checked;
-        }
-
-        private void materialCheckbox_submitIfFC_CheckedChanged(object sender, EventArgs e)
-        {
-            Properties.Settings.Default.isSubmitIfFC = materialCheckbox_submitIfFC.Checked;
-        }
-
-        private void materialCheckbox_hideData_CheckedChanged(object sender, EventArgs e)
-        {
-            Properties.Settings.Default.isHideData = materialCheckbox_hideData.Checked;
-        }
-
-        private void materialCheckbox_topMost_CheckedChanged(object sender, EventArgs e)
-        {
-            Properties.Settings.Default.isTopMost = materialCheckbox_topMost.Checked;
-            this.TopMost = materialCheckbox_topMost.Checked;
-        }
-
-        private void materialCheckbox_toggleWithSound_CheckedChanged(object sender, EventArgs e)
-        {
-            Properties.Settings.Default.isToggleSound = materialCheckbox_toggleWithSound.Checked;
-        }
-
-        private void materialCheckbox_minimizeToSystemTray_CheckedChanged(object sender, EventArgs e)
-        {
-            Properties.Settings.Default.isSystemTray = materialCheckbox_minimizeToSystemTray.Checked;
-        }
-
-        private void materialCheckbox_runAtStartup_CheckedChanged(object sender, EventArgs e)
-        {
-            Properties.Settings.Default.isStartup = materialCheckbox_runAtStartup.Checked;
-
-            MainForm.SetRunAtStartup(materialCheckbox_runAtStartup.Checked);
-        }
-
-        private void materialButton_checkApi_Click(object sender, EventArgs e)
-        {
-            Properties.Settings.Default.userApiKey = materialMultiLineTextBox_apiInput.Text;
-        }
-
-        #region Initialize and OnLoad
-
         private readonly string _osuWindowTitleHint;
         private int _readDelay = 33;
         private readonly object _minMaxLock = new object();
@@ -108,18 +51,25 @@ namespace osuEscape
         private Size originalFormSize;
         private Point originalGroupBoxLocation;
         private Point originalLabelSSLocation;
-        public MainForm(string osuWindowTitleHint)
+
+        readonly MaterialSkinManager materialSkinManager;
+        public HomeForm(string osuWindowTitleHint)
         {
-
-            _osuWindowTitleHint = osuWindowTitleHint;
-
             InitializeComponent();
+
+            //Initialize material skin manager
+            materialSkinManager = MaterialSkin.MaterialSkinManager.Instance;
+            materialSkinManager.EnforceBackcolorOnAllComponents = true;
+            materialSkinManager.AddFormToManage(this);
+            materialSkinManager.Theme = MaterialSkin.MaterialSkinManager.Themes.LIGHT;
+            materialSkinManager.ColorScheme = new MaterialSkin.ColorScheme
+                (MaterialSkin.Primary.Indigo500, MaterialSkin.Primary.Indigo700, MaterialSkin.Primary.Indigo100, MaterialSkin.Accent.Pink200, MaterialSkin.TextShade.WHITE);
 
 
             _sreader = StructuredOsuMemoryReader.Instance.GetInstanceForWindowTitleHint(osuWindowTitleHint);
 
             Closing += OnClosing;
-            numericUpDown_readDelay.ValueChanged += NumericUpDownReadDelayOnValueChanged;
+            //numericUpDown_readDelay.ValueChanged += NumericUpDownReadDelayOnValueChanged;
 
             // check if osu!Escape is already opened
             if (Process.GetProcessesByName("osuEscape").Length > 1)
@@ -130,8 +80,8 @@ namespace osuEscape
 
             // for ui resizing
             originalFormSize = this.Size;
-            originalGroupBoxLocation = groupBox_checkBoxes.Location;
-            originalLabelSSLocation = label_submissionStatus.Location;
+            //originalGroupBoxLocation = groupBox_checkBoxes.Location;
+            originalLabelSSLocation = materialLabel_submissionStatus.Location;
 
             //fixing ui size at start
             HideData(Properties.Settings.Default.isHideData);
@@ -139,7 +89,11 @@ namespace osuEscape
 
 
             UIUserSettingsUpdate();
-        }
+        }       
+
+        #region Initialize and OnLoad
+
+        
 
         #region Structured Reader
 
@@ -177,18 +131,18 @@ namespace osuEscape
         private void UIUserSettingsUpdate()
         {
             // UI Update with saved user settings
-            checkBox_startup.Checked = Properties.Settings.Default.isStartup;
-            checkBox_toggleSound.Checked = Properties.Settings.Default.isToggleSound;
-            checkBox_systemTray.Checked = Properties.Settings.Default.isSystemTray;
-            checkBox_topMost.Checked = Properties.Settings.Default.isTopMost;
-            checkBox_submitIfFC.Checked = Properties.Settings.Default.isSubmitIfFC;
-            checkBox_hideData.Checked = Properties.Settings.Default.isHideData;
-            checkBox_autoDisconnect.Checked = Properties.Settings.Default.isAutoDisconnect;
+            materialCheckbox_runAtStartup.Checked = Properties.Settings.Default.isStartup;
+            materialCheckbox_toggleWithSound.Checked = Properties.Settings.Default.isToggleSound;
+            materialCheckbox_minimizeToSystemTray.Checked = Properties.Settings.Default.isSystemTray;
+            materialCheckbox_topMost.Checked = Properties.Settings.Default.isTopMost;
+            materialCheckbox_submitIfFC.Checked = Properties.Settings.Default.isSubmitIfFC;
+            materialCheckbox_hideData.Checked = Properties.Settings.Default.isHideData;
+            materialCheckbox_autoDisconnect.Checked = Properties.Settings.Default.isAutoDisconnect;
 
-            numericUpDown_readDelay.Value = Properties.Settings.Default.refreshRate;
+            //numericUpDown_readDelay.Value = Properties.Settings.Default.refreshRate;
 
-            textBox_apiKey.Text = Properties.Settings.Default.userApiKey;
-            textBox_submitAcc.Text = Properties.Settings.Default.submitAcc.ToString();
+            materialMultiLineTextBox_apiInput.Text = Properties.Settings.Default.userApiKey;
+            materialMultiLineTextBox_submitAcc.Text = Properties.Settings.Default.submitAcc.ToString();
         }
 
         private void OsuEscape_Load(object sender, EventArgs e)
@@ -264,12 +218,8 @@ namespace osuEscape
                     {
                         Invoke((MethodInvoker)(() =>
                         {
-                            //textBox_Status.Text = "NotRunning";
-
-                            var status = ReadInt(baseAddresses.GeneralData, nameof(GeneralData.RawStatus));
-
-                            if (status == -5)
-                                textBox_Status.Text = "NotRunning";
+                            if (ReadInt(baseAddresses.GeneralData, nameof(GeneralData.RawStatus)) == -5)
+                                materialMultiLineTextBox_status.Text = "NotRunning";
                         }));
 
                         await Task.Delay(_readDelay);
@@ -335,7 +285,7 @@ namespace osuEscape
                                         // Connection should be enabled because of meeting the requirement of submitting
                                         if (isAllowConnection)
                                         {
-                                            label_submissionStatus.BeginInvoke((MethodInvoker)delegate {
+                                            materialLabel_submissionStatus.BeginInvoke((MethodInvoker)delegate {
                                                 Label_SubmissionStatus_TextChanged("Ready to upload recent score.");
                                             });
 
@@ -363,7 +313,7 @@ namespace osuEscape
                                                 }
                                             }
 
-                                            label_submissionStatus.BeginInvoke((MethodInvoker)delegate
+                                            materialLabel_submissionStatus.BeginInvoke((MethodInvoker)delegate
                                             {
                                                 if (isUploaded)
                                                 {
@@ -424,7 +374,7 @@ namespace osuEscape
                                 {
                                     if (baseAddresses.Player.HitMiss == 0) // full combo / dropped some sliderends
                                     {
-                                        if (baseAddresses.Player.Accuracy >= Convert.ToInt32(textBox_submitAcc.Text)) // above or equal to the required acc
+                                        if (baseAddresses.Player.Accuracy >= Convert.ToInt32(materialMultiLineTextBox_submitAcc.Text)) // above or equal to the required acc
                                         {
                                             if (!isAllowConnection) // if there is block connection, disable it
                                             {
@@ -467,7 +417,7 @@ namespace osuEscape
                             //full data
                             //textBox_Data.Text = JsonConvert.SerializeObject(baseAddresses, Formatting.Indented); 
 
-                            textBox_mapData.Text =
+                            materialMultiLineTextBox_mapData.Text =
                                   $"Map: {baseAddresses.Beatmap.MapString}{Environment.NewLine}" +
                                   $"AR: {baseAddresses.Beatmap.Ar} CS: {baseAddresses.Beatmap.Cs} HP: {baseAddresses.Beatmap.Hp} OD: {baseAddresses.Beatmap.Od}{Environment.NewLine}" +
                                   $"Gamemode: {(Gamemode)baseAddresses.GeneralData.GameMode}{Environment.NewLine}" +
@@ -475,7 +425,7 @@ namespace osuEscape
                                   $"Mods: {(Mods)baseAddresses.GeneralData.Mods}"
                                   ;
 
-                            textBox_currentPlayData.Text =
+                            materialMultiLineTextBox_currentPlayingData.Text =
                                 $"Player: {baseAddresses.Player.Username}{Environment.NewLine}" +
                                 $"Score: {baseAddresses.Player.Score}{Environment.NewLine}" +
                                 $"Recent Combo: {baseAddresses.Player.Combo}{Environment.NewLine}" +
@@ -484,8 +434,8 @@ namespace osuEscape
                                 $"300: {baseAddresses.Player.Hit300} 100: {baseAddresses.Player.Hit100} 50: {baseAddresses.Player.Hit50} Miss: {baseAddresses.Player.HitMiss}"
                                 ;
 
-                            textBox_currentMapTime.Text = $"{baseAddresses.GeneralData.AudioTime}";
-                            textBox_Status.Text = $"{baseAddresses.GeneralData.OsuStatus}";
+                            materialMultiLineTextBox_currentMapTime.Text = $"{baseAddresses.GeneralData.AudioTime}";
+                            materialMultiLineTextBox_status.Text = $"{baseAddresses.GeneralData.OsuStatus}";
 
 
                         }));
@@ -525,7 +475,7 @@ namespace osuEscape
 
             AllowConnection(isAllowConnection);
 
-            if (checkBox_toggleSound.Checked)
+            if (materialCheckbox_toggleWithSound.Checked)
                 System.Media.SystemSounds.Asterisk.Play();
         }
 
@@ -550,18 +500,18 @@ namespace osuEscape
 
         private void ToggleButtonUpdate(bool isAllow)
         {
-            if (button_toggle.InvokeRequired)
+            if (materialButton_toggle.InvokeRequired)
             {
-                button_toggle.Invoke(new MethodInvoker(delegate
+                materialButton_toggle.Invoke(new MethodInvoker(delegate
                 {
-                    button_toggle.Text = isAllow ? "Connecting" : "Blocked";
-                    button_toggle.ForeColor = isAllow ? System.Drawing.Color.Green : System.Drawing.Color.Red;
+                    materialButton_toggle.Text = isAllow ? "Connecting" : "Blocked";
+                    materialButton_toggle.ForeColor = isAllow ? System.Drawing.Color.Green : System.Drawing.Color.Red;
                 }));
             }
             else
             {
-                button_toggle.Text = isAllow ? "Connecting" : "Blocked";
-                button_toggle.ForeColor = isAllow ? System.Drawing.Color.Green : System.Drawing.Color.Red;
+                materialButton_toggle.Text = isAllow ? "Connecting" : "Blocked";
+                materialButton_toggle.ForeColor = isAllow ? System.Drawing.Color.Green : System.Drawing.Color.Red;
             }
         }
 
@@ -601,10 +551,7 @@ namespace osuEscape
 
 
         #region Find osu! location
-        private void Button_findLocation_Click(object sender, EventArgs e) // select osu!.exe
-        {
-            FindOsuLocation();
-        }
+       
 
         private void FindOsuLocation()
         {
@@ -633,7 +580,7 @@ namespace osuEscape
 
             Properties.Settings.Default.osuPath = osuPath;
 
-            textBox_osuPath.Text = "osu! Path: " + osuPath;
+            materialLabel_osuPath.Text = "osu! Path: " + osuPath;
         }
 
         private static string GetOsuPath()
@@ -654,12 +601,6 @@ namespace osuEscape
         // - hide Data
         // - auto disconnect
         #region Run at Startup
-        private void CheckBox_startUp_CheckedChanged(object sender, EventArgs e)
-        {
-            SetRunAtStartup(checkBox_startup.Checked);
-
-            Properties.Settings.Default.isStartup = checkBox_startup.Checked;
-        }
         public static void SetRunAtStartup(bool enabled)
         {
             try
@@ -682,29 +623,6 @@ namespace osuEscape
         }
         #endregion
 
-        #region Toggle with Sound
-        private void CheckBox_toggleSound_CheckedChanged(object sender, EventArgs e)
-        {
-            Properties.Settings.Default.isToggleSound = checkBox_toggleSound.Checked;
-        }
-
-        #endregion
-
-        #region NotifyIcon, SystemTray, ContextMenuStrip
-        private void NotifyIcon_osuEscape_MouseDoubleClick(object sender, MouseEventArgs e)
-        {
-            this.WindowState = FormWindowState.Normal;
-            ToggleSystemTray(false);
-
-            // Re-enable Hotkey
-            GlobalHotkeyRegister();
-        }
-
-        private void CheckBox_systemTray_CheckedChanged(object sender, EventArgs e)
-        {
-            Properties.Settings.Default.isSystemTray = checkBox_systemTray.Checked;
-        }
-
         private void ToggleSystemTray(bool enabled)
         {
             notifyIcon_osuEscape.Visible = enabled;
@@ -717,11 +635,11 @@ namespace osuEscape
             notifyIcon_osuEscape.ContextMenuStrip = contextMenuStrip_osu;
 
             //Status Update
-            contextMenuStrip_osu.Items[0].Text = "Status: " + button_toggle.Text;
+            contextMenuStrip_osu.Items[0].Text = "Status: " + materialButton_toggle.Text;
 
             contextMenuStrip_osu.Items[1].Click += new EventHandler(Item_quit_Click);
 
-            notifyIcon_osuEscape.Icon = (button_toggle.Text == "Connecting" ? Properties.Resources.osuEscapeConnecting : Properties.Resources.osuEscapeBlocking);
+            notifyIcon_osuEscape.Icon = (materialButton_toggle.Text == "Connecting" ? Properties.Resources.osuEscapeConnecting : Properties.Resources.osuEscapeBlocking);
         }
         private void Item_quit_Click(object sender, EventArgs e)
         {
@@ -731,31 +649,6 @@ namespace osuEscape
         #endregion
 
         #endregion
-
-        #region TopMost
-        private void CheckBox_topMost_CheckedChanged(object sender, EventArgs e)
-        {
-            Properties.Settings.Default.isTopMost = materialCheckbox_topMost.Checked;
-            this.TopMost = materialCheckbox_topMost.Checked;
-        }
-
-        #endregion
-
-        #region Submit If FC
-        private void CheckBox_submitIfFC_CheckedChanged(object sender, EventArgs e)
-        {
-            Properties.Settings.Default.isSubmitIfFC = materialCheckbox_submitIfFC.Checked;
-        }
-
-        #endregion
-
-        #region Hide Data
-        private void CheckBox_hideData_CheckedChanged(object sender, EventArgs e)
-        {
-            Properties.Settings.Default.isHideData = materialCheckbox_hideData.Checked;
-
-            HideData(Properties.Settings.Default.isHideData);
-        }
 
         public void HideData(bool isEnabled)
         {
@@ -770,14 +663,14 @@ namespace osuEscape
                 this.Size = this.MinimumSize;
                 this.MaximumSize = this.Size;
 
-                groupBox_Data.Visible = false;
-                groupBox_checkBoxes.Location = new Point(8, 120);
+                //groupBox_Data.Visible = false;
+                //groupBox_checkBoxes.Location = new Point(8, 120);
                 materialLabel_submissionStatus.Location = new Point(8, 260);
             }
             else
             {
-                groupBox_Data.Visible = true;
-                groupBox_checkBoxes.Location = originalGroupBoxLocation;
+                //groupBox_Data.Visible = true;
+                //groupBox_checkBoxes.Location = originalGroupBoxLocation;
                 materialLabel_submissionStatus.Location = originalLabelSSLocation;
 
                 // reset ui with fixed size
@@ -786,16 +679,6 @@ namespace osuEscape
                 this.MinimumSize = originalFormSize;
             }
         }
-
-        #endregion
-
-        #region Automatically disconnect after score uploading
-        private void checkBox_autoDisconnect_CheckedChanged(object sender, EventArgs e)
-        {
-            Properties.Settings.Default.isAutoDisconnect = materialCheckbox_autoDisconnect.Checked;
-        }
-
-        #endregion
 
         #region numericUpDown
 
@@ -815,7 +698,7 @@ namespace osuEscape
 
         #region minor buttons
 
-        private void Button_ResetReadTimeMinMax_Click(object sender, EventArgs e)
+        private void materialButton_ResetReadTimeMinMax_Click(object sender, EventArgs e)
         {
             lock (_minMaxLock)
             {
@@ -826,58 +709,7 @@ namespace osuEscape
 
         #endregion
 
-        #endregion
-
-        #region Panel Dragging
-
-        private bool dragging = false;
-        private Point dragCursorPoint;
-        private Point dragFormPoint;
-
-        private void Panel_top_MouseDown(object sender, MouseEventArgs e)
-        {
-            dragging = true;
-            dragCursorPoint = Cursor.Position;
-            dragFormPoint = this.Location;
-        }
-
-        private void Panel_top_MouseMove(object sender, MouseEventArgs e)
-        {
-            if (dragging)
-            {
-                Point dif = Point.Subtract(Cursor.Position, new Size(dragCursorPoint));
-                this.Location = Point.Add(dragFormPoint, new Size(dif));
-            }
-        }
-
-        private void Panel_top_MouseUp(object sender, MouseEventArgs e)
-        {
-            dragging = false;
-        }
-
-        // Make dragging also usable for label
-        private void Label_title_MouseDown(object sender, MouseEventArgs e)
-        {
-            dragging = true;
-            dragCursorPoint = Cursor.Position;
-            dragFormPoint = this.Location;
-        }
-
-        private void Label_title_MouseMove(object sender, MouseEventArgs e)
-        {
-            if (dragging)
-            {
-                Point dif = Point.Subtract(Cursor.Position, new Size(dragCursorPoint));
-                this.Location = Point.Add(dragFormPoint, new Size(dif));
-            }
-        }
-
-        private void Label_title_MouseUp(object sender, MouseEventArgs e)
-        {
-            dragging = false;
-        }
-
-        #endregion
+        
 
         #region FormClose
         private void Application_ApplicationExit(object sender, EventArgs e)
@@ -998,8 +830,6 @@ namespace osuEscape
             }
         }
 
-
-
         private void Label_SubmissionStatus_TextChanged(string str)
         {
             materialLabel_submissionStatus.Text = "Submission Status: " + str;
@@ -1014,6 +844,69 @@ namespace osuEscape
             }
 
             GlobalHotkeyRegister();
+        }
+
+        private void materialButton_osuPath_Click(object sender, EventArgs e)
+        {
+            FindOsuLocation();
+        }
+
+        private void materialButton_toggle_Click(object sender, EventArgs e)
+        {
+            ToggleFirewall();
+        }
+
+        private void materialSlider_refreshRate_Click(object sender, EventArgs e)
+        {
+            _readDelay = materialSlider_refreshRate.Value;
+        }
+
+        private void materialCheckbox_autoDisconnect_CheckedChanged(object sender, EventArgs e)
+        {
+            Properties.Settings.Default.isAutoDisconnect = materialCheckbox_autoDisconnect.Checked;
+        }
+
+        private void materialCheckbox_submitIfFC_CheckedChanged(object sender, EventArgs e)
+        {
+            Properties.Settings.Default.isSubmitIfFC = materialCheckbox_submitIfFC.Checked;
+        }
+
+        private void materialCheckbox_hideData_CheckedChanged(object sender, EventArgs e)
+        {
+            Properties.Settings.Default.isHideData = materialCheckbox_hideData.Checked;
+        }
+
+        private void materialCheckbox_topMost_CheckedChanged(object sender, EventArgs e)
+        {
+            Properties.Settings.Default.isTopMost = materialCheckbox_topMost.Checked;
+            this.TopMost = materialCheckbox_topMost.Checked;
+        }
+
+        private void materialCheckbox_toggleWithSound_CheckedChanged(object sender, EventArgs e)
+        {
+            Properties.Settings.Default.isToggleSound = materialCheckbox_toggleWithSound.Checked;
+        }
+
+        private void materialCheckbox_minimizeToSystemTray_CheckedChanged(object sender, EventArgs e)
+        {
+            Properties.Settings.Default.isSystemTray = materialCheckbox_minimizeToSystemTray.Checked;
+        }
+
+        private void materialCheckbox_runAtStartup_CheckedChanged(object sender, EventArgs e)
+        {
+            Properties.Settings.Default.isStartup = materialCheckbox_runAtStartup.Checked;
+
+            SetRunAtStartup(materialCheckbox_runAtStartup.Checked);
+        }
+
+        private void materialButton_checkApi_Click(object sender, EventArgs e)
+        {
+            Properties.Settings.Default.userApiKey = materialMultiLineTextBox_apiInput.Text;
+        }
+
+        private void materialButton_findOsuLocation_Click(object sender, EventArgs e)
+        {
+            FindOsuLocation();
         }
     }
 }

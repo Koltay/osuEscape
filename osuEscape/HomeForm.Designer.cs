@@ -36,17 +36,18 @@
             this.materialButton_refreshRateReset = new MaterialSkin.Controls.MaterialButton();
             this.materialLabel_submissionStatus = new MaterialSkin.Controls.MaterialLabel();
             this.materialMultiLineTextBox_status = new MaterialSkin.Controls.MaterialMultiLineTextBox();
-            this.materialMultiLineTextBox2 = new MaterialSkin.Controls.MaterialMultiLineTextBox();
+            this.materialMultiLineTextBox_currentMapTime = new MaterialSkin.Controls.MaterialMultiLineTextBox();
             this.materialLabel_refeshRate = new MaterialSkin.Controls.MaterialLabel();
             this.materialLabel_currentMapTime = new MaterialSkin.Controls.MaterialLabel();
             this.materialLabel_status = new MaterialSkin.Controls.MaterialLabel();
-            this.materialMultiLineTextBox1 = new MaterialSkin.Controls.MaterialMultiLineTextBox();
+            this.materialMultiLineTextBox_currentPlayingData = new MaterialSkin.Controls.MaterialMultiLineTextBox();
             this.materialLabel_currentPlayingData = new MaterialSkin.Controls.MaterialLabel();
             this.materialMultiLineTextBox_mapData = new MaterialSkin.Controls.MaterialMultiLineTextBox();
             this.materialLabel_MapData = new MaterialSkin.Controls.MaterialLabel();
-            this.materialButton_osuPath = new MaterialSkin.Controls.MaterialButton();
             this.materialButton_toggle = new MaterialSkin.Controls.MaterialButton();
             this.tabPage_settings = new System.Windows.Forms.TabPage();
+            this.materialLabel_globalToggleHotkey = new MaterialSkin.Controls.MaterialLabel();
+            this.materialLabel_osuPath = new MaterialSkin.Controls.MaterialLabel();
             this.materialMultiLineTextBox_submitAcc = new MaterialSkin.Controls.MaterialMultiLineTextBox();
             this.materialButton_checkApi = new MaterialSkin.Controls.MaterialButton();
             this.materialMultiLineTextBox_apiInput = new MaterialSkin.Controls.MaterialMultiLineTextBox();
@@ -60,9 +61,10 @@
             this.materialCheckbox_runAtStartup = new MaterialSkin.Controls.MaterialCheckbox();
             this.imageList_menu = new System.Windows.Forms.ImageList(this.components);
             this.contextMenuStrip_osu = new System.Windows.Forms.ContextMenuStrip(this.components);
-            this.notifyIcon_osuEscape = new System.Windows.Forms.NotifyIcon(this.components);
             this.statusToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.quitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.notifyIcon_osuEscape = new System.Windows.Forms.NotifyIcon(this.components);
+            this.materialButton_findOsuLocation = new MaterialSkin.Controls.MaterialButton();
             this.materialTabControl_menu.SuspendLayout();
             this.tabPage_main.SuspendLayout();
             this.tabPage_settings.SuspendLayout();
@@ -74,14 +76,14 @@
             this.materialTabControl_menu.Controls.Add(this.tabPage_main);
             this.materialTabControl_menu.Controls.Add(this.tabPage_settings);
             this.materialTabControl_menu.Depth = 0;
-            this.materialTabControl_menu.Dock = System.Windows.Forms.DockStyle.Fill;
             this.materialTabControl_menu.ImageList = this.imageList_menu;
             this.materialTabControl_menu.Location = new System.Drawing.Point(3, 64);
             this.materialTabControl_menu.MouseState = MaterialSkin.MouseState.HOVER;
             this.materialTabControl_menu.Multiline = true;
             this.materialTabControl_menu.Name = "materialTabControl_menu";
             this.materialTabControl_menu.SelectedIndex = 0;
-            this.materialTabControl_menu.Size = new System.Drawing.Size(610, 500);
+            this.materialTabControl_menu.ShowToolTips = true;
+            this.materialTabControl_menu.Size = new System.Drawing.Size(547, 456);
             this.materialTabControl_menu.TabIndex = 0;
             // 
             // tabPage_main
@@ -91,21 +93,20 @@
             this.tabPage_main.Controls.Add(this.materialButton_refreshRateReset);
             this.tabPage_main.Controls.Add(this.materialLabel_submissionStatus);
             this.tabPage_main.Controls.Add(this.materialMultiLineTextBox_status);
-            this.tabPage_main.Controls.Add(this.materialMultiLineTextBox2);
+            this.tabPage_main.Controls.Add(this.materialMultiLineTextBox_currentMapTime);
             this.tabPage_main.Controls.Add(this.materialLabel_refeshRate);
             this.tabPage_main.Controls.Add(this.materialLabel_currentMapTime);
             this.tabPage_main.Controls.Add(this.materialLabel_status);
-            this.tabPage_main.Controls.Add(this.materialMultiLineTextBox1);
+            this.tabPage_main.Controls.Add(this.materialMultiLineTextBox_currentPlayingData);
             this.tabPage_main.Controls.Add(this.materialLabel_currentPlayingData);
             this.tabPage_main.Controls.Add(this.materialMultiLineTextBox_mapData);
             this.tabPage_main.Controls.Add(this.materialLabel_MapData);
-            this.tabPage_main.Controls.Add(this.materialButton_osuPath);
             this.tabPage_main.Controls.Add(this.materialButton_toggle);
             this.tabPage_main.ImageKey = "Home_32.png";
             this.tabPage_main.Location = new System.Drawing.Point(4, 39);
             this.tabPage_main.Name = "tabPage_main";
             this.tabPage_main.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage_main.Size = new System.Drawing.Size(602, 457);
+            this.tabPage_main.Size = new System.Drawing.Size(539, 413);
             this.tabPage_main.TabIndex = 0;
             this.tabPage_main.Text = "Main";
             // 
@@ -120,6 +121,7 @@
             this.materialSlider_refreshRate.Size = new System.Drawing.Size(146, 40);
             this.materialSlider_refreshRate.TabIndex = 14;
             this.materialSlider_refreshRate.Text = "";
+            this.materialSlider_refreshRate.Click += new System.EventHandler(this.materialSlider_refreshRate_Click);
             // 
             // materialButton_refreshRateReset
             // 
@@ -140,13 +142,14 @@
             this.materialButton_refreshRateReset.Type = MaterialSkin.Controls.MaterialButton.MaterialButtonType.Contained;
             this.materialButton_refreshRateReset.UseAccentColor = false;
             this.materialButton_refreshRateReset.UseVisualStyleBackColor = true;
+            this.materialButton_refreshRateReset.Click += new System.EventHandler(this.materialButton_ResetReadTimeMinMax_Click);
             // 
             // materialLabel_submissionStatus
             // 
             this.materialLabel_submissionStatus.AutoSize = true;
             this.materialLabel_submissionStatus.Depth = 0;
             this.materialLabel_submissionStatus.Font = new System.Drawing.Font("Roboto", 14F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
-            this.materialLabel_submissionStatus.Location = new System.Drawing.Point(14, 374);
+            this.materialLabel_submissionStatus.Location = new System.Drawing.Point(14, 384);
             this.materialLabel_submissionStatus.MouseState = MaterialSkin.MouseState.HOVER;
             this.materialLabel_submissionStatus.Name = "materialLabel_submissionStatus";
             this.materialLabel_submissionStatus.Size = new System.Drawing.Size(143, 19);
@@ -167,19 +170,19 @@
             this.materialMultiLineTextBox_status.TabIndex = 11;
             this.materialMultiLineTextBox_status.Text = "";
             // 
-            // materialMultiLineTextBox2
+            // materialMultiLineTextBox_currentMapTime
             // 
-            this.materialMultiLineTextBox2.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(255)))), ((int)(((byte)(255)))));
-            this.materialMultiLineTextBox2.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.materialMultiLineTextBox2.Depth = 0;
-            this.materialMultiLineTextBox2.Font = new System.Drawing.Font("Microsoft Sans Serif", 14F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
-            this.materialMultiLineTextBox2.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(222)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))));
-            this.materialMultiLineTextBox2.Location = new System.Drawing.Point(381, 91);
-            this.materialMultiLineTextBox2.MouseState = MaterialSkin.MouseState.HOVER;
-            this.materialMultiLineTextBox2.Name = "materialMultiLineTextBox2";
-            this.materialMultiLineTextBox2.Size = new System.Drawing.Size(131, 31);
-            this.materialMultiLineTextBox2.TabIndex = 10;
-            this.materialMultiLineTextBox2.Text = "";
+            this.materialMultiLineTextBox_currentMapTime.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(255)))), ((int)(((byte)(255)))));
+            this.materialMultiLineTextBox_currentMapTime.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.materialMultiLineTextBox_currentMapTime.Depth = 0;
+            this.materialMultiLineTextBox_currentMapTime.Font = new System.Drawing.Font("Microsoft Sans Serif", 14F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
+            this.materialMultiLineTextBox_currentMapTime.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(222)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))));
+            this.materialMultiLineTextBox_currentMapTime.Location = new System.Drawing.Point(381, 91);
+            this.materialMultiLineTextBox_currentMapTime.MouseState = MaterialSkin.MouseState.HOVER;
+            this.materialMultiLineTextBox_currentMapTime.Name = "materialMultiLineTextBox_currentMapTime";
+            this.materialMultiLineTextBox_currentMapTime.Size = new System.Drawing.Size(131, 31);
+            this.materialMultiLineTextBox_currentMapTime.TabIndex = 10;
+            this.materialMultiLineTextBox_currentMapTime.Text = "";
             // 
             // materialLabel_refeshRate
             // 
@@ -217,19 +220,19 @@
             this.materialLabel_status.TabIndex = 7;
             this.materialLabel_status.Text = "Status";
             // 
-            // materialMultiLineTextBox1
+            // materialMultiLineTextBox_currentPlayingData
             // 
-            this.materialMultiLineTextBox1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(255)))), ((int)(((byte)(255)))));
-            this.materialMultiLineTextBox1.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.materialMultiLineTextBox1.Depth = 0;
-            this.materialMultiLineTextBox1.Font = new System.Drawing.Font("Microsoft Sans Serif", 14F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
-            this.materialMultiLineTextBox1.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(222)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))));
-            this.materialMultiLineTextBox1.Location = new System.Drawing.Point(14, 238);
-            this.materialMultiLineTextBox1.MouseState = MaterialSkin.MouseState.HOVER;
-            this.materialMultiLineTextBox1.Name = "materialMultiLineTextBox1";
-            this.materialMultiLineTextBox1.Size = new System.Drawing.Size(361, 133);
-            this.materialMultiLineTextBox1.TabIndex = 6;
-            this.materialMultiLineTextBox1.Text = "";
+            this.materialMultiLineTextBox_currentPlayingData.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(255)))), ((int)(((byte)(255)))));
+            this.materialMultiLineTextBox_currentPlayingData.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.materialMultiLineTextBox_currentPlayingData.Depth = 0;
+            this.materialMultiLineTextBox_currentPlayingData.Font = new System.Drawing.Font("Microsoft Sans Serif", 14F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
+            this.materialMultiLineTextBox_currentPlayingData.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(222)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))));
+            this.materialMultiLineTextBox_currentPlayingData.Location = new System.Drawing.Point(14, 238);
+            this.materialMultiLineTextBox_currentPlayingData.MouseState = MaterialSkin.MouseState.HOVER;
+            this.materialMultiLineTextBox_currentPlayingData.Name = "materialMultiLineTextBox_currentPlayingData";
+            this.materialMultiLineTextBox_currentPlayingData.Size = new System.Drawing.Size(361, 133);
+            this.materialMultiLineTextBox_currentPlayingData.TabIndex = 6;
+            this.materialMultiLineTextBox_currentPlayingData.Text = "";
             // 
             // materialLabel_currentPlayingData
             // 
@@ -269,26 +272,6 @@
             this.materialLabel_MapData.TabIndex = 2;
             this.materialLabel_MapData.Text = "Map";
             // 
-            // materialButton_osuPath
-            // 
-            this.materialButton_osuPath.AutoSize = false;
-            this.materialButton_osuPath.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.materialButton_osuPath.Density = MaterialSkin.Controls.MaterialButton.MaterialButtonDensity.Default;
-            this.materialButton_osuPath.Depth = 0;
-            this.materialButton_osuPath.HighEmphasis = true;
-            this.materialButton_osuPath.Icon = null;
-            this.materialButton_osuPath.Location = new System.Drawing.Point(179, 18);
-            this.materialButton_osuPath.Margin = new System.Windows.Forms.Padding(4, 6, 4, 6);
-            this.materialButton_osuPath.MouseState = MaterialSkin.MouseState.HOVER;
-            this.materialButton_osuPath.Name = "materialButton_osuPath";
-            this.materialButton_osuPath.NoAccentTextColor = System.Drawing.Color.Empty;
-            this.materialButton_osuPath.Size = new System.Drawing.Size(146, 35);
-            this.materialButton_osuPath.TabIndex = 1;
-            this.materialButton_osuPath.Text = "File";
-            this.materialButton_osuPath.Type = MaterialSkin.Controls.MaterialButton.MaterialButtonType.Contained;
-            this.materialButton_osuPath.UseAccentColor = false;
-            this.materialButton_osuPath.UseVisualStyleBackColor = true;
-            // 
             // materialButton_toggle
             // 
             this.materialButton_toggle.AutoSize = false;
@@ -297,21 +280,25 @@
             this.materialButton_toggle.Depth = 0;
             this.materialButton_toggle.HighEmphasis = true;
             this.materialButton_toggle.Icon = null;
-            this.materialButton_toggle.Location = new System.Drawing.Point(14, 18);
+            this.materialButton_toggle.Location = new System.Drawing.Point(14, 9);
             this.materialButton_toggle.Margin = new System.Windows.Forms.Padding(4, 6, 4, 6);
             this.materialButton_toggle.MouseState = MaterialSkin.MouseState.HOVER;
             this.materialButton_toggle.Name = "materialButton_toggle";
             this.materialButton_toggle.NoAccentTextColor = System.Drawing.Color.Empty;
-            this.materialButton_toggle.Size = new System.Drawing.Size(146, 35);
+            this.materialButton_toggle.Size = new System.Drawing.Size(246, 54);
             this.materialButton_toggle.TabIndex = 0;
             this.materialButton_toggle.Text = "Toggle";
             this.materialButton_toggle.Type = MaterialSkin.Controls.MaterialButton.MaterialButtonType.Contained;
             this.materialButton_toggle.UseAccentColor = false;
             this.materialButton_toggle.UseVisualStyleBackColor = true;
+            this.materialButton_toggle.Click += new System.EventHandler(this.materialButton_toggle_Click);
             // 
             // tabPage_settings
             // 
             this.tabPage_settings.BackColor = System.Drawing.Color.White;
+            this.tabPage_settings.Controls.Add(this.materialButton_findOsuLocation);
+            this.tabPage_settings.Controls.Add(this.materialLabel_globalToggleHotkey);
+            this.tabPage_settings.Controls.Add(this.materialLabel_osuPath);
             this.tabPage_settings.Controls.Add(this.materialMultiLineTextBox_submitAcc);
             this.tabPage_settings.Controls.Add(this.materialButton_checkApi);
             this.tabPage_settings.Controls.Add(this.materialMultiLineTextBox_apiInput);
@@ -327,23 +314,47 @@
             this.tabPage_settings.Location = new System.Drawing.Point(4, 39);
             this.tabPage_settings.Name = "tabPage_settings";
             this.tabPage_settings.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage_settings.Size = new System.Drawing.Size(602, 457);
+            this.tabPage_settings.Size = new System.Drawing.Size(539, 413);
             this.tabPage_settings.TabIndex = 1;
             this.tabPage_settings.Text = "Settings";
+            // 
+            // materialLabel_globalToggleHotkey
+            // 
+            this.materialLabel_globalToggleHotkey.AutoSize = true;
+            this.materialLabel_globalToggleHotkey.Depth = 0;
+            this.materialLabel_globalToggleHotkey.Font = new System.Drawing.Font("Roboto", 14F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
+            this.materialLabel_globalToggleHotkey.Location = new System.Drawing.Point(13, 335);
+            this.materialLabel_globalToggleHotkey.MouseState = MaterialSkin.MouseState.HOVER;
+            this.materialLabel_globalToggleHotkey.Name = "materialLabel_globalToggleHotkey";
+            this.materialLabel_globalToggleHotkey.Size = new System.Drawing.Size(179, 19);
+            this.materialLabel_globalToggleHotkey.TabIndex = 21;
+            this.materialLabel_globalToggleHotkey.Text = "Global Toggle Hotkey: F6";
+            // 
+            // materialLabel_osuPath
+            // 
+            this.materialLabel_osuPath.AutoSize = true;
+            this.materialLabel_osuPath.Depth = 0;
+            this.materialLabel_osuPath.Font = new System.Drawing.Font("Roboto", 14F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
+            this.materialLabel_osuPath.Location = new System.Drawing.Point(13, 371);
+            this.materialLabel_osuPath.MouseState = MaterialSkin.MouseState.HOVER;
+            this.materialLabel_osuPath.Name = "materialLabel_osuPath";
+            this.materialLabel_osuPath.Size = new System.Drawing.Size(72, 19);
+            this.materialLabel_osuPath.TabIndex = 20;
+            this.materialLabel_osuPath.Text = "osu! Path:";
             // 
             // materialMultiLineTextBox_submitAcc
             // 
             this.materialMultiLineTextBox_submitAcc.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(255)))), ((int)(((byte)(255)))));
             this.materialMultiLineTextBox_submitAcc.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.materialMultiLineTextBox_submitAcc.Depth = 0;
-            this.materialMultiLineTextBox_submitAcc.Font = new System.Drawing.Font("Microsoft Sans Serif", 14F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
+            this.materialMultiLineTextBox_submitAcc.Font = new System.Drawing.Font("Segoe UI", 14F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
             this.materialMultiLineTextBox_submitAcc.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(222)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))));
-            this.materialMultiLineTextBox_submitAcc.Location = new System.Drawing.Point(177, 194);
+            this.materialMultiLineTextBox_submitAcc.Location = new System.Drawing.Point(181, 189);
             this.materialMultiLineTextBox_submitAcc.MaxLength = 3;
             this.materialMultiLineTextBox_submitAcc.MouseState = MaterialSkin.MouseState.HOVER;
             this.materialMultiLineTextBox_submitAcc.Multiline = false;
             this.materialMultiLineTextBox_submitAcc.Name = "materialMultiLineTextBox_submitAcc";
-            this.materialMultiLineTextBox_submitAcc.Size = new System.Drawing.Size(31, 22);
+            this.materialMultiLineTextBox_submitAcc.Size = new System.Drawing.Size(37, 29);
             this.materialMultiLineTextBox_submitAcc.TabIndex = 19;
             this.materialMultiLineTextBox_submitAcc.Text = "100";
             // 
@@ -387,7 +398,7 @@
             this.materialLabel_apiNeeded.AutoSize = true;
             this.materialLabel_apiNeeded.Depth = 0;
             this.materialLabel_apiNeeded.Font = new System.Drawing.Font("Roboto", 14F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
-            this.materialLabel_apiNeeded.Location = new System.Drawing.Point(6, 233);
+            this.materialLabel_apiNeeded.Location = new System.Drawing.Point(13, 233);
             this.materialLabel_apiNeeded.MouseState = MaterialSkin.MouseState.HOVER;
             this.materialLabel_apiNeeded.Name = "materialLabel_apiNeeded";
             this.materialLabel_apiNeeded.Size = new System.Drawing.Size(143, 19);
@@ -398,7 +409,7 @@
             // 
             this.materialCheckbox_autoDisconnect.AutoSize = true;
             this.materialCheckbox_autoDisconnect.Depth = 0;
-            this.materialCheckbox_autoDisconnect.Location = new System.Drawing.Point(6, 287);
+            this.materialCheckbox_autoDisconnect.Location = new System.Drawing.Point(3, 292);
             this.materialCheckbox_autoDisconnect.Margin = new System.Windows.Forms.Padding(0);
             this.materialCheckbox_autoDisconnect.MouseLocation = new System.Drawing.Point(-1, -1);
             this.materialCheckbox_autoDisconnect.MouseState = MaterialSkin.MouseState.HOVER;
@@ -422,9 +433,9 @@
             this.materialCheckbox_submitIfFC.Name = "materialCheckbox_submitIfFC";
             this.materialCheckbox_submitIfFC.ReadOnly = false;
             this.materialCheckbox_submitIfFC.Ripple = true;
-            this.materialCheckbox_submitIfFC.Size = new System.Drawing.Size(274, 37);
+            this.materialCheckbox_submitIfFC.Size = new System.Drawing.Size(286, 37);
             this.materialCheckbox_submitIfFC.TabIndex = 15;
-            this.materialCheckbox_submitIfFC.Text = "Submit if FC with ≥          Accuracy";
+            this.materialCheckbox_submitIfFC.Text = "Submit if FC with ≥             Accuracy";
             this.materialCheckbox_submitIfFC.UseVisualStyleBackColor = true;
             this.materialCheckbox_submitIfFC.CheckedChanged += new System.EventHandler(this.materialCheckbox_submitIfFC_CheckedChanged);
             // 
@@ -530,12 +541,6 @@
             this.contextMenuStrip_osu.Size = new System.Drawing.Size(113, 48);
             this.contextMenuStrip_osu.Text = "osu!Escape";
             // 
-            // notifyIcon_osuEscape
-            // 
-            this.notifyIcon_osuEscape.Icon = ((System.Drawing.Icon)(resources.GetObject("notifyIcon_osuEscape.Icon")));
-            this.notifyIcon_osuEscape.Text = "osu!Escape";
-            this.notifyIcon_osuEscape.Visible = true;
-            // 
             // statusToolStripMenuItem
             // 
             this.statusToolStripMenuItem.Name = "statusToolStripMenuItem";
@@ -548,18 +553,46 @@
             this.quitToolStripMenuItem.Size = new System.Drawing.Size(112, 22);
             this.quitToolStripMenuItem.Text = "Quit";
             // 
+            // notifyIcon_osuEscape
+            // 
+            this.notifyIcon_osuEscape.Icon = ((System.Drawing.Icon)(resources.GetObject("notifyIcon_osuEscape.Icon")));
+            this.notifyIcon_osuEscape.Text = "osu!Escape";
+            this.notifyIcon_osuEscape.Visible = true;
+            // 
+            // materialButton_findOsuLocation
+            // 
+            this.materialButton_findOsuLocation.AutoSize = false;
+            this.materialButton_findOsuLocation.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.materialButton_findOsuLocation.Density = MaterialSkin.Controls.MaterialButton.MaterialButtonDensity.Default;
+            this.materialButton_findOsuLocation.Depth = 0;
+            this.materialButton_findOsuLocation.HighEmphasis = true;
+            this.materialButton_findOsuLocation.Icon = null;
+            this.materialButton_findOsuLocation.Location = new System.Drawing.Point(339, 9);
+            this.materialButton_findOsuLocation.Margin = new System.Windows.Forms.Padding(4, 6, 4, 6);
+            this.materialButton_findOsuLocation.MouseState = MaterialSkin.MouseState.HOVER;
+            this.materialButton_findOsuLocation.Name = "materialButton_findOsuLocation";
+            this.materialButton_findOsuLocation.NoAccentTextColor = System.Drawing.Color.Empty;
+            this.materialButton_findOsuLocation.Size = new System.Drawing.Size(193, 41);
+            this.materialButton_findOsuLocation.TabIndex = 22;
+            this.materialButton_findOsuLocation.Text = "find osu!.exe location";
+            this.materialButton_findOsuLocation.Type = MaterialSkin.Controls.MaterialButton.MaterialButtonType.Contained;
+            this.materialButton_findOsuLocation.UseAccentColor = false;
+            this.materialButton_findOsuLocation.UseVisualStyleBackColor = true;
+            this.materialButton_findOsuLocation.Click += new System.EventHandler(this.materialButton_findOsuLocation_Click);
+            // 
             // HomeForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.ActiveCaption;
-            this.ClientSize = new System.Drawing.Size(616, 567);
+            this.ClientSize = new System.Drawing.Size(553, 523);
             this.Controls.Add(this.materialTabControl_menu);
             this.DrawerShowIconsWhenHidden = true;
             this.DrawerTabControl = this.materialTabControl_menu;
             this.MaximizeBox = false;
             this.Name = "HomeForm";
             this.Text = "osu! Escape";
+            this.Load += new System.EventHandler(this.OsuEscape_Load);
             this.materialTabControl_menu.ResumeLayout(false);
             this.tabPage_main.ResumeLayout(false);
             this.tabPage_main.PerformLayout();
@@ -578,12 +611,11 @@
         private System.Windows.Forms.ImageList imageList_menu;
         private MaterialSkin.Controls.MaterialButton materialButton_toggle;
         private MaterialSkin.Controls.MaterialLabel materialLabel_MapData;
-        private MaterialSkin.Controls.MaterialButton materialButton_osuPath;
-        private MaterialSkin.Controls.MaterialMultiLineTextBox materialMultiLineTextBox2;
+        private MaterialSkin.Controls.MaterialMultiLineTextBox materialMultiLineTextBox_currentMapTime;
         private MaterialSkin.Controls.MaterialLabel materialLabel_refeshRate;
         private MaterialSkin.Controls.MaterialLabel materialLabel_currentMapTime;
         private MaterialSkin.Controls.MaterialLabel materialLabel_status;
-        private MaterialSkin.Controls.MaterialMultiLineTextBox materialMultiLineTextBox1;
+        private MaterialSkin.Controls.MaterialMultiLineTextBox materialMultiLineTextBox_currentPlayingData;
         private MaterialSkin.Controls.MaterialLabel materialLabel_currentPlayingData;
         private MaterialSkin.Controls.MaterialMultiLineTextBox materialMultiLineTextBox_mapData;
         private MaterialSkin.Controls.MaterialMultiLineTextBox materialMultiLineTextBox_status;
@@ -605,5 +637,8 @@
         private System.Windows.Forms.ToolStripMenuItem statusToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem quitToolStripMenuItem;
         private System.Windows.Forms.NotifyIcon notifyIcon_osuEscape;
+        private MaterialSkin.Controls.MaterialLabel materialLabel_osuPath;
+        private MaterialSkin.Controls.MaterialLabel materialLabel_globalToggleHotkey;
+        private MaterialSkin.Controls.MaterialButton materialButton_findOsuLocation;
     }
 }
