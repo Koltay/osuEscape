@@ -32,12 +32,12 @@
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(HomeForm));
             this.materialTabControl_menu = new MaterialSkin.Controls.MaterialTabControl();
             this.tabPage_main = new System.Windows.Forms.TabPage();
+            this.materialSlider_refreshRate = new MaterialSkin.Controls.MaterialSlider();
             this.groupBox_mapStatus = new System.Windows.Forms.GroupBox();
             this.materialMultiLineTextBox_status = new MaterialSkin.Controls.MaterialMultiLineTextBox();
             this.materialMultiLineTextBox_currentMapTime = new MaterialSkin.Controls.MaterialMultiLineTextBox();
             this.materialLabel_currentMapTime = new MaterialSkin.Controls.MaterialLabel();
             this.materialLabel_status = new MaterialSkin.Controls.MaterialLabel();
-            this.materialSlider_refreshRate = new MaterialSkin.Controls.MaterialSlider();
             this.materialButton_refreshRateReset = new MaterialSkin.Controls.MaterialButton();
             this.materialLabel_submissionStatus = new MaterialSkin.Controls.MaterialLabel();
             this.materialLabel_refeshRate = new MaterialSkin.Controls.MaterialLabel();
@@ -63,7 +63,6 @@
             this.materialCheckbox_minimizeToSystemTray = new MaterialSkin.Controls.MaterialCheckbox();
             this.materialCheckbox_runAtStartup = new MaterialSkin.Controls.MaterialCheckbox();
             this.materialLabel_focus = new MaterialSkin.Controls.MaterialLabel();
-            this.imageList_menu = new System.Windows.Forms.ImageList(this.components);
             this.contextMenuStrip_osu = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.statusToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.quitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -82,7 +81,6 @@
             this.materialTabControl_menu.Controls.Add(this.tabPage_main);
             this.materialTabControl_menu.Controls.Add(this.tabPage_settings);
             this.materialTabControl_menu.Depth = 0;
-            this.materialTabControl_menu.ImageList = this.imageList_menu;
             this.materialTabControl_menu.Location = new System.Drawing.Point(3, 105);
             this.materialTabControl_menu.MouseState = MaterialSkin.MouseState.HOVER;
             this.materialTabControl_menu.Multiline = true;
@@ -95,8 +93,8 @@
             // tabPage_main
             // 
             this.tabPage_main.BackColor = System.Drawing.Color.White;
-            this.tabPage_main.Controls.Add(this.groupBox_mapStatus);
             this.tabPage_main.Controls.Add(this.materialSlider_refreshRate);
+            this.tabPage_main.Controls.Add(this.groupBox_mapStatus);
             this.tabPage_main.Controls.Add(this.materialButton_refreshRateReset);
             this.tabPage_main.Controls.Add(this.materialLabel_submissionStatus);
             this.tabPage_main.Controls.Add(this.materialLabel_refeshRate);
@@ -106,12 +104,26 @@
             this.tabPage_main.Controls.Add(this.materialLabel_MapData);
             this.tabPage_main.Controls.Add(this.materialButton_toggle);
             this.tabPage_main.ImageKey = "Home_32.png";
-            this.tabPage_main.Location = new System.Drawing.Point(4, 42);
+            this.tabPage_main.Location = new System.Drawing.Point(4, 27);
             this.tabPage_main.Name = "tabPage_main";
             this.tabPage_main.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage_main.Size = new System.Drawing.Size(540, 405);
+            this.tabPage_main.Size = new System.Drawing.Size(540, 420);
             this.tabPage_main.TabIndex = 0;
             this.tabPage_main.Text = "Main";
+            // 
+            // materialSlider_refreshRate
+            // 
+            this.materialSlider_refreshRate.Depth = 0;
+            this.materialSlider_refreshRate.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(222)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))));
+            this.materialSlider_refreshRate.Location = new System.Drawing.Point(383, 209);
+            this.materialSlider_refreshRate.MouseState = MaterialSkin.MouseState.HOVER;
+            this.materialSlider_refreshRate.Name = "materialSlider_refreshRate";
+            this.materialSlider_refreshRate.RangeMax = 1000;
+            this.materialSlider_refreshRate.RangeMin = 10;
+            this.materialSlider_refreshRate.Size = new System.Drawing.Size(146, 40);
+            this.materialSlider_refreshRate.TabIndex = 14;
+            this.materialSlider_refreshRate.Text = "";
+            this.materialSlider_refreshRate.Click += new System.EventHandler(this.materialSlider_refreshRate_Click);
             // 
             // groupBox_mapStatus
             // 
@@ -177,19 +189,6 @@
             this.materialLabel_status.TabIndex = 7;
             this.materialLabel_status.Text = "Status";
             // 
-            // materialSlider_refreshRate
-            // 
-            this.materialSlider_refreshRate.Depth = 0;
-            this.materialSlider_refreshRate.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(222)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))));
-            this.materialSlider_refreshRate.Location = new System.Drawing.Point(381, 209);
-            this.materialSlider_refreshRate.MouseState = MaterialSkin.MouseState.HOVER;
-            this.materialSlider_refreshRate.Name = "materialSlider_refreshRate";
-            this.materialSlider_refreshRate.RangeMax = 1000;
-            this.materialSlider_refreshRate.Size = new System.Drawing.Size(146, 40);
-            this.materialSlider_refreshRate.TabIndex = 14;
-            this.materialSlider_refreshRate.Text = "";
-            this.materialSlider_refreshRate.Click += new System.EventHandler(this.materialSlider_refreshRate_Click);
-            // 
             // materialButton_refreshRateReset
             // 
             this.materialButton_refreshRateReset.AutoSize = false;
@@ -205,6 +204,7 @@
             this.materialButton_refreshRateReset.NoAccentTextColor = System.Drawing.Color.Empty;
             this.materialButton_refreshRateReset.Size = new System.Drawing.Size(146, 35);
             this.materialButton_refreshRateReset.TabIndex = 13;
+            this.materialButton_refreshRateReset.TabStop = false;
             this.materialButton_refreshRateReset.Text = "Reset";
             this.materialButton_refreshRateReset.Type = MaterialSkin.Controls.MaterialButton.MaterialButtonType.Contained;
             this.materialButton_refreshRateReset.UseAccentColor = false;
@@ -219,9 +219,9 @@
             this.materialLabel_submissionStatus.Location = new System.Drawing.Point(14, 384);
             this.materialLabel_submissionStatus.MouseState = MaterialSkin.MouseState.HOVER;
             this.materialLabel_submissionStatus.Name = "materialLabel_submissionStatus";
-            this.materialLabel_submissionStatus.Size = new System.Drawing.Size(400, 19);
+            this.materialLabel_submissionStatus.Size = new System.Drawing.Size(143, 19);
             this.materialLabel_submissionStatus.TabIndex = 12;
-            this.materialLabel_submissionStatus.Text = "Submission Status: FAILED: Did not upload recent score.";
+            this.materialLabel_submissionStatus.Text = "Submission Status: ";
             // 
             // materialLabel_refeshRate
             // 
@@ -303,6 +303,7 @@
             this.materialButton_toggle.NoAccentTextColor = System.Drawing.Color.Empty;
             this.materialButton_toggle.Size = new System.Drawing.Size(246, 54);
             this.materialButton_toggle.TabIndex = 0;
+            this.materialButton_toggle.TabStop = false;
             this.materialButton_toggle.Text = "Toggle";
             this.materialButton_toggle.Type = MaterialSkin.Controls.MaterialButton.MaterialButtonType.Contained;
             this.materialButton_toggle.UseAccentColor = false;
@@ -329,10 +330,10 @@
             this.tabPage_settings.Controls.Add(this.materialCheckbox_runAtStartup);
             this.tabPage_settings.Controls.Add(this.materialLabel_focus);
             this.tabPage_settings.ImageKey = "Setting_32.png";
-            this.tabPage_settings.Location = new System.Drawing.Point(4, 42);
+            this.tabPage_settings.Location = new System.Drawing.Point(4, 27);
             this.tabPage_settings.Name = "tabPage_settings";
             this.tabPage_settings.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage_settings.Size = new System.Drawing.Size(540, 405);
+            this.tabPage_settings.Size = new System.Drawing.Size(540, 420);
             this.tabPage_settings.TabIndex = 1;
             this.tabPage_settings.Text = "Settings";
             // 
@@ -351,7 +352,8 @@
             this.materialButton_changeTheme.NoAccentTextColor = System.Drawing.Color.Empty;
             this.materialButton_changeTheme.Size = new System.Drawing.Size(142, 41);
             this.materialButton_changeTheme.TabIndex = 25;
-            this.materialButton_changeTheme.Text = "Light Mode";
+            this.materialButton_changeTheme.TabStop = false;
+            this.materialButton_changeTheme.Text = "Mode";
             this.materialButton_changeTheme.Type = MaterialSkin.Controls.MaterialButton.MaterialButtonType.Contained;
             this.materialButton_changeTheme.UseAccentColor = false;
             this.materialButton_changeTheme.UseVisualStyleBackColor = true;
@@ -385,7 +387,6 @@
             this.materialTextBox_apiInput.TrailingIcon = null;
             this.materialTextBox_apiInput.UseSystemPasswordChar = true;
             this.materialTextBox_apiInput.UseTallSize = false;
-            this.materialTextBox_apiInput.Click += new System.EventHandler(this.materialTextBox21_Click);
             // 
             // materialButton_findOsuLocation
             // 
@@ -402,6 +403,7 @@
             this.materialButton_findOsuLocation.NoAccentTextColor = System.Drawing.Color.Empty;
             this.materialButton_findOsuLocation.Size = new System.Drawing.Size(193, 41);
             this.materialButton_findOsuLocation.TabIndex = 22;
+            this.materialButton_findOsuLocation.TabStop = false;
             this.materialButton_findOsuLocation.Text = "find osu!.exe location";
             this.materialButton_findOsuLocation.Type = MaterialSkin.Controls.MaterialButton.MaterialButtonType.Contained;
             this.materialButton_findOsuLocation.UseAccentColor = false;
@@ -447,6 +449,7 @@
             this.materialMultiLineTextBox_submitAcc.Size = new System.Drawing.Size(37, 29);
             this.materialMultiLineTextBox_submitAcc.TabIndex = 19;
             this.materialMultiLineTextBox_submitAcc.Text = "100";
+            this.materialMultiLineTextBox_submitAcc.TextChanged += new System.EventHandler(this.materialMultiLineTextBox_submitAcc_TextChanged);
             // 
             // materialButton_checkApi
             // 
@@ -463,6 +466,7 @@
             this.materialButton_checkApi.NoAccentTextColor = System.Drawing.Color.Empty;
             this.materialButton_checkApi.Size = new System.Drawing.Size(56, 34);
             this.materialButton_checkApi.TabIndex = 18;
+            this.materialButton_checkApi.TabStop = false;
             this.materialButton_checkApi.Text = "Check";
             this.materialButton_checkApi.Type = MaterialSkin.Controls.MaterialButton.MaterialButtonType.Contained;
             this.materialButton_checkApi.UseAccentColor = false;
@@ -494,6 +498,7 @@
             this.materialCheckbox_autoDisconnect.Ripple = true;
             this.materialCheckbox_autoDisconnect.Size = new System.Drawing.Size(304, 37);
             this.materialCheckbox_autoDisconnect.TabIndex = 16;
+            this.materialCheckbox_autoDisconnect.TabStop = false;
             this.materialCheckbox_autoDisconnect.Text = "Automatically disconnect after upload";
             this.materialCheckbox_autoDisconnect.UseVisualStyleBackColor = true;
             this.materialCheckbox_autoDisconnect.CheckedChanged += new System.EventHandler(this.materialCheckbox_autoDisconnect_CheckedChanged);
@@ -511,6 +516,7 @@
             this.materialCheckbox_submitIfFC.Ripple = true;
             this.materialCheckbox_submitIfFC.Size = new System.Drawing.Size(286, 37);
             this.materialCheckbox_submitIfFC.TabIndex = 15;
+            this.materialCheckbox_submitIfFC.TabStop = false;
             this.materialCheckbox_submitIfFC.Text = "Submit if FC with ≥             Accuracy";
             this.materialCheckbox_submitIfFC.UseVisualStyleBackColor = true;
             this.materialCheckbox_submitIfFC.CheckedChanged += new System.EventHandler(this.materialCheckbox_submitIfFC_CheckedChanged);
@@ -528,6 +534,7 @@
             this.materialCheckbox_hideData.Ripple = true;
             this.materialCheckbox_hideData.Size = new System.Drawing.Size(105, 37);
             this.materialCheckbox_hideData.TabIndex = 14;
+            this.materialCheckbox_hideData.TabStop = false;
             this.materialCheckbox_hideData.Text = "Hide Data";
             this.materialCheckbox_hideData.UseVisualStyleBackColor = true;
             this.materialCheckbox_hideData.CheckedChanged += new System.EventHandler(this.materialCheckbox_hideData_CheckedChanged);
@@ -545,6 +552,7 @@
             this.materialCheckbox_topMost.Ripple = true;
             this.materialCheckbox_topMost.Size = new System.Drawing.Size(136, 37);
             this.materialCheckbox_topMost.TabIndex = 13;
+            this.materialCheckbox_topMost.TabStop = false;
             this.materialCheckbox_topMost.Text = "Always at Top";
             this.materialCheckbox_topMost.UseVisualStyleBackColor = true;
             this.materialCheckbox_topMost.CheckedChanged += new System.EventHandler(this.materialCheckbox_topMost_CheckedChanged);
@@ -562,6 +570,7 @@
             this.materialCheckbox_toggleWithSound.Ripple = true;
             this.materialCheckbox_toggleWithSound.Size = new System.Drawing.Size(168, 37);
             this.materialCheckbox_toggleWithSound.TabIndex = 12;
+            this.materialCheckbox_toggleWithSound.TabStop = false;
             this.materialCheckbox_toggleWithSound.Text = "Toggle with Sound";
             this.materialCheckbox_toggleWithSound.UseVisualStyleBackColor = true;
             this.materialCheckbox_toggleWithSound.CheckedChanged += new System.EventHandler(this.materialCheckbox_toggleWithSound_CheckedChanged);
@@ -579,6 +588,7 @@
             this.materialCheckbox_minimizeToSystemTray.Ripple = true;
             this.materialCheckbox_minimizeToSystemTray.Size = new System.Drawing.Size(211, 37);
             this.materialCheckbox_minimizeToSystemTray.TabIndex = 10;
+            this.materialCheckbox_minimizeToSystemTray.TabStop = false;
             this.materialCheckbox_minimizeToSystemTray.Text = "Minimize to System Tray";
             this.materialCheckbox_minimizeToSystemTray.UseVisualStyleBackColor = true;
             this.materialCheckbox_minimizeToSystemTray.CheckedChanged += new System.EventHandler(this.materialCheckbox_minimizeToSystemTray_CheckedChanged);
@@ -596,6 +606,7 @@
             this.materialCheckbox_runAtStartup.Ripple = true;
             this.materialCheckbox_runAtStartup.Size = new System.Drawing.Size(137, 37);
             this.materialCheckbox_runAtStartup.TabIndex = 11;
+            this.materialCheckbox_runAtStartup.TabStop = false;
             this.materialCheckbox_runAtStartup.Text = "Run at Startup";
             this.materialCheckbox_runAtStartup.UseVisualStyleBackColor = true;
             this.materialCheckbox_runAtStartup.CheckedChanged += new System.EventHandler(this.materialCheckbox_runAtStartup_CheckedChanged);
@@ -611,14 +622,6 @@
             this.materialLabel_focus.Size = new System.Drawing.Size(103, 19);
             this.materialLabel_focus.TabIndex = 24;
             this.materialLabel_focus.Text = "label for focus";
-            // 
-            // imageList_menu
-            // 
-            this.imageList_menu.ColorDepth = System.Windows.Forms.ColorDepth.Depth32Bit;
-            this.imageList_menu.ImageStream = ((System.Windows.Forms.ImageListStreamer)(resources.GetObject("imageList_menu.ImageStream")));
-            this.imageList_menu.TransparentColor = System.Drawing.Color.Transparent;
-            this.imageList_menu.Images.SetKeyName(0, "Home_32.png");
-            this.imageList_menu.Images.SetKeyName(1, "Setting_32.png");
             // 
             // contextMenuStrip_osu
             // 
@@ -657,6 +660,7 @@
             this.materialTabSelector_main.Name = "materialTabSelector_main";
             this.materialTabSelector_main.Size = new System.Drawing.Size(553, 37);
             this.materialTabSelector_main.TabIndex = 1;
+            this.materialTabSelector_main.TabStop = false;
             this.materialTabSelector_main.Text = "materialTabSelector_main";
             // 
             // HomeForm
@@ -672,6 +676,7 @@
             this.Name = "HomeForm";
             this.Text = "osu! Escape";
             this.Load += new System.EventHandler(this.OsuEscape_Load);
+            this.Resize += new System.EventHandler(this.HomeForm_Resize);
             this.materialTabControl_menu.ResumeLayout(false);
             this.tabPage_main.ResumeLayout(false);
             this.tabPage_main.PerformLayout();
@@ -689,7 +694,6 @@
         private MaterialSkin.Controls.MaterialTabControl materialTabControl_menu;
         private System.Windows.Forms.TabPage tabPage_main;
         private System.Windows.Forms.TabPage tabPage_settings;
-        private System.Windows.Forms.ImageList imageList_menu;
         private MaterialSkin.Controls.MaterialButton materialButton_toggle;
         private MaterialSkin.Controls.MaterialLabel materialLabel_MapData;
         private MaterialSkin.Controls.MaterialMultiLineTextBox materialMultiLineTextBox_currentMapTime;

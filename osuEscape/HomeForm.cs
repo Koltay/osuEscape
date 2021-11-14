@@ -65,7 +65,6 @@ namespace osuEscape
             materialSkinManager = MaterialSkin.MaterialSkinManager.Instance;
             materialSkinManager.EnforceBackcolorOnAllComponents = true;
             materialSkinManager.AddFormToManage(this);
-            materialSkinManager.Theme = MaterialSkin.MaterialSkinManager.Themes.LIGHT;
             materialSkinManager.ColorScheme = new MaterialSkin.ColorScheme
                 (MaterialSkin.Primary.Indigo500, 
                 MaterialSkin.Primary.Indigo700,
@@ -77,7 +76,6 @@ namespace osuEscape
             _sreader = StructuredOsuMemoryReader.Instance.GetInstanceForWindowTitleHint(osuWindowTitleHint);
 
             Closing += OnClosing;
-            //numericUpDown_readDelay.ValueChanged += NumericUpDownReadDelayOnValueChanged;
 
             // check if osu!Escape is already opened
             if (Process.GetProcessesByName("osuEscape").Length > 1)
@@ -87,15 +85,15 @@ namespace osuEscape
 
 
             // for ui resizing
+            // editor pixels offset (50px)
+            this.Size = new Size (this.Size.Width, this.Size.Height - 50);
             FormSize_init = this.Size;            
             labelSubmissionStatus_Location_init = materialLabel_submissionStatus.Location;
             groupBoxMapStatus_Location_init = groupBox_mapStatus.Location;
             button_Toggle_Size_init = materialButton_toggle.Size;
 
-            //fixing ui size at start
-            //HideData(Properties.Settings.Default.isHideData);
-
-
+            // change ui size according to user setting on isHideData
+            HideData();
 
             UIUserSettingsUpdate();
         }       
@@ -148,12 +146,11 @@ namespace osuEscape
             materialCheckbox_hideData.Checked = Properties.Settings.Default.isHideData;
             materialCheckbox_autoDisconnect.Checked = Properties.Settings.Default.isAutoDisconnect;
 
-            //numericUpDown_readDelay.Value = Properties.Settings.Default.refreshRate;
-
             materialTextBox_apiInput.Text = Properties.Settings.Default.userApiKey;
             materialMultiLineTextBox_submitAcc.Text = Properties.Settings.Default.submitAcc.ToString();
-            materialButton_changeTheme.Text = $"{Properties.Settings.Default.Theme} Mode";
-            materialSkinManager.Theme = (Properties.Settings.Default.Theme == "Light" ? MaterialSkin.MaterialSkinManager.Themes.LIGHT : MaterialSkin.MaterialSkinManager.Themes.DARK);
+
+            materialSkinManager.Theme = (MaterialSkinManager.Themes) Properties.Settings.Default.Theme;
+            materialButton_changeTheme.Text = (Properties.Settings.Default.Theme == 0 ? "Dark Mode" : "Light Mode");
         }
 
         private void OsuEscape_Load(object sender, EventArgs e)
@@ -546,7 +543,6 @@ namespace osuEscape
 
         #endregion
 
-
         #region Find osu! location
        
 
@@ -588,15 +584,8 @@ namespace osuEscape
 
         #endregion
 
-        #region CheckBox/ numericUpDown/ minor buttons Settings
-        // Include:
-        // - startup
-        // - toggle with sound
-        // - minimize to system tray
-        // - top most
-        // - submit if fc
-        // - hide Data
-        // - auto disconnect
+        #region CheckBoxes
+
         #region Run at Startup
         public static void SetRunAtStartup(bool enabled)
         {
@@ -620,11 +609,14 @@ namespace osuEscape
         }
         #endregion
 
+        #region System Tray
         private void ToggleSystemTray(bool enabled)
         {
             notifyIcon_osuEscape.Visible = enabled;
             this.ShowInTaskbar = !enabled;
         }
+
+        #endregion
 
         #region ContextMenuStrip
         private void ContextMenuStripUpdate()
@@ -645,26 +637,49 @@ namespace osuEscape
 
         #endregion
 
+
+
+        private void materialCheckbox_autoDisconnect_CheckedChanged(object sender, EventArgs e)
+        {
+            Properties.Settings.Default.isAutoDisconnect = materialCheckbox_autoDisconnect.Checked;
+        }
+
+        private void materialCheckbox_submitIfFC_CheckedChanged(object sender, EventArgs e)
+        {
+            Properties.Settings.Default.isSubmitIfFC = materialCheckbox_submitIfFC.Checked;
+        }
+
+        private void materialCheckbox_hideData_CheckedChanged(object sender, EventArgs e)
+        {
+            Properties.Settings.Default.isHideData = materialCheckbox_hideData.Checked;
+        }
+
+        private void materialCheckbox_topMost_CheckedChanged(object sender, EventArgs e)
+        {
+            Properties.Settings.Default.isTopMost = materialCheckbox_topMost.Checked;
+            this.TopMost = materialCheckbox_topMost.Checked;
+        }
+
+        private void materialCheckbox_toggleWithSound_CheckedChanged(object sender, EventArgs e)
+        {
+            Properties.Settings.Default.isToggleSound = materialCheckbox_toggleWithSound.Checked;
+        }
+
+        private void materialCheckbox_minimizeToSystemTray_CheckedChanged(object sender, EventArgs e)
+        {
+            Properties.Settings.Default.isSystemTray = materialCheckbox_minimizeToSystemTray.Checked;
+        }
+
+        private void materialCheckbox_runAtStartup_CheckedChanged(object sender, EventArgs e)
+        {
+            Properties.Settings.Default.isStartup = materialCheckbox_runAtStartup.Checked;
+
+            SetRunAtStartup(materialCheckbox_runAtStartup.Checked);
+        }
+
         #endregion
 
-
-        #region numericUpDown
-
-        //private void NumericUpDownReadDelayOnValueChanged(object sender, EventArgs eventArgs)
-        //{
-        //    if (int.TryParse(numericUpDown_readDelay.Value.ToString(CultureInfo.InvariantCulture), out var value))
-        //    {
-        //        _readDelay = value;
-        //    }
-        //    else
-        //    {
-        //        numericUpDown_readDelay.Value = 33;
-        //    }
-        //}
-
-        #endregion
-
-        #region minor buttons
+        #region Buttons
 
         private void materialButton_ResetReadTimeMinMax_Click(object sender, EventArgs e)
         {
@@ -675,9 +690,55 @@ namespace osuEscape
             }
         }
 
-        #endregion
+        private void materialButton_checkApi_Click(object sender, EventArgs e)
+        {
+            //***verify api not added
 
-        
+            Properties.Settings.Default.userApiKey = materialTextBox_apiInput.Text;
+        }
+
+        private void materialButton_findOsuLocation_Click(object sender, EventArgs e)
+        {
+            FindOsuLocation();
+        }
+
+        private void materialButton_changeTheme_Click(object sender, EventArgs e)
+        {
+            UIThemeToggle();
+        }
+
+        private void UIThemeToggle()
+        {
+            //light mode toggles to dark mode
+            if (Properties.Settings.Default.Theme == 0)
+            {
+                materialSkinManager.Theme = MaterialSkin.MaterialSkinManager.Themes.DARK;
+                Properties.Settings.Default.Theme = 1;
+
+                materialButton_changeTheme.Text = "Light Mode";
+            }
+            else
+            {
+                materialSkinManager.Theme = MaterialSkin.MaterialSkinManager.Themes.LIGHT;
+                Properties.Settings.Default.Theme = 0;
+
+                materialButton_changeTheme.Text = "Dark Mode";
+            }
+        }
+        private void materialButton_toggle_Click(object sender, EventArgs e)
+        {
+            if (Properties.Settings.Default.osuLocation == "")
+            {
+                MessageBox.Show("Invalid Location");
+            }
+            else
+            {
+                ToggleFirewall();
+            }
+        }
+
+
+        #endregion
 
         #region FormClose
         private void Application_ApplicationExit(object sender, EventArgs e)
@@ -685,9 +746,6 @@ namespace osuEscape
             // save the last position of the application
             if (this.WindowState != FormWindowState.Minimized)
                 Properties.Settings.Default.appLocation = this.Location;
-
-            //deciding slider or numericUpDown
-            //Properties.Settings.Default.refreshRate = Convert.ToInt32(numericUpDown_readDelay.Value);
 
             Properties.Settings.Default.Save();
         }
@@ -782,14 +840,8 @@ namespace osuEscape
 
         #endregion
 
-        private void Button_checkApiKey_Click(object sender, EventArgs e)
-        {
-            //***verify api not added
 
-            Properties.Settings.Default.userApiKey = materialTextBox_apiInput.Text;
-        }
-
-        private void TextBox_submitAcc_TextChanged(object sender, EventArgs e)
+        private void materialMultiLineTextBox_submitAcc_TextChanged(object sender, EventArgs e)
         {
             if (materialMultiLineTextBox_submitAcc.Text.Equals("")) { materialMultiLineTextBox_submitAcc.Text = "0"; }
             if (Convert.ToInt32(materialMultiLineTextBox_submitAcc.Text) > 100)
@@ -809,131 +861,16 @@ namespace osuEscape
         {
             materialLabel_submissionStatus.Text = "Submission Status: " + str;
         }
-
-        private void MainForm_Resize(object sender, EventArgs e)
-        {
-            if (materialCheckbox_minimizeToSystemTray.Checked && this.WindowState == FormWindowState.Minimized)
-            {
-                ToggleSystemTray(materialCheckbox_minimizeToSystemTray.Checked);
-                ContextMenuStripUpdate();
-            }
-
-            GlobalHotkeyRegister();
-        }
-
-        private void materialButton_osuPath_Click(object sender, EventArgs e)
-        {
-            FindOsuLocation();
-        }
-
-        private void materialButton_toggle_Click(object sender, EventArgs e)
-        {
-            if (Properties.Settings.Default.osuLocation == "")
-            {
-                MessageBox.Show("Invalid Location");
-            }
-            else
-            {
-                ToggleFirewall();
-            }
-        }
-
+         
         private void materialSlider_refreshRate_Click(object sender, EventArgs e)
         {
             _readDelay = materialSlider_refreshRate.Value;
         }
-
-        private void materialCheckbox_autoDisconnect_CheckedChanged(object sender, EventArgs e)
-        {
-            Properties.Settings.Default.isAutoDisconnect = materialCheckbox_autoDisconnect.Checked;
-        }
-
-        private void materialCheckbox_submitIfFC_CheckedChanged(object sender, EventArgs e)
-        {
-            Properties.Settings.Default.isSubmitIfFC = materialCheckbox_submitIfFC.Checked;
-        }
-
-        private void materialCheckbox_hideData_CheckedChanged(object sender, EventArgs e)
-        {
-            Properties.Settings.Default.isHideData = materialCheckbox_hideData.Checked;
-        }
-
-        private void materialCheckbox_topMost_CheckedChanged(object sender, EventArgs e)
-        {
-            Properties.Settings.Default.isTopMost = materialCheckbox_topMost.Checked;
-            this.TopMost = materialCheckbox_topMost.Checked;
-        }
-
-        private void materialCheckbox_toggleWithSound_CheckedChanged(object sender, EventArgs e)
-        {
-            Properties.Settings.Default.isToggleSound = materialCheckbox_toggleWithSound.Checked;
-        }
-
-        private void materialCheckbox_minimizeToSystemTray_CheckedChanged(object sender, EventArgs e)
-        {
-            Properties.Settings.Default.isSystemTray = materialCheckbox_minimizeToSystemTray.Checked;
-        }
-
-        private void materialCheckbox_runAtStartup_CheckedChanged(object sender, EventArgs e)
-        {
-            Properties.Settings.Default.isStartup = materialCheckbox_runAtStartup.Checked;
-
-            SetRunAtStartup(materialCheckbox_runAtStartup.Checked);
-        }
-
-        private void materialButton_checkApi_Click(object sender, EventArgs e)
-        {
-            Properties.Settings.Default.userApiKey = materialTextBox_apiInput.Text;
-        }
-
-        private void materialButton_findOsuLocation_Click(object sender, EventArgs e)
-        {
-            FindOsuLocation();
-        }
-
-        private void materialMultiLineTextBox_apiInput_TextChanged(object sender, EventArgs e)
-        {
-
-        }
-
-        private void materialTextBox21_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void materialButton_changeTheme_Click(object sender, EventArgs e)
-        {
-            if (Properties.Settings.Default.Theme == "Light")
-            {
-                materialSkinManager.Theme = MaterialSkin.MaterialSkinManager.Themes.DARK;
-                Properties.Settings.Default.Theme = "Dark";
-                materialButton_changeTheme.Text = "Dark Mode";
-            }
-            else
-            {
-                materialSkinManager.Theme = MaterialSkin.MaterialSkinManager.Themes.LIGHT;
-                Properties.Settings.Default.Theme = "Light";
-                materialButton_changeTheme.Text = "Light Mode";
-            }
-        }
-
         private void materialTabControl_menu_Selected(object sender, TabControlEventArgs e)
         {
             if (materialTabControl_menu.SelectedTab == tabPage_main)
             {
-                if (Properties.Settings.Default.isHideData)
-                {
-                    // hide data, smaller ui
-                    this.MinimumSize = new Size(500, 275);
-                    this.Size = this.MinimumSize;
-                    this.MaximumSize = this.Size;
-
-                    materialLabel_submissionStatus.Location = new Point(14, 140);
-                    groupBox_mapStatus.Location = new Point(330, 5);
-                    materialButton_toggle.Size = new Size(300, 120);
-                    materialLabel_MapData.Visible = false;
-                    materialMultiLineTextBox_mapData.Visible = false;
-                }
+                HideData();
             }
             else
             {
@@ -950,6 +887,34 @@ namespace osuEscape
             }
 
             materialLabel_focus.Focus();
+        }
+
+        private void HideData()
+        {
+            if (Properties.Settings.Default.isHideData)
+            {
+                // hide data, smaller ui
+                this.MinimumSize = new Size(500, 275);
+                this.Size = this.MinimumSize;
+                this.MaximumSize = this.Size;
+
+                materialLabel_submissionStatus.Location = new Point(14, 140);
+                groupBox_mapStatus.Location = new Point(330, 5);
+                materialButton_toggle.Size = new Size(300, 120);
+                materialLabel_MapData.Visible = false;
+                materialMultiLineTextBox_mapData.Visible = false;
+            }
+        }
+
+        private void HomeForm_Resize(object sender, EventArgs e)
+        {
+            if (materialCheckbox_minimizeToSystemTray.Checked && this.WindowState == FormWindowState.Minimized)
+            {
+                ToggleSystemTray(materialCheckbox_minimizeToSystemTray.Checked);
+                ContextMenuStripUpdate();
+            }
+
+            GlobalHotkeyRegister();
         }
     }
 }
