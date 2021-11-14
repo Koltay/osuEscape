@@ -672,6 +672,7 @@
             this.Controls.Add(this.materialTabSelector_main);
             this.Controls.Add(this.materialTabControl_menu);
             this.DrawerShowIconsWhenHidden = true;
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MaximizeBox = false;
             this.Name = "HomeForm";
             this.Text = "osu! Escape";

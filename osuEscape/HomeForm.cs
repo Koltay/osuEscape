@@ -55,6 +55,10 @@ namespace osuEscape
         private Size button_Toggle_Size_init;
 
         readonly MaterialSkinManager materialSkinManager;
+
+        //Startup registry key and value
+        private static readonly string StartupKey = "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run";
+        private static readonly string StartupValue = System.Reflection.Assembly.GetExecutingAssembly().GetName().Name;
         public HomeForm(string osuWindowTitleHint)
         {
             _osuWindowTitleHint = osuWindowTitleHint;
@@ -346,7 +350,6 @@ namespace osuEscape
                     if (baseAddresses.GeneralData.OsuStatus == OsuMemoryStatus.Playing)
                     {
                         _sreader.TryRead(baseAddresses.Player);
-                        //TODO: flag needed for single/multi player detection (should be read once per play in singleplayer)
                         _sreader.TryRead(baseAddresses.LeaderBoard);
                         _sreader.TryRead(baseAddresses.KeyOverlay);
 
@@ -356,7 +359,7 @@ namespace osuEscape
                             _sreader.TryReadProperty(baseAddresses.Player, nameof(Player.Mods), out var dummyResult);
                         }
 
-                        // only read the audio offset of this map if it is a new loaded beatmap
+                        // only read the audio offset if it is not the previous beatmap
                         if (lastNoteOffset == -1)
                         {
                             string beatmapLocation = $"{Properties.Settings.Default.osuPath}\\Songs\\{baseAddresses.Beatmap.FolderName}\\{baseAddresses.Beatmap.OsuFileName}";
@@ -450,7 +453,7 @@ namespace osuEscape
                     }
                     catch (ObjectDisposedException)
                     {
-                        //return;
+                        
                     }
 
                     _sreader.ReadTimes.Clear();
@@ -470,8 +473,7 @@ namespace osuEscape
 
             AllowConnection(isAllowConnection);
 
-            if (materialCheckbox_toggleWithSound.Checked)
-                System.Media.SystemSounds.Asterisk.Play();
+            ToggleSound(Properties.Settings.Default.isToggleSound);                
         }
 
         private void AllowConnection(bool isAllow)
@@ -587,24 +589,20 @@ namespace osuEscape
         #region CheckBoxes
 
         #region Run at Startup
-        public static void SetRunAtStartup(bool enabled)
+        public void StartupSetUp(bool enabled)
         {
             try
             {
-                string path = System.Reflection.Assembly.GetExecutingAssembly().Location;
-
-                RegistryKey rk = Registry.CurrentUser.OpenSubKey("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run", true);
-
+                RegistryKey key = Registry.CurrentUser.OpenSubKey(StartupKey, true);
                 if (enabled)
-                    rk.SetValue("osu!Escape", "\"" + path + "\" --hide");
+                    key.SetValue(StartupValue, Application.ExecutablePath.ToString());
                 else
-                    rk.DeleteValue("osu!Escape", false);
-
-                rk.Close();
+                    key.DeleteValue(StartupValue, false);
+                key.Close();
             }
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message);
+                ShowMessageBox(ex.Message);
             }
         }
         #endregion
@@ -623,7 +621,7 @@ namespace osuEscape
         {
             notifyIcon_osuEscape.ContextMenuStrip = contextMenuStrip_osu;
 
-            //Status Update
+            // status Update
             contextMenuStrip_osu.Items[0].Text = "Status: " + materialButton_toggle.Text;
 
             contextMenuStrip_osu.Items[1].Click += new EventHandler(Item_quit_Click);
@@ -674,7 +672,7 @@ namespace osuEscape
         {
             Properties.Settings.Default.isStartup = materialCheckbox_runAtStartup.Checked;
 
-            SetRunAtStartup(materialCheckbox_runAtStartup.Checked);
+            StartupSetUp(materialCheckbox_runAtStartup.Checked);
         }
 
         #endregion
@@ -709,7 +707,7 @@ namespace osuEscape
 
         private void UIThemeToggle()
         {
-            //light mode toggles to dark mode
+            // light mode toggles to dark mode
             if (Properties.Settings.Default.Theme == 0)
             {
                 materialSkinManager.Theme = MaterialSkin.MaterialSkinManager.Themes.DARK;
@@ -729,7 +727,7 @@ namespace osuEscape
         {
             if (Properties.Settings.Default.osuLocation == "")
             {
-                MessageBox.Show("Invalid Location");
+                ShowMessageBox("Invalid Location");
             }
             else
             {
@@ -915,6 +913,19 @@ namespace osuEscape
             }
 
             GlobalHotkeyRegister();
+        }
+
+        private void ShowMessageBox(string message)
+        {
+            ToggleSound(Properties.Settings.Default.isToggleSound);          
+
+            MessageBox.Show(message);
+        }
+
+        private static void ToggleSound(bool enabled)
+        {
+            if (enabled)
+                System.Media.SystemSounds.Asterisk.Play();
         }
     }
 }
