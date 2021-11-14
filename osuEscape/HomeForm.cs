@@ -927,5 +927,14 @@ namespace osuEscape
             if (enabled)
                 System.Media.SystemSounds.Asterisk.Play();
         }
+
+        private void notifyIcon_osuEscape_MouseDoubleClick(object sender, MouseEventArgs e)
+        {
+            this.WindowState = FormWindowState.Normal;
+            ToggleSystemTray(false);
+
+            // Re-enable Hotkey
+            GlobalHotkeyRegister();
+        }
     }
 }
