@@ -1009,23 +1009,6 @@ namespace osuEscape
                 this.MinimumSize = originalFormSize;
             }
         }
-
-        private void materialButton_openSettings_Click(object sender, EventArgs e)
-        {
-            SettingForm settingForm = new SettingForm();   
-            
-            settingForm.TopMost = true;
-
-            settingForm.StartPosition = FormStartPosition.Manual;
-
-            settingForm.Location = this.Location;
-
-            this.Hide();
-
-            settingForm.ShowDialog();
-
-            this.Show();
-        }  
     }
 
     #region internal struct PatternsToRead

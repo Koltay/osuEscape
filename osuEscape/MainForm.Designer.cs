@@ -522,7 +522,6 @@
             this.materialButton_openSettings.Type = MaterialSkin.Controls.MaterialButton.MaterialButtonType.Contained;
             this.materialButton_openSettings.UseAccentColor = false;
             this.materialButton_openSettings.UseVisualStyleBackColor = true;
-            this.materialButton_openSettings.Click += new System.EventHandler(this.materialButton_openSettings_Click);
             // 
             // MainForm
             // 

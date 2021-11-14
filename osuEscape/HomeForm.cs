@@ -1,6 +1,5 @@
 ﻿using MaterialSkin;
 using MaterialSkin.Controls;
-
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -14,7 +13,6 @@ using OsuMemoryDataProvider;
 using OsuMemoryDataProvider.OsuMemoryModels;
 using OsuMemoryDataProvider.OsuMemoryModels.Direct;
 using System.Diagnostics;
-using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
@@ -48,13 +46,19 @@ namespace osuEscape
 
         public static List<int> recentUploadScoreList = new List<int>();
 
-        private Size originalFormSize;
-        private Point originalGroupBoxLocation;
-        private Point originalLabelSSLocation;
+        private Size FormSize_init;
+
+        private Point labelSubmissionStatus_Location_init;
+
+        private Point groupBoxMapStatus_Location_init;
+
+        private Size button_Toggle_Size_init;
 
         readonly MaterialSkinManager materialSkinManager;
         public HomeForm(string osuWindowTitleHint)
         {
+            _osuWindowTitleHint = osuWindowTitleHint;
+
             InitializeComponent();
 
             //Initialize material skin manager
@@ -63,7 +67,11 @@ namespace osuEscape
             materialSkinManager.AddFormToManage(this);
             materialSkinManager.Theme = MaterialSkin.MaterialSkinManager.Themes.LIGHT;
             materialSkinManager.ColorScheme = new MaterialSkin.ColorScheme
-                (MaterialSkin.Primary.Indigo500, MaterialSkin.Primary.Indigo700, MaterialSkin.Primary.Indigo100, MaterialSkin.Accent.Pink200, MaterialSkin.TextShade.WHITE);
+                (MaterialSkin.Primary.Indigo500, 
+                MaterialSkin.Primary.Indigo700,
+                MaterialSkin.Primary.Indigo100, 
+                MaterialSkin.Accent.LightBlue100, 
+                MaterialSkin.TextShade.WHITE);
 
 
             _sreader = StructuredOsuMemoryReader.Instance.GetInstanceForWindowTitleHint(osuWindowTitleHint);
@@ -79,12 +87,13 @@ namespace osuEscape
 
 
             // for ui resizing
-            originalFormSize = this.Size;
-            //originalGroupBoxLocation = groupBox_checkBoxes.Location;
-            originalLabelSSLocation = materialLabel_submissionStatus.Location;
+            FormSize_init = this.Size;            
+            labelSubmissionStatus_Location_init = materialLabel_submissionStatus.Location;
+            groupBoxMapStatus_Location_init = groupBox_mapStatus.Location;
+            button_Toggle_Size_init = materialButton_toggle.Size;
 
             //fixing ui size at start
-            HideData(Properties.Settings.Default.isHideData);
+            //HideData(Properties.Settings.Default.isHideData);
 
 
 
@@ -141,8 +150,10 @@ namespace osuEscape
 
             //numericUpDown_readDelay.Value = Properties.Settings.Default.refreshRate;
 
-            materialMultiLineTextBox_apiInput.Text = Properties.Settings.Default.userApiKey;
+            materialTextBox_apiInput.Text = Properties.Settings.Default.userApiKey;
             materialMultiLineTextBox_submitAcc.Text = Properties.Settings.Default.submitAcc.ToString();
+            materialButton_changeTheme.Text = $"{Properties.Settings.Default.Theme} Mode";
+            materialSkinManager.Theme = (Properties.Settings.Default.Theme == "Light" ? MaterialSkin.MaterialSkinManager.Themes.LIGHT : MaterialSkin.MaterialSkinManager.Themes.DARK);
         }
 
         private void OsuEscape_Load(object sender, EventArgs e)
@@ -184,7 +195,7 @@ namespace osuEscape
             }
 
             ghk = new KeyHandler(Keys.F6, this);
-            ghk.Register();
+            ghk.Register();            
         }
 
         #endregion
@@ -454,19 +465,6 @@ namespace osuEscape
         #endregion 
 
         #region ToggleConnection 
-        private void Button_toggle_Click(object sender, EventArgs e)
-        {
-            if (Properties.Settings.Default.osuLocation == "")
-            {
-                MessageBox.Show("Invalid Location");
-            }
-            else
-            {
-                ToggleFirewall();
-            }
-        }
-
-
 
         private void ToggleFirewall()
         {
@@ -478,7 +476,6 @@ namespace osuEscape
             if (materialCheckbox_toggleWithSound.Checked)
                 System.Media.SystemSounds.Asterisk.Play();
         }
-
 
         private void AllowConnection(bool isAllow)
         {
@@ -650,35 +647,6 @@ namespace osuEscape
 
         #endregion
 
-        public void HideData(bool isEnabled)
-        {
-
-
-            if (isEnabled)
-            {
-                //* Hiding data now DOES NOT stop osu memory reading
-
-                // hide data, smaller ui
-                this.MinimumSize = new Size(426, 300);
-                this.Size = this.MinimumSize;
-                this.MaximumSize = this.Size;
-
-                //groupBox_Data.Visible = false;
-                //groupBox_checkBoxes.Location = new Point(8, 120);
-                materialLabel_submissionStatus.Location = new Point(8, 260);
-            }
-            else
-            {
-                //groupBox_Data.Visible = true;
-                //groupBox_checkBoxes.Location = originalGroupBoxLocation;
-                materialLabel_submissionStatus.Location = originalLabelSSLocation;
-
-                // reset ui with fixed size
-                this.MaximumSize = originalFormSize;
-                this.Size = originalFormSize;
-                this.MinimumSize = originalFormSize;
-            }
-        }
 
         #region numericUpDown
 
@@ -734,7 +702,14 @@ namespace osuEscape
         #region Global HotKey
         private void HandleHotkey()
         {
-            ToggleFirewall();
+            if (Properties.Settings.Default.osuLocation == "")
+            {
+                MessageBox.Show("Invalid Location");
+            }
+            else
+            {
+                ToggleFirewall();
+            }
         }
 
         protected override void WndProc(ref Message m)
@@ -811,7 +786,7 @@ namespace osuEscape
         {
             //***verify api not added
 
-            Properties.Settings.Default.userApiKey = materialMultiLineTextBox_apiInput.Text;
+            Properties.Settings.Default.userApiKey = materialTextBox_apiInput.Text;
         }
 
         private void TextBox_submitAcc_TextChanged(object sender, EventArgs e)
@@ -853,7 +828,14 @@ namespace osuEscape
 
         private void materialButton_toggle_Click(object sender, EventArgs e)
         {
-            ToggleFirewall();
+            if (Properties.Settings.Default.osuLocation == "")
+            {
+                MessageBox.Show("Invalid Location");
+            }
+            else
+            {
+                ToggleFirewall();
+            }
         }
 
         private void materialSlider_refreshRate_Click(object sender, EventArgs e)
@@ -901,12 +883,73 @@ namespace osuEscape
 
         private void materialButton_checkApi_Click(object sender, EventArgs e)
         {
-            Properties.Settings.Default.userApiKey = materialMultiLineTextBox_apiInput.Text;
+            Properties.Settings.Default.userApiKey = materialTextBox_apiInput.Text;
         }
 
         private void materialButton_findOsuLocation_Click(object sender, EventArgs e)
         {
             FindOsuLocation();
+        }
+
+        private void materialMultiLineTextBox_apiInput_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void materialTextBox21_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void materialButton_changeTheme_Click(object sender, EventArgs e)
+        {
+            if (Properties.Settings.Default.Theme == "Light")
+            {
+                materialSkinManager.Theme = MaterialSkin.MaterialSkinManager.Themes.DARK;
+                Properties.Settings.Default.Theme = "Dark";
+                materialButton_changeTheme.Text = "Dark Mode";
+            }
+            else
+            {
+                materialSkinManager.Theme = MaterialSkin.MaterialSkinManager.Themes.LIGHT;
+                Properties.Settings.Default.Theme = "Light";
+                materialButton_changeTheme.Text = "Light Mode";
+            }
+        }
+
+        private void materialTabControl_menu_Selected(object sender, TabControlEventArgs e)
+        {
+            if (materialTabControl_menu.SelectedTab == tabPage_main)
+            {
+                if (Properties.Settings.Default.isHideData)
+                {
+                    // hide data, smaller ui
+                    this.MinimumSize = new Size(500, 275);
+                    this.Size = this.MinimumSize;
+                    this.MaximumSize = this.Size;
+
+                    materialLabel_submissionStatus.Location = new Point(14, 140);
+                    groupBox_mapStatus.Location = new Point(330, 5);
+                    materialButton_toggle.Size = new Size(300, 120);
+                    materialLabel_MapData.Visible = false;
+                    materialMultiLineTextBox_mapData.Visible = false;
+                }
+            }
+            else
+            {
+                // reset ui with fixed size
+                this.MaximumSize = FormSize_init;
+                this.Size = FormSize_init;
+                this.MinimumSize = FormSize_init;
+
+                materialLabel_submissionStatus.Location = labelSubmissionStatus_Location_init;
+                groupBox_mapStatus.Location = groupBoxMapStatus_Location_init;
+                materialButton_toggle.Size = button_Toggle_Size_init;
+                materialLabel_MapData.Visible = true;
+                materialMultiLineTextBox_mapData.Visible = true;
+            }
+
+            materialLabel_focus.Focus();
         }
     }
 }
