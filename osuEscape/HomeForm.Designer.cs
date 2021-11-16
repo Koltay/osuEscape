@@ -38,7 +38,6 @@
             this.materialMultiLineTextBox_currentMapTime = new MaterialSkin.Controls.MaterialMultiLineTextBox();
             this.materialLabel_currentMapTime = new MaterialSkin.Controls.MaterialLabel();
             this.materialLabel_status = new MaterialSkin.Controls.MaterialLabel();
-            this.materialButton_refreshRateReset = new MaterialSkin.Controls.MaterialButton();
             this.materialLabel_submissionStatus = new MaterialSkin.Controls.MaterialLabel();
             this.materialLabel_refeshRate = new MaterialSkin.Controls.MaterialLabel();
             this.materialMultiLineTextBox_currentPlayingData = new MaterialSkin.Controls.MaterialMultiLineTextBox();
@@ -96,7 +95,6 @@
             this.tabPage_main.BackColor = System.Drawing.Color.White;
             this.tabPage_main.Controls.Add(this.materialSlider_refreshRate);
             this.tabPage_main.Controls.Add(this.groupBox_mapStatus);
-            this.tabPage_main.Controls.Add(this.materialButton_refreshRateReset);
             this.tabPage_main.Controls.Add(this.materialLabel_submissionStatus);
             this.tabPage_main.Controls.Add(this.materialLabel_refeshRate);
             this.tabPage_main.Controls.Add(this.materialMultiLineTextBox_currentPlayingData);
@@ -120,7 +118,7 @@
             this.materialSlider_refreshRate.MouseState = MaterialSkin.MouseState.HOVER;
             this.materialSlider_refreshRate.Name = "materialSlider_refreshRate";
             this.materialSlider_refreshRate.RangeMax = 1000;
-            this.materialSlider_refreshRate.RangeMin = 10;
+            this.materialSlider_refreshRate.RangeMin = 33;
             this.materialSlider_refreshRate.Size = new System.Drawing.Size(146, 40);
             this.materialSlider_refreshRate.TabIndex = 14;
             this.materialSlider_refreshRate.Text = "";
@@ -189,28 +187,6 @@
             this.materialLabel_status.Size = new System.Drawing.Size(47, 19);
             this.materialLabel_status.TabIndex = 7;
             this.materialLabel_status.Text = "Status";
-            // 
-            // materialButton_refreshRateReset
-            // 
-            this.materialButton_refreshRateReset.AutoSize = false;
-            this.materialButton_refreshRateReset.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.materialButton_refreshRateReset.Density = MaterialSkin.Controls.MaterialButton.MaterialButtonDensity.Default;
-            this.materialButton_refreshRateReset.Depth = 0;
-            this.materialButton_refreshRateReset.HighEmphasis = true;
-            this.materialButton_refreshRateReset.Icon = null;
-            this.materialButton_refreshRateReset.Location = new System.Drawing.Point(381, 258);
-            this.materialButton_refreshRateReset.Margin = new System.Windows.Forms.Padding(4, 6, 4, 6);
-            this.materialButton_refreshRateReset.MouseState = MaterialSkin.MouseState.HOVER;
-            this.materialButton_refreshRateReset.Name = "materialButton_refreshRateReset";
-            this.materialButton_refreshRateReset.NoAccentTextColor = System.Drawing.Color.Empty;
-            this.materialButton_refreshRateReset.Size = new System.Drawing.Size(146, 35);
-            this.materialButton_refreshRateReset.TabIndex = 13;
-            this.materialButton_refreshRateReset.TabStop = false;
-            this.materialButton_refreshRateReset.Text = "Reset";
-            this.materialButton_refreshRateReset.Type = MaterialSkin.Controls.MaterialButton.MaterialButtonType.Contained;
-            this.materialButton_refreshRateReset.UseAccentColor = false;
-            this.materialButton_refreshRateReset.UseVisualStyleBackColor = true;
-            this.materialButton_refreshRateReset.Click += new System.EventHandler(this.materialButton_ResetReadTimeMinMax_Click);
             // 
             // materialLabel_submissionStatus
             // 
@@ -733,7 +709,6 @@
         private MaterialSkin.Controls.MaterialLabel materialLabel_apiNeeded;
         private MaterialSkin.Controls.MaterialButton materialButton_checkApi;
         private MaterialSkin.Controls.MaterialSlider materialSlider_refreshRate;
-        private MaterialSkin.Controls.MaterialButton materialButton_refreshRateReset;
         private MaterialSkin.Controls.MaterialLabel materialLabel_submissionStatus;
         private MaterialSkin.Controls.MaterialMultiLineTextBox materialMultiLineTextBox_submitAcc;
         private System.Windows.Forms.ContextMenuStrip contextMenuStrip_osu;

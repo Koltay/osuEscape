@@ -413,15 +413,7 @@ namespace osuEscape
                     }
 
                     stopwatch.Stop();
-                    readTimeMs = stopwatch.ElapsedTicks / (double)TimeSpan.TicksPerMillisecond;
-                    //lock (_minMaxLock)
-                    //{
-                    //    if (readTimeMs < _memoryReadTimeMin) _memoryReadTimeMin = readTimeMs;
-                    //    if (readTimeMs > _memoryReadTimeMax) _memoryReadTimeMax = readTimeMs;
-                    //    // copy value since we're inside lock
-                    //    readTimeMsMin = _memoryReadTimeMin;
-                    //    readTimeMsMax = _memoryReadTimeMax;
-                    //}
+                    readTimeMs = stopwatch.ElapsedTicks / (double)TimeSpan.TicksPerMillisecond;  
 
                     try
                     {
@@ -441,8 +433,8 @@ namespace osuEscape
                             materialMultiLineTextBox_currentPlayingData.Text =
                                 $"Player: {baseAddresses.Player.Username}{Environment.NewLine}" +
                                 $"Score: {baseAddresses.Player.Score}{Environment.NewLine}" +
-                                $"Recent Combo: {baseAddresses.Player.Combo}{Environment.NewLine}" +
-                                $"Best Combo: {baseAddresses.Player.MaxCombo}{Environment.NewLine}" +
+                                $"Player Recent Combo: {baseAddresses.Player.Combo}{Environment.NewLine}" +
+                                $"Player Best Combo: {baseAddresses.Player.MaxCombo}{Environment.NewLine}" +
                                 $"Accuracy: {baseAddresses.Player.Accuracy:0.00}{Environment.NewLine}" +
                                 $"300: {baseAddresses.Player.Hit300} 100: {baseAddresses.Player.Hit100} 50: {baseAddresses.Player.Hit50} Miss: {baseAddresses.Player.HitMiss}"
                                 ;
@@ -681,15 +673,6 @@ namespace osuEscape
 
         #region Buttons
 
-        private void materialButton_ResetReadTimeMinMax_Click(object sender, EventArgs e)
-        {
-            lock (_minMaxLock)
-            {
-                _memoryReadTimeMin = double.PositiveInfinity;
-                _memoryReadTimeMax = double.NegativeInfinity;
-            }
-        }
-
         private void materialButton_checkApi_Click(object sender, EventArgs e)
         {
             //***verify api not added
@@ -904,6 +887,9 @@ namespace osuEscape
         private void materialSlider_refreshRate_Click(object sender, EventArgs e)
         {
             _readDelay = materialSlider_refreshRate.Value;
+
+            if (materialSlider_refreshRate.Value < 33)
+                _readDelay = 33;
         }
         private void materialTabControl_menu_Selected(object sender, TabControlEventArgs e)
         {
