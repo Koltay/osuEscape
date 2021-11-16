@@ -1,24 +1,24 @@
 ﻿using MaterialSkin;
 using MaterialSkin.Controls;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Drawing;
-using System.Text;
-using System.Windows.Forms;
 using Microsoft.Win32;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using OsuMemoryDataProvider;
 using OsuMemoryDataProvider.OsuMemoryModels;
 using OsuMemoryDataProvider.OsuMemoryModels.Direct;
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
 using System.Diagnostics;
+using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 
 
 namespace osuEscape
@@ -29,9 +29,6 @@ namespace osuEscape
 
         private readonly string _osuWindowTitleHint;
         private int _readDelay = 33;
-        private readonly object _minMaxLock = new object();
-        private double _memoryReadTimeMin = double.PositiveInfinity;
-        private double _memoryReadTimeMax = double.NegativeInfinity;
         private readonly StructuredOsuMemoryReader _sreader;
         private readonly CancellationTokenSource cts = new CancellationTokenSource();
 
@@ -66,32 +63,29 @@ namespace osuEscape
             InitializeComponent();
 
             //Initialize material skin manager
-            materialSkinManager = MaterialSkin.MaterialSkinManager.Instance;
+            materialSkinManager = MaterialSkinManager.Instance;
             materialSkinManager.EnforceBackcolorOnAllComponents = false;
             materialSkinManager.AddFormToManage(this);
-            materialSkinManager.ColorScheme = new MaterialSkin.ColorScheme
-                (MaterialSkin.Primary.Indigo500, 
-                MaterialSkin.Primary.Indigo700,
-                MaterialSkin.Primary.Indigo100, 
-                MaterialSkin.Accent.LightBlue100, 
-                MaterialSkin.TextShade.WHITE);
-
+            materialSkinManager.ColorScheme = new ColorScheme
+                (Primary.Indigo500,
+                Primary.Indigo700,
+                Primary.Indigo100,
+                Accent.LightBlue100,
+                TextShade.WHITE);
 
             _sreader = StructuredOsuMemoryReader.Instance.GetInstanceForWindowTitleHint(osuWindowTitleHint);
-
-            Closing += OnClosing;
 
             // check if osu!Escape is already opened
             if (Process.GetProcessesByName("osuEscape").Length > 1)
             {
-                this.Close();
+                AppClosing();
             }
 
 
             // for ui resizing
             // editor pixels offset (50px)
-            this.Size = new Size (this.Size.Width, this.Size.Height - 50);
-            FormSize_init = this.Size;            
+            this.Size = new Size(this.Size.Width, this.Size.Height - 50);
+            FormSize_init = this.Size;
             labelSubmissionStatus_Location_init = materialLabel_submissionStatus.Location;
             groupBoxMapStatus_Location_init = groupBox_mapStatus.Location;
             button_Toggle_Size_init = materialButton_toggle.Size;
@@ -99,12 +93,12 @@ namespace osuEscape
             // change ui size according to user setting on isHideData
             HideData();
 
-            UIUserSettingsUpdate();
-        }       
+            SettingFormUpdate();
+        }
 
         #region Initialize and OnLoad
 
-        
+
 
         #region Structured Reader
 
@@ -139,7 +133,7 @@ namespace osuEscape
         #endregion
 
 
-        private void UIUserSettingsUpdate()
+        private void SettingFormUpdate()
         {
             // UI Update with saved user settings
             materialCheckbox_runAtStartup.Checked = Properties.Settings.Default.isStartup;
@@ -153,7 +147,7 @@ namespace osuEscape
             materialTextBox_apiInput.Text = Properties.Settings.Default.userApiKey;
             materialMultiLineTextBox_submitAcc.Text = Properties.Settings.Default.submitAcc.ToString();
 
-            materialSkinManager.Theme = (MaterialSkinManager.Themes) Properties.Settings.Default.Theme;
+            materialSkinManager.Theme = (MaterialSkinManager.Themes)Properties.Settings.Default.Theme;
             materialButton_changeTheme.Text = (Properties.Settings.Default.Theme == 0 ? "Dark Mode" : "Light Mode");
         }
 
@@ -196,7 +190,7 @@ namespace osuEscape
             }
 
             ghk = new KeyHandler(Keys.F6, this);
-            ghk.Register();            
+            ghk.Register();
         }
 
         #endregion
@@ -297,7 +291,8 @@ namespace osuEscape
                                         // Connection should be enabled because of meeting the requirement of submitting
                                         if (isAllowConnection)
                                         {
-                                            materialLabel_submissionStatus.BeginInvoke((MethodInvoker)delegate {
+                                            materialLabel_submissionStatus.BeginInvoke((MethodInvoker)delegate
+                                            {
                                                 Label_SubmissionStatus_TextChanged("Ready to upload recent score.");
                                             });
 
@@ -413,7 +408,7 @@ namespace osuEscape
                     }
 
                     stopwatch.Stop();
-                    readTimeMs = stopwatch.ElapsedTicks / (double)TimeSpan.TicksPerMillisecond;  
+                    readTimeMs = stopwatch.ElapsedTicks / (double)TimeSpan.TicksPerMillisecond;
 
                     try
                     {
@@ -447,7 +442,7 @@ namespace osuEscape
                     }
                     catch (ObjectDisposedException)
                     {
-                        
+
                     }
 
                     _sreader.ReadTimes.Clear();
@@ -467,7 +462,7 @@ namespace osuEscape
 
             AllowConnection(isAllowConnection);
 
-            ToggleSound(Properties.Settings.Default.isToggleSound);                
+            ToggleSound(Properties.Settings.Default.isToggleSound);
         }
 
         private void AllowConnection(bool isAllow)
@@ -540,7 +535,7 @@ namespace osuEscape
         #endregion
 
         #region Find osu! location
-       
+
 
         private void FindOsuLocation()
         {
@@ -624,7 +619,7 @@ namespace osuEscape
         }
         private void Item_quit_Click(object sender, EventArgs e)
         {
-            this.Close();
+            AppClosing();
         }
 
         #endregion
@@ -683,7 +678,7 @@ namespace osuEscape
                 if (verified)
                 {
                     Properties.Settings.Default.userApiKey = materialTextBox_apiInput.Text;
-                    Properties.Settings.Default.isAPIKeyVerified = true;                    
+                    Properties.Settings.Default.isAPIKeyVerified = true;
                 }
                 else
                     Properties.Settings.Default.isAPIKeyVerified = false;
@@ -745,10 +740,11 @@ namespace osuEscape
 
             Properties.Settings.Default.Save();
         }
-
-        private void OnClosing(object sender, CancelEventArgs cancelEventArgs)
+        private void AppClosing()
         {
             cts.Cancel();
+            cts.Dispose();
+            this.Close();
         }
 
         #endregion
@@ -883,7 +879,7 @@ namespace osuEscape
         {
             materialLabel_submissionStatus.Text = "Submission Status: " + str;
         }
-         
+
         private void materialSlider_refreshRate_Click(object sender, EventArgs e)
         {
             _readDelay = materialSlider_refreshRate.Value;
@@ -946,7 +942,7 @@ namespace osuEscape
 
         private static void ShowMessageBox(string message)
         {
-            ToggleSound(Properties.Settings.Default.isToggleSound);          
+            ToggleSound(Properties.Settings.Default.isToggleSound);
 
             MessageBox.Show(message);
         }
@@ -967,11 +963,11 @@ namespace osuEscape
         }
 
         private static void IncorrectAPITextOutput()
-        {     
+        {
             ShowMessageBox(
                     $"Internal server Error/ Incorrect API! {Environment.NewLine} " +
                     $"Please check if your API key is correct.")
-                    ;            
+                    ;
         }
         private void APIRequiredCheckBoxesEnabled()
         {
