@@ -30,18 +30,18 @@ namespace osuEscape
         private readonly string _osuWindowTitleHint;
         private int _readDelay = 33;
         private readonly StructuredOsuMemoryReader _sreader;
-        private readonly CancellationTokenSource cts = new CancellationTokenSource();
+        private readonly CancellationTokenSource cts = new();
 
         private KeyHandler ghk;
         public const int WM_HOTKEY_MSG_ID = 0x0312;
 
         private bool isAllowConnection = true;
 
-        private static readonly HttpClient client = new HttpClient();
+        private static readonly HttpClient client = new();
 
         private static int lastNoteOffset = -1;
 
-        public static List<int> recentUploadScoreList = new List<int>();
+        private static List<int> recentUploadScoreList = new();
 
         private Size FormSize_init;
 
@@ -207,7 +207,7 @@ namespace osuEscape
             {
                 Stopwatch stopwatch;
 
-                double readTimeMs, readTimeMsMin, readTimeMsMax;
+                double readTimeMs;
 
                 _sreader.WithTimes = true;
 
@@ -467,7 +467,7 @@ namespace osuEscape
 
         private void AllowConnection(bool isAllow)
         {
-            Process cmd = new Process();
+            Process cmd = new();
             cmd.StartInfo.FileName = "netsh";
             cmd.StartInfo.Arguments =
                   @"advfirewall firewall set rule name=""osu block"" new enable=" + (isAllow ? "no" : "yes");
@@ -508,7 +508,7 @@ namespace osuEscape
 
                 UpdateOsuLocationText();
 
-                Process cmd = new Process();
+                Process cmd = new();
                 cmd.StartInfo.FileName = "netsh";
                 cmd.StartInfo.Verb = "runas";
                 cmd.StartInfo.UseShellExecute = true;
@@ -539,7 +539,7 @@ namespace osuEscape
 
         private void FindOsuLocation()
         {
-            OpenFileDialog ofd = new OpenFileDialog
+            OpenFileDialog ofd = new()
             {
                 Filter = "osu.exe |*.EXE"
             };
@@ -578,7 +578,7 @@ namespace osuEscape
         #region CheckBoxes
 
         #region Run at Startup
-        public void StartupSetUp(bool enabled)
+        public static void StartupSetUp(bool enabled)
         {
             try
             {
@@ -797,7 +797,7 @@ namespace osuEscape
             request.Headers.Authorization = new AuthenticationHeaderValue("Bearer");
             request.Content = new StringContent("{...}", Encoding.UTF8, "application/json");
 
-            List<int> result = new List<int>();
+            List<int> result = new();
 
             var response = await client.SendAsync(request, CancellationToken.None);
 
