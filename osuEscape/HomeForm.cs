@@ -53,6 +53,8 @@ namespace osuEscape
 
         readonly MaterialSkinManager materialSkinManager;
 
+        private ColorScheme recentColorScheme;
+
         //Startup registry key and value
         private static readonly string StartupKey = "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run";
         private static readonly string StartupValue = System.Reflection.Assembly.GetExecutingAssembly().GetName().Name;
@@ -66,12 +68,9 @@ namespace osuEscape
             materialSkinManager = MaterialSkinManager.Instance;
             materialSkinManager.EnforceBackcolorOnAllComponents = false;
             materialSkinManager.AddFormToManage(this);
-            materialSkinManager.ColorScheme = new ColorScheme
-                (Primary.Indigo500,
-                Primary.Indigo700,
-                Primary.Indigo100,
-                Accent.LightBlue100,
-                TextShade.WHITE);
+            //color scheme declared in allowconnection()
+
+
 
             _sreader = StructuredOsuMemoryReader.Instance.GetInstanceForWindowTitleHint(osuWindowTitleHint);
 
@@ -483,21 +482,71 @@ namespace osuEscape
         }
 
 
-        private void ToggleButtonUpdate(bool isAllow)
+        private void ToggleButtonUpdate_old(bool isAllow)
         {
             if (materialButton_toggle.InvokeRequired)
             {
-                materialButton_toggle.Invoke(new MethodInvoker(delegate
-                {
-                    materialButton_toggle.Text = isAllow ? "Connecting" : "Blocked";
-                    materialButton_toggle.ForeColor = isAllow ? System.Drawing.Color.Green : System.Drawing.Color.Red;
-                }));
+                _ = materialButton_toggle.Invoke(new MethodInvoker(delegate
+                  {
+                      materialButton_toggle.Text = isAllow ? "Connecting" : "Blocked";
+
+                      materialSkinManager.ColorScheme = isAllow ?
+                      new ColorScheme(
+                            Primary.Indigo500,
+                            Primary.Indigo700,
+                            Primary.Indigo100,
+                            Accent.Green400,
+                            TextShade.WHITE)
+                      :
+                      new ColorScheme(
+                            Primary.Indigo500,
+                            Primary.Indigo700,
+                            Primary.Indigo100,
+                            Accent.Red400,
+                            TextShade.WHITE);
+                  }));
             }
             else
             {
                 materialButton_toggle.Text = isAllow ? "Connecting" : "Blocked";
-                materialButton_toggle.ForeColor = isAllow ? System.Drawing.Color.Green : System.Drawing.Color.Red;
+                materialSkinManager.ColorScheme = isAllow ?
+                      new ColorScheme(
+                            Primary.Indigo500,
+                            Primary.Indigo700,
+                            Primary.Indigo100,
+                            Accent.Green700,
+                            TextShade.WHITE)
+                      :
+                      new ColorScheme(
+                            Primary.Indigo500,
+                            Primary.Indigo700,
+                            Primary.Indigo100,
+                            Accent.Red400,
+                            TextShade.WHITE);
             }
+        }
+
+        private void ToggleButtonUpdate(bool isAllow)
+        {
+            _ = materialButton_toggle.Invoke(new MethodInvoker(delegate
+            {
+                materialButton_toggle.Text = isAllow ? "Connecting" : "Blocked";
+
+                materialSkinManager.ColorScheme = isAllow ?
+                new ColorScheme(
+                        Primary.Indigo500,
+                        Primary.Indigo700,
+                        Primary.Indigo100,
+                        Accent.Green400,
+                        TextShade.WHITE)
+                :
+                new ColorScheme(
+                        Primary.Indigo500,
+                        Primary.Indigo700,
+                        Primary.Indigo100,
+                        Accent.Red400,
+                        TextShade.WHITE);
+            }));           
         }
 
         private void FirewallRuleSetUp(string filename)
@@ -682,8 +731,8 @@ namespace osuEscape
                 }
                 else
                     Properties.Settings.Default.isAPIKeyVerified = false;
-
-                MessageBox.Show(Properties.Settings.Default.isAPIKeyVerified.ToString());
+                //test
+                //MessageBox.Show(Properties.Settings.Default.isAPIKeyVerified.ToString());
                 APIRequiredCheckBoxesEnabled();
             });
         }
@@ -701,20 +750,23 @@ namespace osuEscape
         private void UIThemeToggle()
         {
             // light mode toggles to dark mode
-            if (Properties.Settings.Default.Theme == 0)
-            {
-                materialSkinManager.Theme = MaterialSkin.MaterialSkinManager.Themes.DARK;
-                Properties.Settings.Default.Theme = 1;
+            materialSkinManager.Theme = materialSkinManager.Theme == MaterialSkinManager.Themes.DARK ? MaterialSkinManager.Themes.LIGHT : MaterialSkinManager.Themes.DARK;
+            Properties.Settings.Default.Theme = materialSkinManager.Theme == MaterialSkinManager.Themes.DARK ? 1 : 0;
+            materialButton_changeTheme.Text = materialSkinManager.Theme == MaterialSkinManager.Themes.DARK ? "Light Mode" : "Dark Mode";
+            //if (Properties.Settings.Default.Theme == 0)
+            //{
+            //    materialSkinManager.Theme = MaterialSkin.MaterialSkinManager.Themes.DARK;
+            //    Properties.Settings.Default.Theme = 1;
 
-                materialButton_changeTheme.Text = "Light Mode";
-            }
-            else
-            {
-                materialSkinManager.Theme = MaterialSkin.MaterialSkinManager.Themes.LIGHT;
-                Properties.Settings.Default.Theme = 0;
+            //    materialButton_changeTheme.Text = "Light Mode";
+            //}
+            //else
+            //{
+            //    materialSkinManager.Theme = MaterialSkin.MaterialSkinManager.Themes.LIGHT;
+            //    Properties.Settings.Default.Theme = 0;
 
-                materialButton_changeTheme.Text = "Dark Mode";
-            }
+            //    materialButton_changeTheme.Text = "Dark Mode";
+            //}
         }
         private void materialButton_toggle_Click(object sender, EventArgs e)
         {

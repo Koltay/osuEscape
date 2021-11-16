@@ -270,7 +270,7 @@
             this.materialButton_toggle.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.materialButton_toggle.Density = MaterialSkin.Controls.MaterialButton.MaterialButtonDensity.Default;
             this.materialButton_toggle.Depth = 0;
-            this.materialButton_toggle.Font = new System.Drawing.Font("Segoe UI", 21F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+            this.materialButton_toggle.Font = new System.Drawing.Font("Segoe UI", 25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
             this.materialButton_toggle.HighEmphasis = true;
             this.materialButton_toggle.Icon = null;
             this.materialButton_toggle.Location = new System.Drawing.Point(14, 9);
@@ -278,12 +278,12 @@
             this.materialButton_toggle.MouseState = MaterialSkin.MouseState.HOVER;
             this.materialButton_toggle.Name = "materialButton_toggle";
             this.materialButton_toggle.NoAccentTextColor = System.Drawing.Color.Empty;
-            this.materialButton_toggle.Size = new System.Drawing.Size(246, 54);
+            this.materialButton_toggle.Size = new System.Drawing.Size(289, 54);
             this.materialButton_toggle.TabIndex = 0;
             this.materialButton_toggle.TabStop = false;
             this.materialButton_toggle.Text = "Toggle";
             this.materialButton_toggle.Type = MaterialSkin.Controls.MaterialButton.MaterialButtonType.Contained;
-            this.materialButton_toggle.UseAccentColor = false;
+            this.materialButton_toggle.UseAccentColor = true;
             this.materialButton_toggle.UseVisualStyleBackColor = true;
             this.materialButton_toggle.Click += new System.EventHandler(this.materialButton_toggle_Click);
             // 
