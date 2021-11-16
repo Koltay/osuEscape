@@ -275,7 +275,7 @@ namespace osuEscape
                         _sreader.TryRead(baseAddresses.ResultsScreen);
 
 
-                        if (Properties.Settings.Default.isAutoDisconnect)
+                        if (Properties.Settings.Default.isAutoDisconnect && materialCheckbox_autoDisconnect.Enabled)
                         {
                             //upload if only it is not a replay
                             if (!baseAddresses.Player.IsReplay)
@@ -717,22 +717,7 @@ namespace osuEscape
 
         private void materialButton_checkApi_Click(object sender, EventArgs e)
         {
-            //***verify api not added
-            Task.Run(async () =>
-            {
-                bool verified = await CheckAPIKeyAsync(materialTextBox_apiInput.Text);
-
-                if (verified)
-                {
-                    Properties.Settings.Default.userApiKey = materialTextBox_apiInput.Text;
-                    Properties.Settings.Default.isAPIKeyVerified = true;
-                }
-                else
-                    Properties.Settings.Default.isAPIKeyVerified = false;
-                //test
-                //MessageBox.Show(Properties.Settings.Default.isAPIKeyVerified.ToString());
-                APIRequiredCheckBoxesEnabled();
-            });
+            CheckAPIKeyAsync();
         }
 
         private void materialButton_findOsuLocation_Click(object sender, EventArgs e)
@@ -751,20 +736,6 @@ namespace osuEscape
             materialSkinManager.Theme = materialSkinManager.Theme == MaterialSkinManager.Themes.DARK ? MaterialSkinManager.Themes.LIGHT : MaterialSkinManager.Themes.DARK;
             Properties.Settings.Default.Theme = materialSkinManager.Theme == MaterialSkinManager.Themes.DARK ? 1 : 0;
             materialButton_changeTheme.Text = materialSkinManager.Theme == MaterialSkinManager.Themes.DARK ? "Light Mode" : "Dark Mode";
-            //if (Properties.Settings.Default.Theme == 0)
-            //{
-            //    materialSkinManager.Theme = MaterialSkin.MaterialSkinManager.Themes.DARK;
-            //    Properties.Settings.Default.Theme = 1;
-
-            //    materialButton_changeTheme.Text = "Light Mode";
-            //}
-            //else
-            //{
-            //    materialSkinManager.Theme = MaterialSkin.MaterialSkinManager.Themes.LIGHT;
-            //    Properties.Settings.Default.Theme = 0;
-
-            //    materialButton_changeTheme.Text = "Dark Mode";
-            //}
         }
         private void materialButton_toggle_Click(object sender, EventArgs e)
         {
@@ -823,7 +794,6 @@ namespace osuEscape
 
         private void GlobalHotkeyRegister()
         {
-
             if (ghk != null && ghk.Register() == true)
                 ghk.Unregiser();
 
@@ -875,14 +845,13 @@ namespace osuEscape
             return result;
         }
 
-        private static async Task<bool> CheckAPIKeyAsync(string textBoxAPIKey)
+        private async Task CheckAPIKeyAsync()
         {
             // verifying api key using one of the osu! api urls
-            // we use get_beatmaps as it requires the least parameter
-            // this url returns nothing but only success status
-            // result should be []
-            var url = $"https://osu.ppy.sh/api/get_beatmaps?k={textBoxAPIKey}&b=1&m=0&limit=1";
+            // using get_beatmaps as it requires the least parameter
+            // result does not matter, only success status code is needed
 
+            var url = $"https://osu.ppy.sh/api/get_beatmaps?k={materialTextBox_apiInput.Text}&b=100&m=0";
 
             var request = new HttpRequestMessage(HttpMethod.Get, url);
             request.Headers.Accept.Clear();
@@ -892,16 +861,22 @@ namespace osuEscape
 
             var response = await client.SendAsync(request, CancellationToken.None);
 
+            Properties.Settings.Default.isAPIKeyVerified = response.IsSuccessStatusCode;
+            materialCheckbox_autoDisconnect.Enabled = response.IsSuccessStatusCode;
+
             if (response.IsSuccessStatusCode)
             {
-                // check if the response is successful, response content is not needed
-                return true;
+                // response content is not needed
+                Properties.Settings.Default.userApiKey = materialTextBox_apiInput.Text;
             }
             else
             {
                 IncorrectAPITextOutput();
-                return false;
+                materialCheckbox_autoDisconnect.Checked = false;
             }
+
+            materialCheckbox_autoDisconnect.Invalidate();
+            materialCheckbox_autoDisconnect.Update();
         }
 
 
