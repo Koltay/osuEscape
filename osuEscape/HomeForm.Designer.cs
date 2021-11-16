@@ -33,7 +33,6 @@
             this.materialTabControl_menu = new MaterialSkin.Controls.MaterialTabControl();
             this.tabPage_main = new System.Windows.Forms.TabPage();
             this.materialSlider_refreshRate = new MaterialSkin.Controls.MaterialSlider();
-            this.groupBox_mapStatus = new System.Windows.Forms.GroupBox();
             this.materialMultiLineTextBox_status = new MaterialSkin.Controls.MaterialMultiLineTextBox();
             this.materialMultiLineTextBox_currentMapTime = new MaterialSkin.Controls.MaterialMultiLineTextBox();
             this.materialLabel_currentMapTime = new MaterialSkin.Controls.MaterialLabel();
@@ -68,11 +67,12 @@
             this.quitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.notifyIcon_osuEscape = new System.Windows.Forms.NotifyIcon(this.components);
             this.materialTabSelector_main = new MaterialSkin.Controls.MaterialTabSelector();
+            this.panel_mapStatus = new System.Windows.Forms.Panel();
             this.materialTabControl_menu.SuspendLayout();
             this.tabPage_main.SuspendLayout();
-            this.groupBox_mapStatus.SuspendLayout();
             this.tabPage_settings.SuspendLayout();
             this.contextMenuStrip_osu.SuspendLayout();
+            this.panel_mapStatus.SuspendLayout();
             this.SuspendLayout();
             // 
             // materialTabControl_menu
@@ -93,8 +93,8 @@
             // tabPage_main
             // 
             this.tabPage_main.BackColor = System.Drawing.Color.White;
+            this.tabPage_main.Controls.Add(this.panel_mapStatus);
             this.tabPage_main.Controls.Add(this.materialSlider_refreshRate);
-            this.tabPage_main.Controls.Add(this.groupBox_mapStatus);
             this.tabPage_main.Controls.Add(this.materialLabel_submissionStatus);
             this.tabPage_main.Controls.Add(this.materialLabel_refeshRate);
             this.tabPage_main.Controls.Add(this.materialMultiLineTextBox_currentPlayingData);
@@ -124,18 +124,6 @@
             this.materialSlider_refreshRate.Text = "";
             this.materialSlider_refreshRate.Click += new System.EventHandler(this.materialSlider_refreshRate_Click);
             // 
-            // groupBox_mapStatus
-            // 
-            this.groupBox_mapStatus.Controls.Add(this.materialMultiLineTextBox_status);
-            this.groupBox_mapStatus.Controls.Add(this.materialMultiLineTextBox_currentMapTime);
-            this.groupBox_mapStatus.Controls.Add(this.materialLabel_currentMapTime);
-            this.groupBox_mapStatus.Controls.Add(this.materialLabel_status);
-            this.groupBox_mapStatus.Location = new System.Drawing.Point(376, 59);
-            this.groupBox_mapStatus.Name = "groupBox_mapStatus";
-            this.groupBox_mapStatus.Size = new System.Drawing.Size(158, 125);
-            this.groupBox_mapStatus.TabIndex = 15;
-            this.groupBox_mapStatus.TabStop = false;
-            // 
             // materialMultiLineTextBox_status
             // 
             this.materialMultiLineTextBox_status.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(255)))), ((int)(((byte)(255)))));
@@ -143,7 +131,7 @@
             this.materialMultiLineTextBox_status.Depth = 0;
             this.materialMultiLineTextBox_status.Font = new System.Drawing.Font("Microsoft Sans Serif", 14F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
             this.materialMultiLineTextBox_status.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(222)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))));
-            this.materialMultiLineTextBox_status.Location = new System.Drawing.Point(5, 88);
+            this.materialMultiLineTextBox_status.Location = new System.Drawing.Point(9, 84);
             this.materialMultiLineTextBox_status.MouseState = MaterialSkin.MouseState.HOVER;
             this.materialMultiLineTextBox_status.Name = "materialMultiLineTextBox_status";
             this.materialMultiLineTextBox_status.Size = new System.Drawing.Size(131, 31);
@@ -157,7 +145,7 @@
             this.materialMultiLineTextBox_currentMapTime.Depth = 0;
             this.materialMultiLineTextBox_currentMapTime.Font = new System.Drawing.Font("Microsoft Sans Serif", 14F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
             this.materialMultiLineTextBox_currentMapTime.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(222)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))));
-            this.materialMultiLineTextBox_currentMapTime.Location = new System.Drawing.Point(5, 32);
+            this.materialMultiLineTextBox_currentMapTime.Location = new System.Drawing.Point(9, 28);
             this.materialMultiLineTextBox_currentMapTime.MouseState = MaterialSkin.MouseState.HOVER;
             this.materialMultiLineTextBox_currentMapTime.Name = "materialMultiLineTextBox_currentMapTime";
             this.materialMultiLineTextBox_currentMapTime.Size = new System.Drawing.Size(131, 31);
@@ -169,7 +157,7 @@
             this.materialLabel_currentMapTime.AutoSize = true;
             this.materialLabel_currentMapTime.Depth = 0;
             this.materialLabel_currentMapTime.Font = new System.Drawing.Font("Roboto", 14F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
-            this.materialLabel_currentMapTime.Location = new System.Drawing.Point(5, 12);
+            this.materialLabel_currentMapTime.Location = new System.Drawing.Point(9, 8);
             this.materialLabel_currentMapTime.MouseState = MaterialSkin.MouseState.HOVER;
             this.materialLabel_currentMapTime.Name = "materialLabel_currentMapTime";
             this.materialLabel_currentMapTime.Size = new System.Drawing.Size(128, 19);
@@ -181,7 +169,7 @@
             this.materialLabel_status.AutoSize = true;
             this.materialLabel_status.Depth = 0;
             this.materialLabel_status.Font = new System.Drawing.Font("Roboto", 14F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
-            this.materialLabel_status.Location = new System.Drawing.Point(5, 66);
+            this.materialLabel_status.Location = new System.Drawing.Point(9, 62);
             this.materialLabel_status.MouseState = MaterialSkin.MouseState.HOVER;
             this.materialLabel_status.Name = "materialLabel_status";
             this.materialLabel_status.Size = new System.Drawing.Size(47, 19);
@@ -657,6 +645,17 @@
             this.materialTabSelector_main.TabStop = false;
             this.materialTabSelector_main.Text = "materialTabSelector_main";
             // 
+            // panel_mapStatus
+            // 
+            this.panel_mapStatus.Controls.Add(this.materialLabel_currentMapTime);
+            this.panel_mapStatus.Controls.Add(this.materialMultiLineTextBox_status);
+            this.panel_mapStatus.Controls.Add(this.materialLabel_status);
+            this.panel_mapStatus.Controls.Add(this.materialMultiLineTextBox_currentMapTime);
+            this.panel_mapStatus.Location = new System.Drawing.Point(383, 51);
+            this.panel_mapStatus.Name = "panel_mapStatus";
+            this.panel_mapStatus.Size = new System.Drawing.Size(150, 125);
+            this.panel_mapStatus.TabIndex = 15;
+            // 
             // HomeForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
@@ -675,11 +674,11 @@
             this.materialTabControl_menu.ResumeLayout(false);
             this.tabPage_main.ResumeLayout(false);
             this.tabPage_main.PerformLayout();
-            this.groupBox_mapStatus.ResumeLayout(false);
-            this.groupBox_mapStatus.PerformLayout();
             this.tabPage_settings.ResumeLayout(false);
             this.tabPage_settings.PerformLayout();
             this.contextMenuStrip_osu.ResumeLayout(false);
+            this.panel_mapStatus.ResumeLayout(false);
+            this.panel_mapStatus.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -722,7 +721,7 @@
         private MaterialSkin.Controls.MaterialTextBox2 materialTextBox_apiInput;
         private MaterialSkin.Controls.MaterialLabel materialLabel_focus;
         private MaterialSkin.Controls.MaterialButton materialButton_changeTheme;
-        private System.Windows.Forms.GroupBox groupBox_mapStatus;
         private MaterialSkin.Controls.MaterialLabel materialLabel_saved;
+        private System.Windows.Forms.Panel panel_mapStatus;
     }
 }

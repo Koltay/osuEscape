@@ -47,13 +47,11 @@ namespace osuEscape
 
         private Point labelSubmissionStatus_Location_init;
 
-        private Point groupBoxMapStatus_Location_init;
+        private Point panel_MapStatus_Location_init;
 
         private Size button_Toggle_Size_init;
 
         readonly MaterialSkinManager materialSkinManager;
-
-        private ColorScheme recentColorScheme;
 
         //Startup registry key and value
         private static readonly string StartupKey = "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run";
@@ -86,7 +84,7 @@ namespace osuEscape
             this.Size = new Size(this.Size.Width, this.Size.Height - 50);
             FormSize_init = this.Size;
             labelSubmissionStatus_Location_init = materialLabel_submissionStatus.Location;
-            groupBoxMapStatus_Location_init = groupBox_mapStatus.Location;
+            panel_MapStatus_Location_init = panel_mapStatus.Location;
             button_Toggle_Size_init = materialButton_toggle.Size;
 
             // change ui size according to user setting on isHideData
@@ -953,7 +951,7 @@ namespace osuEscape
                 this.MinimumSize = FormSize_init;
 
                 materialLabel_submissionStatus.Location = labelSubmissionStatus_Location_init;
-                groupBox_mapStatus.Location = groupBoxMapStatus_Location_init;
+                panel_mapStatus.Location = panel_MapStatus_Location_init;
                 materialButton_toggle.Size = button_Toggle_Size_init;
                 materialLabel_MapData.Visible = true;
                 materialMultiLineTextBox_mapData.Visible = true;
@@ -974,7 +972,7 @@ namespace osuEscape
                 this.MaximumSize = this.Size;
 
                 materialLabel_submissionStatus.Location = new Point(14, 140);
-                groupBox_mapStatus.Location = new Point(330, 5);
+                panel_mapStatus.Location = new Point(330, 5);
                 materialButton_toggle.Size = new Size(300, 120);
                 materialLabel_MapData.Visible = false;
                 materialMultiLineTextBox_mapData.Visible = false;
