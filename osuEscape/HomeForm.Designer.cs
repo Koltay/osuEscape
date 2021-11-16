@@ -47,6 +47,7 @@
             this.materialLabel_MapData = new MaterialSkin.Controls.MaterialLabel();
             this.materialButton_toggle = new MaterialSkin.Controls.MaterialButton();
             this.tabPage_settings = new System.Windows.Forms.TabPage();
+            this.materialLabel_saved = new MaterialSkin.Controls.MaterialLabel();
             this.materialButton_changeTheme = new MaterialSkin.Controls.MaterialButton();
             this.materialTextBox_apiInput = new MaterialSkin.Controls.MaterialTextBox2();
             this.materialButton_findOsuLocation = new MaterialSkin.Controls.MaterialButton();
@@ -313,6 +314,7 @@
             // tabPage_settings
             // 
             this.tabPage_settings.BackColor = System.Drawing.Color.White;
+            this.tabPage_settings.Controls.Add(this.materialLabel_saved);
             this.tabPage_settings.Controls.Add(this.materialButton_changeTheme);
             this.tabPage_settings.Controls.Add(this.materialTextBox_apiInput);
             this.tabPage_settings.Controls.Add(this.materialButton_findOsuLocation);
@@ -336,6 +338,21 @@
             this.tabPage_settings.Size = new System.Drawing.Size(540, 420);
             this.tabPage_settings.TabIndex = 1;
             this.tabPage_settings.Text = "Settings";
+            // 
+            // materialLabel_saved
+            // 
+            this.materialLabel_saved.BackColor = System.Drawing.Color.Transparent;
+            this.materialLabel_saved.Depth = 0;
+            this.materialLabel_saved.FlatStyle = System.Windows.Forms.FlatStyle.System;
+            this.materialLabel_saved.Font = new System.Drawing.Font("Roboto", 14F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
+            this.materialLabel_saved.ForeColor = System.Drawing.Color.Green;
+            this.materialLabel_saved.Location = new System.Drawing.Point(491, 264);
+            this.materialLabel_saved.MouseState = MaterialSkin.MouseState.HOVER;
+            this.materialLabel_saved.Name = "materialLabel_saved";
+            this.materialLabel_saved.Size = new System.Drawing.Size(61, 25);
+            this.materialLabel_saved.TabIndex = 26;
+            this.materialLabel_saved.Text = "Saved!";
+            this.materialLabel_saved.Visible = false;
             // 
             // materialButton_changeTheme
             // 
@@ -731,5 +748,6 @@
         private MaterialSkin.Controls.MaterialLabel materialLabel_focus;
         private MaterialSkin.Controls.MaterialButton materialButton_changeTheme;
         private System.Windows.Forms.GroupBox groupBox_mapStatus;
+        private MaterialSkin.Controls.MaterialLabel materialLabel_saved;
     }
 }

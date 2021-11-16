@@ -67,7 +67,7 @@ namespace osuEscape
 
             //Initialize material skin manager
             materialSkinManager = MaterialSkin.MaterialSkinManager.Instance;
-            materialSkinManager.EnforceBackcolorOnAllComponents = true;
+            materialSkinManager.EnforceBackcolorOnAllComponents = false;
             materialSkinManager.AddFormToManage(this);
             materialSkinManager.ColorScheme = new MaterialSkin.ColorScheme
                 (MaterialSkin.Primary.Indigo500, 
@@ -337,8 +337,10 @@ namespace osuEscape
                                                 }
                                             });
 
-                                            // 3s for displaying label message
-                                            await Task.Delay(3000);
+                                            // 5s for displaying label message
+                                            await Task.Delay(5000);
+
+                                            Label_SubmissionStatus_TextChanged("");
                                         }
                                     }
                                 }
@@ -412,14 +414,14 @@ namespace osuEscape
 
                     stopwatch.Stop();
                     readTimeMs = stopwatch.ElapsedTicks / (double)TimeSpan.TicksPerMillisecond;
-                    lock (_minMaxLock)
-                    {
-                        if (readTimeMs < _memoryReadTimeMin) _memoryReadTimeMin = readTimeMs;
-                        if (readTimeMs > _memoryReadTimeMax) _memoryReadTimeMax = readTimeMs;
-                        // copy value since we're inside lock
-                        readTimeMsMin = _memoryReadTimeMin;
-                        readTimeMsMax = _memoryReadTimeMax;
-                    }
+                    //lock (_minMaxLock)
+                    //{
+                    //    if (readTimeMs < _memoryReadTimeMin) _memoryReadTimeMin = readTimeMs;
+                    //    if (readTimeMs > _memoryReadTimeMax) _memoryReadTimeMax = readTimeMs;
+                    //    // copy value since we're inside lock
+                    //    readTimeMsMin = _memoryReadTimeMin;
+                    //    readTimeMsMax = _memoryReadTimeMax;
+                    //}
 
                     try
                     {
@@ -691,8 +693,21 @@ namespace osuEscape
         private void materialButton_checkApi_Click(object sender, EventArgs e)
         {
             //***verify api not added
+            Task.Run(async () =>
+            {
+                bool verified = await CheckAPIKeyAsync(materialTextBox_apiInput.Text);
 
-            Properties.Settings.Default.userApiKey = materialTextBox_apiInput.Text;
+                if (verified)
+                {
+                    Properties.Settings.Default.userApiKey = materialTextBox_apiInput.Text;
+                    Properties.Settings.Default.isAPIKeyVerified = true;                    
+                }
+                else
+                    Properties.Settings.Default.isAPIKeyVerified = false;
+
+                MessageBox.Show(Properties.Settings.Default.isAPIKeyVerified.ToString());
+                APIRequiredCheckBoxesEnabled();
+            });
         }
 
         private void materialButton_findOsuLocation_Click(object sender, EventArgs e)
@@ -760,7 +775,7 @@ namespace osuEscape
         {
             if (Properties.Settings.Default.osuLocation == "")
             {
-                MessageBox.Show("Invalid Location");
+                ShowMessageBox("ERROR: Invalid Location!");
             }
             else
             {
@@ -825,13 +840,39 @@ namespace osuEscape
             }
             else
             {
-                MessageBox.Show(
-                    $"Internal server Error/ Incorrect API! {Environment.NewLine} " +
-                    $"Please restart the application")
-                    ;
+                IncorrectAPITextOutput();
             }
 
             return result;
+        }
+
+        private static async Task<bool> CheckAPIKeyAsync(string textBoxAPIKey)
+        {
+            // verifying api key using one of the osu! api urls
+            // we use get_beatmaps as it requires the least parameter
+            // this url returns nothing but only success status
+            // result should be []
+            var url = $"https://osu.ppy.sh/api/get_beatmaps?k={textBoxAPIKey}&b=1&m=0&limit=1";
+
+
+            var request = new HttpRequestMessage(HttpMethod.Get, url);
+            request.Headers.Accept.Clear();
+            request.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer");
+            request.Content = new StringContent("{...}", Encoding.UTF8, "application/json");
+
+            var response = await client.SendAsync(request, CancellationToken.None);
+
+            if (response.IsSuccessStatusCode)
+            {
+                // check if the response is successful, response content is not needed
+                return true;
+            }
+            else
+            {
+                IncorrectAPITextOutput();
+                return false;
+            }
         }
 
 
@@ -872,7 +913,7 @@ namespace osuEscape
             }
             else
             {
-                // reset ui with fixed size
+                // reset ui size with fixed min/max
                 this.MaximumSize = FormSize_init;
                 this.Size = FormSize_init;
                 this.MinimumSize = FormSize_init;
@@ -882,8 +923,10 @@ namespace osuEscape
                 materialButton_toggle.Size = button_Toggle_Size_init;
                 materialLabel_MapData.Visible = true;
                 materialMultiLineTextBox_mapData.Visible = true;
-            }
 
+                APIRequiredCheckBoxesEnabled();
+            }
+            //avoid button focus
             materialLabel_focus.Focus();
         }
 
@@ -915,7 +958,7 @@ namespace osuEscape
             GlobalHotkeyRegister();
         }
 
-        private void ShowMessageBox(string message)
+        private static void ShowMessageBox(string message)
         {
             ToggleSound(Properties.Settings.Default.isToggleSound);          
 
@@ -935,6 +978,32 @@ namespace osuEscape
 
             // Re-enable Hotkey
             GlobalHotkeyRegister();
+        }
+
+        private static void IncorrectAPITextOutput()
+        {     
+            ShowMessageBox(
+                    $"Internal server Error/ Incorrect API! {Environment.NewLine} " +
+                    $"Please check if your API key is correct.")
+                    ;            
+        }
+        private void APIRequiredCheckBoxesEnabled()
+        {
+            if (materialCheckbox_autoDisconnect.InvokeRequired)
+            {
+                materialCheckbox_autoDisconnect.Invoke(new MethodInvoker(delegate
+                {
+                    materialCheckbox_autoDisconnect.Enabled = Properties.Settings.Default.isAPIKeyVerified;
+                    if (!materialCheckbox_autoDisconnect.Enabled)
+                        materialCheckbox_autoDisconnect.Checked = false;
+                }));
+            }
+            else
+            {
+                materialCheckbox_autoDisconnect.Enabled = Properties.Settings.Default.isAPIKeyVerified;
+                if (!materialCheckbox_autoDisconnect.Enabled)
+                    materialCheckbox_autoDisconnect.Checked = false;
+            }
         }
     }
 }
