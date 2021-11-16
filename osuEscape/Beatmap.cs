@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace osuEscape
+﻿namespace osuEscape
 {
     public class Beatmap
     {

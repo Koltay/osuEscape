@@ -8,7 +8,6 @@ using OsuMemoryDataProvider.OsuMemoryModels;
 using OsuMemoryDataProvider.OsuMemoryModels.Direct;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Diagnostics;
 using System.Drawing;
 using System.IO;
@@ -140,8 +139,10 @@ namespace osuEscape
             materialCheckbox_submitIfFC.Checked = Properties.Settings.Default.isSubmitIfFC;
             materialCheckbox_hideData.Checked = Properties.Settings.Default.isHideData;
             materialCheckbox_autoDisconnect.Checked = Properties.Settings.Default.isAutoDisconnect;
+            materialCheckbox_autoDisconnect.Enabled = Properties.Settings.Default.isAPIKeyVerified;
 
             materialTextBox_apiInput.Text = Properties.Settings.Default.userApiKey;
+
             materialMultiLineTextBox_submitAcc.Text = Properties.Settings.Default.submitAcc.ToString();
 
             materialSkinManager.Theme = (MaterialSkinManager.Themes)Properties.Settings.Default.Theme;
@@ -544,7 +545,7 @@ namespace osuEscape
                         Primary.Indigo100,
                         Accent.Red400,
                         TextShade.WHITE);
-            }));           
+            }));
         }
 
         private void FirewallRuleSetUp(string filename)
@@ -845,7 +846,7 @@ namespace osuEscape
             return result;
         }
 
-        private async Task CheckAPIKeyAsync()
+        private async void CheckAPIKeyAsync()
         {
             // verifying api key using one of the osu! api urls
             // using get_beatmaps as it requires the least parameter
