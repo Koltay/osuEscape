@@ -276,67 +276,60 @@ namespace osuEscape
                         _sreader.TryRead(baseAddresses.ResultsScreen);
 
 
-                        if (Properties.Settings.Default.isAutoDisconnect && materialCheckbox_autoDisconnect.Enabled)
+                        if (Properties.Settings.Default.isAutoDisconnect && materialCheckbox_autoDisconnect.Enabled && isAllowConnection)
                         {
-                            //upload if only it is not a replay
-                            if (!baseAddresses.Player.IsReplay)
+                            // upload if only it is not a replay
+                            // miss count == 0 means full comboing 
+                            if (!baseAddresses.Player.IsReplay && 
+                                baseAddresses.Player.MaxCombo != 0)
                             {
                                 //upload if only the map is ranked or loved
-                                if (baseAddresses.Beatmap.Status == ((short)BeatmapStatus.Ranked) || baseAddresses.Beatmap.Status == ((short)BeatmapStatus.Loved))
+                                if (baseAddresses.Beatmap.Status == ((short)BeatmapStatus.Ranked) || 
+                                    baseAddresses.Beatmap.Status == ((short)BeatmapStatus.Loved))
                                 {
-                                    if (baseAddresses.Player.MaxCombo != 0)
+                                    materialLabel_submissionStatus.BeginInvoke((MethodInvoker)delegate
                                     {
-                                        // Connection should be enabled because of meeting the requirement of submitting
-                                        if (isAllowConnection)
+                                        Label_SubmissionStatus_TextChanged("Ready to upload recent score.");
+                                    });
+
+                                    // delay the task for 1.5s to let the score submitted first
+                                    await Task.Delay(1500);
+
+                                    // GET Method of user's recent score (osu! api v1)
+                                    // get the recent 3 scores, even though there is multiple submissions at one connection
+                                    // the recent score could still be recognized
+                                    recentUploadScoreList = await GetUserRecentScoreAsync(baseAddresses.Player.Username, 3);
+
+                                    bool isUploaded = false;
+
+                                    foreach (int responseScore in recentUploadScoreList)
+                                    {
+                                        // the score player recently submitted
+                                        if (responseScore == baseAddresses.Player.Score)
                                         {
-                                            materialLabel_submissionStatus.BeginInvoke((MethodInvoker)delegate
-                                            {
-                                                Label_SubmissionStatus_TextChanged("Ready to upload recent score.");
-                                            });
+                                            isUploaded = true;
 
-                                            // delay the task for 1.5s to let the score submitted first
-                                            await Task.Delay(1500);
+                                            isAllowConnection = true;
 
-                                            // GET Method of user's recent score (osu! api v1)
-                                            // get the recent 3 scores, even though there is multiple submissions at one connection
-                                            // the recent score could still be recognized
-                                            recentUploadScoreList = await GetUserRecentScoreAsync(baseAddresses.Player.Username, 3);
-
-                                            bool isUploaded = false;
-
-                                            foreach (int responseScore in recentUploadScoreList)
-                                            {
-                                                // the score player recently submitted
-                                                if (responseScore == baseAddresses.Player.Score)
-                                                {
-                                                    isUploaded = true;
-
-                                                    isAllowConnection = true;
-
-                                                    ToggleFirewall();
-                                                    // to avoid toggling twice for same score submission
-                                                }
-                                            }
-
-                                            materialLabel_submissionStatus.BeginInvoke((MethodInvoker)delegate
-                                            {
-                                                if (isUploaded)
-                                                {
-                                                    Label_SubmissionStatus_TextChanged("SUCCESS: Uploaded recent score.");
-                                                }
-                                                else
-                                                {
-                                                    Label_SubmissionStatus_TextChanged("FAILED: Did not upload recent score.");
-                                                }
-                                            });
-
-                                            // 5s for displaying label message
-                                            await Task.Delay(5000);
-
-                                            Label_SubmissionStatus_TextChanged("");
+                                            ToggleFirewall();
+                                            // to avoid toggling twice for same score submission
                                         }
                                     }
-                                }
+
+                                    materialLabel_submissionStatus.BeginInvoke((MethodInvoker)delegate
+                                    {
+                                        string text = isUploaded ? "SUCCESS: Uploaded recent score." : "FAILED: Did not upload recent score.";
+                                        Label_SubmissionStatus_TextChanged(text);
+                                    });
+
+                                    // 5s for displaying label message
+                                    await Task.Delay(5000);
+
+                                    materialLabel_submissionStatus.BeginInvoke((MethodInvoker)delegate
+                                    {
+                                        Label_SubmissionStatus_TextChanged("");
+                                    });
+                                }                                  
                             }
                         }
                     }
@@ -370,26 +363,19 @@ namespace osuEscape
                                 Console.WriteLine(ex.Message);
                             }
                         }
-
-                        if (Properties.Settings.Default.isSubmitIfFC)
-                        {
-                            // using last note offset to determine if the map ended, after that we determine if it is an "FC"
-                            if (baseAddresses.GeneralData.AudioTime >= lastNoteOffset)
-                            {
-                                if (baseAddresses.Player.Combo == baseAddresses.Player.MaxCombo) // This method ignores sliderbreak score
-                                {
-                                    if (baseAddresses.Player.HitMiss == 0) // full combo / dropped some sliderends
-                                    {
-                                        if (baseAddresses.Player.Accuracy >= Convert.ToInt32(materialMultiLineTextBox_submitAcc.Text)) // above or equal to the required acc
-                                        {
-                                            if (!isAllowConnection) // if there is block connection, disable it
-                                            {
-                                                ToggleFirewall();
-                                            }
-                                        }
-                                    }
-                                }
-                            }
+                        // using last note offset to determine if the map ended, after that we determine if it is an "FC"
+                        // zero misscount means full combo / dropped some sliderends / sliderbreak at start
+                        // above or equal to the required acc
+                        // if there is block connection, disable the block rule
+                        if (
+                            Properties.Settings.Default.isSubmitIfFC &&
+                            baseAddresses.GeneralData.AudioTime >= lastNoteOffset && 
+                            baseAddresses.Player.Combo == baseAddresses.Player.MaxCombo && 
+                            baseAddresses.Player.HitMiss == 0 &&
+                            baseAddresses.Player.Accuracy >= Properties.Settings.Default.submitAcc &&
+                            !isAllowConnection)
+                        {     
+                            ToggleFirewall();
                         }
                     }
                     else
@@ -887,18 +873,15 @@ namespace osuEscape
 
         private void materialMultiLineTextBox_submitAcc_TextChanged(object sender, EventArgs e)
         {
-            if (materialMultiLineTextBox_submitAcc.Text.Equals("")) { materialMultiLineTextBox_submitAcc.Text = "0"; }
-            if (Convert.ToInt32(materialMultiLineTextBox_submitAcc.Text) > 100)
-            {
-                Properties.Settings.Default.submitAcc = 100;
-                materialMultiLineTextBox_submitAcc.Text = "100";
-            }
             // reset the accuracy to 100 to avoid unneeded submission
-            if (Convert.ToInt32(materialMultiLineTextBox_submitAcc.Text) < 0)
+            if (Convert.ToInt32(materialMultiLineTextBox_submitAcc.Text) > 100 || 
+                Convert.ToInt32(materialMultiLineTextBox_submitAcc.Text) < 0 || 
+                materialMultiLineTextBox_submitAcc.Text.Equals(""))
             {
-                Properties.Settings.Default.submitAcc = 100;
                 materialMultiLineTextBox_submitAcc.Text = "100";
             }
+
+            Properties.Settings.Default.submitAcc = Convert.ToInt32(materialMultiLineTextBox_submitAcc.Text);
         }
 
         private void Label_SubmissionStatus_TextChanged(string str)
