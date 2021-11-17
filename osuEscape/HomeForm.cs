@@ -280,11 +280,11 @@ namespace osuEscape
                         {
                             // upload if only it is not a replay
                             // miss count == 0 means full comboing 
-                            if (!baseAddresses.Player.IsReplay && 
+                            if (!baseAddresses.Player.IsReplay &&
                                 baseAddresses.Player.MaxCombo != 0)
                             {
                                 //upload if only the map is ranked or loved
-                                if (baseAddresses.Beatmap.Status == ((short)BeatmapStatus.Ranked) || 
+                                if (baseAddresses.Beatmap.Status == ((short)BeatmapStatus.Ranked) ||
                                     baseAddresses.Beatmap.Status == ((short)BeatmapStatus.Loved))
                                 {
                                     materialLabel_submissionStatus.BeginInvoke((MethodInvoker)delegate
@@ -321,15 +321,7 @@ namespace osuEscape
                                         string text = isUploaded ? "SUCCESS: Uploaded recent score." : "FAILED: Did not upload recent score.";
                                         Label_SubmissionStatus_TextChanged(text);
                                     });
-
-                                    // 5s for displaying label message
-                                    await Task.Delay(5000);
-
-                                    materialLabel_submissionStatus.BeginInvoke((MethodInvoker)delegate
-                                    {
-                                        Label_SubmissionStatus_TextChanged("");
-                                    });
-                                }                                  
+                                }
                             }
                         }
                     }
@@ -369,12 +361,12 @@ namespace osuEscape
                         // if there is block connection, disable the block rule
                         if (
                             Properties.Settings.Default.isSubmitIfFC &&
-                            baseAddresses.GeneralData.AudioTime >= lastNoteOffset && 
-                            baseAddresses.Player.Combo == baseAddresses.Player.MaxCombo && 
+                            baseAddresses.GeneralData.AudioTime >= lastNoteOffset &&
+                            baseAddresses.Player.Combo == baseAddresses.Player.MaxCombo &&
                             baseAddresses.Player.HitMiss == 0 &&
                             baseAddresses.Player.Accuracy >= Properties.Settings.Default.submitAcc &&
                             !isAllowConnection)
-                        {     
+                        {
                             ToggleFirewall();
                         }
                     }
@@ -406,7 +398,7 @@ namespace osuEscape
                                   $"AR: {baseAddresses.Beatmap.Ar} CS: {baseAddresses.Beatmap.Cs} HP: {baseAddresses.Beatmap.Hp} OD: {baseAddresses.Beatmap.Od}{Environment.NewLine}" +
                                   $"Gamemode: {(Gamemode)baseAddresses.GeneralData.GameMode}{Environment.NewLine}" +
                                   $"Map Status: {(BeatmapStatus)baseAddresses.Beatmap.Status}{Environment.NewLine}" +
-                                  $"Mods: {(Mods)baseAddresses.GeneralData.Mods}"
+                                  $"Mods: {(Mods)baseAddresses.GeneralData.Mods}"                                  
                                   ;
 
                             materialMultiLineTextBox_currentPlayingData.Text =
@@ -447,6 +439,8 @@ namespace osuEscape
             AllowConnection(isAllowConnection);
 
             ToggleSound(Properties.Settings.Default.isToggleSound);
+
+            CheckBoxesUpdateStatus();
         }
 
         private void AllowConnection(bool isAllow)
@@ -862,8 +856,29 @@ namespace osuEscape
                 materialCheckbox_autoDisconnect.Checked = false;
             }
 
+            CheckBoxesUpdateStatus();
+        }
+
+        private void CheckBoxesUpdateStatus()
+        {
+            materialCheckbox_runAtStartup.Invalidate();
+            materialCheckbox_runAtStartup.Update();
+            materialCheckbox_minimizeToSystemTray.Invalidate();
+            materialCheckbox_minimizeToSystemTray.Update();
+            materialCheckbox_toggleWithSound.Invalidate();
+            materialCheckbox_toggleWithSound.Update();
+            materialCheckbox_topMost.Invalidate();
+            materialCheckbox_topMost.Update();
+            materialCheckbox_hideData.Invalidate();
+            materialCheckbox_hideData.Update();
+            materialCheckbox_submitIfFC.Invalidate();
+            materialCheckbox_submitIfFC.Update();
             materialCheckbox_autoDisconnect.Invalidate();
             materialCheckbox_autoDisconnect.Update();
+
+            //tabPages'color also needs to update
+            materialTabSelector_main.Invalidate();
+            materialTabSelector_main.Update();
         }
 
 
@@ -874,8 +889,8 @@ namespace osuEscape
         private void materialMultiLineTextBox_submitAcc_TextChanged(object sender, EventArgs e)
         {
             // reset the accuracy to 100 to avoid unneeded submission
-            if (Convert.ToInt32(materialMultiLineTextBox_submitAcc.Text) > 100 || 
-                Convert.ToInt32(materialMultiLineTextBox_submitAcc.Text) < 0 || 
+            if (Convert.ToInt32(materialMultiLineTextBox_submitAcc.Text) > 100 ||
+                Convert.ToInt32(materialMultiLineTextBox_submitAcc.Text) < 0 ||
                 materialMultiLineTextBox_submitAcc.Text.Equals(""))
             {
                 materialMultiLineTextBox_submitAcc.Text = "100";
