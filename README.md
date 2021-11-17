@@ -1,6 +1,7 @@
 # osu! Escape
+![image](https://user-images.githubusercontent.com/73950784/142169604-775b49d4-fa5c-4355-bd43-4dbc106518fd.png)
 
-![image](https://user-images.githubusercontent.com/73950784/140847268-7e44ffc3-bf63-4ba8-aff6-c2622d75877a.png)
+![image](https://user-images.githubusercontent.com/73950784/142169568-17415c54-2ec6-4b46-b2d5-f93420bd77d8.png)
  
  This project provides osu! score submission blocking, which is conducted by applying the blocking rule in your PC's advanced firewall
  
