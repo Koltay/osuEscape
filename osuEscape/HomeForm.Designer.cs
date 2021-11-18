@@ -46,6 +46,7 @@
             this.materialLabel_MapData = new MaterialSkin.Controls.MaterialLabel();
             this.materialButton_toggle = new MaterialSkin.Controls.MaterialButton();
             this.tabPage_settings = new System.Windows.Forms.TabPage();
+            this.materialButton_changeToggleKey = new MaterialSkin.Controls.MaterialButton();
             this.materialButton_changeTheme = new MaterialSkin.Controls.MaterialButton();
             this.materialTextBox_apiInput = new MaterialSkin.Controls.MaterialTextBox2();
             this.materialButton_findOsuLocation = new MaterialSkin.Controls.MaterialButton();
@@ -288,6 +289,7 @@
             // tabPage_settings
             // 
             this.tabPage_settings.BackColor = System.Drawing.Color.White;
+            this.tabPage_settings.Controls.Add(this.materialButton_changeToggleKey);
             this.tabPage_settings.Controls.Add(this.materialButton_changeTheme);
             this.tabPage_settings.Controls.Add(this.materialTextBox_apiInput);
             this.tabPage_settings.Controls.Add(this.materialButton_findOsuLocation);
@@ -311,6 +313,29 @@
             this.tabPage_settings.Size = new System.Drawing.Size(540, 420);
             this.tabPage_settings.TabIndex = 1;
             this.tabPage_settings.Text = "Settings";
+            // 
+            // materialButton_changeToggleKey
+            // 
+            this.materialButton_changeToggleKey.AutoSize = false;
+            this.materialButton_changeToggleKey.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.materialButton_changeToggleKey.Density = MaterialSkin.Controls.MaterialButton.MaterialButtonDensity.Default;
+            this.materialButton_changeToggleKey.Depth = 0;
+            this.materialButton_changeToggleKey.HighEmphasis = true;
+            this.materialButton_changeToggleKey.Icon = null;
+            this.materialButton_changeToggleKey.Location = new System.Drawing.Point(351, 359);
+            this.materialButton_changeToggleKey.Margin = new System.Windows.Forms.Padding(4, 6, 4, 6);
+            this.materialButton_changeToggleKey.MouseState = MaterialSkin.MouseState.HOVER;
+            this.materialButton_changeToggleKey.Name = "materialButton_changeToggleKey";
+            this.materialButton_changeToggleKey.NoAccentTextColor = System.Drawing.Color.Empty;
+            this.materialButton_changeToggleKey.Size = new System.Drawing.Size(181, 41);
+            this.materialButton_changeToggleKey.TabIndex = 26;
+            this.materialButton_changeToggleKey.TabStop = false;
+            this.materialButton_changeToggleKey.Text = "Change Toggle Key";
+            this.materialButton_changeToggleKey.TextAlign = System.Drawing.ContentAlignment.BottomCenter;
+            this.materialButton_changeToggleKey.Type = MaterialSkin.Controls.MaterialButton.MaterialButtonType.Contained;
+            this.materialButton_changeToggleKey.UseAccentColor = false;
+            this.materialButton_changeToggleKey.UseVisualStyleBackColor = true;
+            this.materialButton_changeToggleKey.Click += new System.EventHandler(this.materialButton_changeToggleKey_Click);
             // 
             // materialButton_changeTheme
             // 
@@ -650,10 +675,12 @@
             this.Controls.Add(this.materialTabControl_menu);
             this.DrawerShowIconsWhenHidden = true;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
+            this.KeyPreview = true;
             this.MaximizeBox = false;
             this.Name = "HomeForm";
             this.Text = "osu! Escape";
             this.Load += new System.EventHandler(this.OsuEscape_Load);
+            this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.HomeForm_KeyDown);
             this.Resize += new System.EventHandler(this.HomeForm_Resize);
             this.materialTabControl_menu.ResumeLayout(false);
             this.tabPage_main.ResumeLayout(false);
@@ -706,5 +733,6 @@
         private MaterialSkin.Controls.MaterialLabel materialLabel_focus;
         private MaterialSkin.Controls.MaterialButton materialButton_changeTheme;
         private System.Windows.Forms.Panel panel_mapStatus;
+        private MaterialSkin.Controls.MaterialButton materialButton_changeToggleKey;
     }
 }

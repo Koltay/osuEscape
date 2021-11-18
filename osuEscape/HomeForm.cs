@@ -36,18 +36,15 @@ namespace osuEscape
 
         private bool isAllowConnection = true;
 
+        // score upload
         private static readonly HttpClient client = new();
-
         private static int lastNoteOffset = -1;
-
         private static List<int> recentUploadScoreList = new();
 
+        //resize ui
         private Size FormSize_init;
-
         private Point labelSubmissionStatus_Location_init;
-
         private Point panel_MapStatus_Location_init;
-
         private Size button_Toggle_Size_init;
 
         readonly MaterialSkinManager materialSkinManager;
@@ -55,6 +52,62 @@ namespace osuEscape
         //Startup registry key and value
         private static readonly string StartupKey = "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run";
         private static readonly string StartupValue = System.Reflection.Assembly.GetExecutingAssembly().GetName().Name;
+
+        private static Dictionary<Keys, string> AcceptedKeysToString = new Dictionary<Keys, string>()
+        {
+            [Keys.A] = "A",
+            [Keys.B] = "B",
+            [Keys.C] = "C",
+            [Keys.D] = "D",
+            [Keys.E] = "E",
+            [Keys.F] = "F",
+            [Keys.G] = "G",
+            [Keys.H] = "H",
+            [Keys.I] = "I",
+            [Keys.J] = "J",
+            [Keys.K] = "K",
+            [Keys.L] = "L",
+            [Keys.M] = "M",
+            [Keys.N] = "N",
+            [Keys.O] = "O",
+            [Keys.P] = "P",
+            [Keys.Q] = "Q",
+            [Keys.R] = "R",
+            [Keys.S] = "S",
+            [Keys.T] = "T",
+            [Keys.U] = "U",
+            [Keys.V] = "V",
+            [Keys.W] = "W",
+            [Keys.X] = "X",
+            [Keys.Y] = "Y",
+            [Keys.Z] = "Z",
+            [Keys.D1] = "1",
+            [Keys.D2] = "2",
+            [Keys.D3] = "3",
+            [Keys.D4] = "4",
+            [Keys.D5] = "5",
+            [Keys.D6] = "6",
+            [Keys.D7] = "7",
+            [Keys.D8] = "8",
+            [Keys.D9] = "9",
+            [Keys.D0] = "0",
+            [Keys.F6] = "F6",
+            [Keys.F7] = "F7",
+            [Keys.F8] = "F8",
+            [Keys.F9] = "F9",
+            [Keys.OemMinus] = "-",
+            [Keys.Oemplus] = "=",
+            [Keys.OemOpenBrackets] = "[",
+            [Keys.OemCloseBrackets] = "]",
+            [Keys.OemPipe] = @"\",
+            [Keys.OemSemicolon] = ";",
+            [Keys.OemQuotes] = "'",
+            [Keys.Oemtilde] = "`",
+            [Keys.Oemcomma] = ",",
+            [Keys.OemPeriod] = ".",
+            [Keys.OemQuestion] = "/"
+        };
+        private bool EditingHotkey = false;
         public HomeForm(string osuWindowTitleHint)
         {
             _osuWindowTitleHint = osuWindowTitleHint;
@@ -86,7 +139,7 @@ namespace osuEscape
             panel_MapStatus_Location_init = panel_mapStatus.Location;
             button_Toggle_Size_init = materialButton_toggle.Size;
 
-            // change ui size according to user setting on isHideData
+            // isHideData changes ui size
             HideData();
 
             SettingFormUpdate();
@@ -140,13 +193,16 @@ namespace osuEscape
             materialCheckbox_hideData.Checked = Properties.Settings.Default.isHideData;
             materialCheckbox_autoDisconnect.Checked = Properties.Settings.Default.isAutoDisconnect;
             materialCheckbox_autoDisconnect.Enabled = Properties.Settings.Default.isAPIKeyVerified;
-
             materialTextBox_apiInput.Text = Properties.Settings.Default.userApiKey;
-
             materialMultiLineTextBox_submitAcc.Text = Properties.Settings.Default.submitAcc.ToString();
-
             materialSkinManager.Theme = (MaterialSkinManager.Themes)Properties.Settings.Default.Theme;
             materialButton_changeTheme.Text = (Properties.Settings.Default.Theme == 0 ? "Dark Mode" : "Light Mode");
+
+            materialLabel_globalToggleHotkey.Text = "Global Toggle Hotkey: ";
+            materialLabel_globalToggleHotkey.Text += Properties.Settings.Default.isCtrlGHK ? "Ctrl + " : "";
+            materialLabel_globalToggleHotkey.Text += Properties.Settings.Default.isShiftGHK ? "Shift + " : "";
+            materialLabel_globalToggleHotkey.Text += Properties.Settings.Default.isAltGHK ? "Alt + " : "";
+            materialLabel_globalToggleHotkey.Text += Properties.Settings.Default.GlobalHotKey;
         }
 
         private void OsuEscape_Load(object sender, EventArgs e)
@@ -186,9 +242,6 @@ namespace osuEscape
                     FindOsuLocation();
                 }
             }
-
-            ghk = new KeyHandler(Keys.F6, this);
-            ghk.Register();
         }
 
         #endregion
@@ -200,7 +253,6 @@ namespace osuEscape
         private async void osuDataReaderAsync()
         {
             if (!string.IsNullOrEmpty(_osuWindowTitleHint)) Text += $": {_osuWindowTitleHint}";
-            Text += $" ({(Environment.Is64BitProcess ? "x64" : "x86")})";
             await Task.Run(async () =>
             {
                 Stopwatch stopwatch;
@@ -433,14 +485,21 @@ namespace osuEscape
 
         private void ToggleFirewall()
         {
-            // toggle the connection status
-            isAllowConnection = !isAllowConnection;
+            if (Properties.Settings.Default.osuLocation == "")
+            {
+                ShowMessageBox("ERROR: Invalid Location!");
+            }
+            else
+            {
+                // toggle the connection status
+                isAllowConnection = !isAllowConnection;
 
-            AllowConnection(isAllowConnection);
+                AllowConnection(isAllowConnection);
 
-            ToggleSound(Properties.Settings.Default.isToggleSound);
+                ToggleSound(Properties.Settings.Default.isToggleSound);
 
-            CheckBoxesUpdateStatus();
+                CheckBoxesUpdateStatus();
+            }
         }
 
         private void AllowConnection(bool isAllow)
@@ -458,51 +517,6 @@ namespace osuEscape
             ToggleButtonUpdate(isAllow);
 
             ContextMenuStripUpdate();
-        }
-
-
-        private void ToggleButtonUpdate_old(bool isAllow)
-        {
-            if (materialButton_toggle.InvokeRequired)
-            {
-                _ = materialButton_toggle.Invoke(new MethodInvoker(delegate
-                  {
-                      materialButton_toggle.Text = isAllow ? "Connecting" : "Blocked";
-
-                      materialSkinManager.ColorScheme = isAllow ?
-                      new ColorScheme(
-                            Primary.Indigo500,
-                            Primary.Indigo700,
-                            Primary.Indigo100,
-                            Accent.Green400,
-                            TextShade.WHITE)
-                      :
-                      new ColorScheme(
-                            Primary.Indigo500,
-                            Primary.Indigo700,
-                            Primary.Indigo100,
-                            Accent.Red400,
-                            TextShade.WHITE);
-                  }));
-            }
-            else
-            {
-                materialButton_toggle.Text = isAllow ? "Connecting" : "Blocked";
-                materialSkinManager.ColorScheme = isAllow ?
-                      new ColorScheme(
-                            Primary.Indigo500,
-                            Primary.Indigo700,
-                            Primary.Indigo100,
-                            Accent.Green700,
-                            TextShade.WHITE)
-                      :
-                      new ColorScheme(
-                            Primary.Indigo500,
-                            Primary.Indigo700,
-                            Primary.Indigo100,
-                            Accent.Red400,
-                            TextShade.WHITE);
-            }
         }
 
         private void ToggleButtonUpdate(bool isAllow)
@@ -752,36 +766,6 @@ namespace osuEscape
         #endregion
 
         #region Global HotKey
-        private void HandleHotkey()
-        {
-            if (Properties.Settings.Default.osuLocation == "")
-            {
-                ShowMessageBox("ERROR: Invalid Location!");
-            }
-            else
-            {
-                ToggleFirewall();
-            }
-        }
-
-        protected override void WndProc(ref Message m)
-        {
-            if (m.Msg == WM_HOTKEY_MSG_ID)
-            {
-                HandleHotkey();
-            }
-            base.WndProc(ref m);
-        }
-
-        private void GlobalHotkeyRegister()
-        {
-            if (ghk != null && ghk.Register() == true)
-                ghk.Unregiser();
-
-            ghk = new KeyHandler(Keys.F6, this);
-            ghk.Register();
-        }
-
 
         #endregion
 
@@ -960,8 +944,6 @@ namespace osuEscape
                 ToggleSystemTray(materialCheckbox_minimizeToSystemTray.Checked);
                 ContextMenuStripUpdate();
             }
-
-            GlobalHotkeyRegister();
         }
 
         private static void ShowMessageBox(string message)
@@ -981,9 +963,6 @@ namespace osuEscape
         {
             this.WindowState = FormWindowState.Normal;
             ToggleSystemTray(false);
-
-            // Re-enable Hotkey
-            GlobalHotkeyRegister();
         }
 
         private static void IncorrectAPITextOutput()
@@ -1009,6 +988,47 @@ namespace osuEscape
                 materialCheckbox_autoDisconnect.Enabled = Properties.Settings.Default.isAPIKeyVerified;
                 if (!materialCheckbox_autoDisconnect.Enabled)
                     materialCheckbox_autoDisconnect.Checked = false;
+            }
+        }  
+
+        private void materialButton_changeToggleKey_Click(object sender, EventArgs e)
+        {            
+            EditingHotkey = true;
+            materialLabel_globalToggleHotkey.Text = "Press a Key...";
+        }
+
+        private void HomeForm_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (EditingHotkey)
+            {
+                if (e.KeyCode == Keys.Escape)
+                {
+                    materialLabel_globalToggleHotkey.Text = "Global Toggle Hotkey: ";
+                    materialLabel_globalToggleHotkey.Text += Properties.Settings.Default.isCtrlGHK ? "Ctrl + " : "";
+                    materialLabel_globalToggleHotkey.Text += Properties.Settings.Default.isShiftGHK ? "Shift + " : "";
+                    materialLabel_globalToggleHotkey.Text += Properties.Settings.Default.isAltGHK ? "Alt + " : "";
+                    materialLabel_globalToggleHotkey.Text += AcceptedKeysToString[e.KeyCode];
+                    EditingHotkey = false;
+                }
+                else if (AcceptedKeysToString.ContainsKey(e.KeyCode))
+                {
+                    materialLabel_globalToggleHotkey.Text = "Global Toggle Hotkey: ";
+                    materialLabel_globalToggleHotkey.Text += e.Control ? "Ctrl + " : "";
+                    materialLabel_globalToggleHotkey.Text += e.Shift ? "Shift + " : "";
+                    materialLabel_globalToggleHotkey.Text += e.Alt ? "Alt + " : "";
+                    materialLabel_globalToggleHotkey.Text += AcceptedKeysToString[e.KeyCode];
+
+                    Properties.Settings.Default.isCtrlGHK = e.Control;
+                    Properties.Settings.Default.isShiftGHK = e.Shift;
+                    Properties.Settings.Default.isAltGHK = e.Alt;
+                    Properties.Settings.Default.GlobalHotKey = AcceptedKeysToString[e.KeyCode];
+                    EditingHotkey = false;
+                }
+            }
+            else
+            {
+                if (e.KeyCode == AcceptedKeysToString.FirstOrDefault(x => x.Value == Properties.Settings.Default.GlobalHotKey).Key)
+                    ToggleFirewall();
             }
         }
     }

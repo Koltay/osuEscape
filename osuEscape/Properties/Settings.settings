@@ -47,5 +47,17 @@
     <Setting Name="isAPIKeyVerified" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">False</Value>
     </Setting>
+    <Setting Name="isCtrlGHK" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
+    <Setting Name="isShiftGHK" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
+    <Setting Name="isAltGHK" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
+    <Setting Name="GlobalHotKey" Type="System.String" Scope="User">
+      <Value Profile="(Default)">F7</Value>
+    </Setting>
   </Settings>
 </SettingsFile>
