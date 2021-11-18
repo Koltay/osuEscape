@@ -994,7 +994,7 @@ namespace osuEscape
         private void materialButton_changeToggleKey_Click(object sender, EventArgs e)
         {            
             EditingHotkey = true;
-            materialLabel_globalToggleHotkey.Text = "Press a Key...";
+            materialLabel_globalToggleHotkey.Text = "Press the Keys as global toggle key";
         }
 
         private void HomeForm_KeyDown(object sender, KeyEventArgs e)
