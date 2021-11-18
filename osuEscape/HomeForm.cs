@@ -31,9 +31,6 @@ namespace osuEscape
         private readonly StructuredOsuMemoryReader _sreader;
         private readonly CancellationTokenSource cts = new();
 
-        private KeyHandler ghk;
-        public const int WM_HOTKEY_MSG_ID = 0x0312;
-
         private bool isAllowConnection = true;
 
         // score upload
@@ -53,7 +50,7 @@ namespace osuEscape
         private static readonly string StartupKey = "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run";
         private static readonly string StartupValue = System.Reflection.Assembly.GetExecutingAssembly().GetName().Name;
 
-        private static Dictionary<Keys, string> AcceptedKeysToString = new Dictionary<Keys, string>()
+        private static readonly Dictionary<Keys, string> KeysToString = new()
         {
             [Keys.A] = "A",
             [Keys.B] = "B",
@@ -666,7 +663,7 @@ namespace osuEscape
 
         #endregion
 
-
+        #region Checkboxes
 
         private void materialCheckbox_autoDisconnect_CheckedChanged(object sender, EventArgs e)
         {
@@ -708,6 +705,8 @@ namespace osuEscape
 
         #endregion
 
+        #endregion
+
         #region Buttons
 
         private void materialButton_checkApi_Click(object sender, EventArgs e)
@@ -743,6 +742,11 @@ namespace osuEscape
                 ToggleFirewall();
             }
         }
+        private void materialButton_changeToggleKey_Click(object sender, EventArgs e)
+        {
+            EditingHotkey = true;
+            materialLabel_globalToggleHotkey.Text = "Press Key(s) as Global Toggle Hotkey...";
+        }
 
 
         #endregion
@@ -766,6 +770,49 @@ namespace osuEscape
         #endregion
 
         #region Global HotKey
+
+        private void HomeForm_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (EditingHotkey)
+            {
+                if (e.KeyCode == Keys.Escape)
+                {
+                    // cancel changes
+                    materialLabel_globalToggleHotkey.Text = "Global Toggle Hotkey: ";
+                    materialLabel_globalToggleHotkey.Text += Properties.Settings.Default.isCtrlGHK ? "Ctrl + " : "";
+                    materialLabel_globalToggleHotkey.Text += Properties.Settings.Default.isShiftGHK ? "Shift + " : "";
+                    materialLabel_globalToggleHotkey.Text += Properties.Settings.Default.isAltGHK ? "Alt + " : "";
+                    materialLabel_globalToggleHotkey.Text += Properties.Settings.Default.GlobalHotKey;
+                    EditingHotkey = false;
+                }
+                else if (KeysToString.ContainsKey(e.KeyCode))
+                {
+                    materialLabel_globalToggleHotkey.Text = "Global Toggle Hotkey: ";
+                    materialLabel_globalToggleHotkey.Text += e.Control ? "Ctrl + " : "";
+                    materialLabel_globalToggleHotkey.Text += e.Shift ? "Shift + " : "";
+                    materialLabel_globalToggleHotkey.Text += e.Alt ? "Alt + " : "";
+                    materialLabel_globalToggleHotkey.Text += KeysToString[e.KeyCode];
+
+                    Properties.Settings.Default.isCtrlGHK = e.Control;
+                    Properties.Settings.Default.isShiftGHK = e.Shift;
+                    Properties.Settings.Default.isAltGHK = e.Alt;
+                    Properties.Settings.Default.GlobalHotKey = KeysToString[e.KeyCode];
+                    EditingHotkey = false;
+
+                    System.Media.SystemSounds.Asterisk.Play();
+                }
+            }
+            else
+            {
+                if (e.KeyCode == KeysToString.FirstOrDefault(x => x.Value == Properties.Settings.Default.GlobalHotKey).Key &&
+                    e.Control == Properties.Settings.Default.isCtrlGHK &&
+                    e.Shift == Properties.Settings.Default.isShiftGHK &&
+                    e.Alt == Properties.Settings.Default.isAltGHK)
+
+                    ToggleFirewall();
+            }
+        }
+
 
         #endregion
 
@@ -869,7 +916,35 @@ namespace osuEscape
 
         #endregion
 
+        #region API Required Options
 
+        private static void IncorrectAPITextOutput()
+        {
+            ShowMessageBox(
+                    $"Internal server Error/ Incorrect API! {Environment.NewLine} " +
+                    $"Please check if your API key is correct.")
+                    ;
+        }
+        private void APIRequiredCheckBoxesEnabled()
+        {
+            if (materialCheckbox_autoDisconnect.InvokeRequired)
+            {
+                materialCheckbox_autoDisconnect.Invoke(new MethodInvoker(delegate
+                {
+                    materialCheckbox_autoDisconnect.Enabled = Properties.Settings.Default.isAPIKeyVerified;
+                    if (!materialCheckbox_autoDisconnect.Enabled)
+                        materialCheckbox_autoDisconnect.Checked = false;
+                }));
+            }
+            else
+            {
+                materialCheckbox_autoDisconnect.Enabled = Properties.Settings.Default.isAPIKeyVerified;
+                if (!materialCheckbox_autoDisconnect.Enabled)
+                    materialCheckbox_autoDisconnect.Checked = false;
+            }
+        }
+
+        #endregion
         private void materialMultiLineTextBox_submitAcc_TextChanged(object sender, EventArgs e)
         {
             // reset the accuracy to 100 to avoid unneeded submission
@@ -965,71 +1040,6 @@ namespace osuEscape
             ToggleSystemTray(false);
         }
 
-        private static void IncorrectAPITextOutput()
-        {
-            ShowMessageBox(
-                    $"Internal server Error/ Incorrect API! {Environment.NewLine} " +
-                    $"Please check if your API key is correct.")
-                    ;
-        }
-        private void APIRequiredCheckBoxesEnabled()
-        {
-            if (materialCheckbox_autoDisconnect.InvokeRequired)
-            {
-                materialCheckbox_autoDisconnect.Invoke(new MethodInvoker(delegate
-                {
-                    materialCheckbox_autoDisconnect.Enabled = Properties.Settings.Default.isAPIKeyVerified;
-                    if (!materialCheckbox_autoDisconnect.Enabled)
-                        materialCheckbox_autoDisconnect.Checked = false;
-                }));
-            }
-            else
-            {
-                materialCheckbox_autoDisconnect.Enabled = Properties.Settings.Default.isAPIKeyVerified;
-                if (!materialCheckbox_autoDisconnect.Enabled)
-                    materialCheckbox_autoDisconnect.Checked = false;
-            }
-        }  
-
-        private void materialButton_changeToggleKey_Click(object sender, EventArgs e)
-        {            
-            EditingHotkey = true;
-            materialLabel_globalToggleHotkey.Text = "Press the Keys as global toggle key";
-        }
-
-        private void HomeForm_KeyDown(object sender, KeyEventArgs e)
-        {
-            if (EditingHotkey)
-            {
-                if (e.KeyCode == Keys.Escape)
-                {
-                    materialLabel_globalToggleHotkey.Text = "Global Toggle Hotkey: ";
-                    materialLabel_globalToggleHotkey.Text += Properties.Settings.Default.isCtrlGHK ? "Ctrl + " : "";
-                    materialLabel_globalToggleHotkey.Text += Properties.Settings.Default.isShiftGHK ? "Shift + " : "";
-                    materialLabel_globalToggleHotkey.Text += Properties.Settings.Default.isAltGHK ? "Alt + " : "";
-                    materialLabel_globalToggleHotkey.Text += AcceptedKeysToString[e.KeyCode];
-                    EditingHotkey = false;
-                }
-                else if (AcceptedKeysToString.ContainsKey(e.KeyCode))
-                {
-                    materialLabel_globalToggleHotkey.Text = "Global Toggle Hotkey: ";
-                    materialLabel_globalToggleHotkey.Text += e.Control ? "Ctrl + " : "";
-                    materialLabel_globalToggleHotkey.Text += e.Shift ? "Shift + " : "";
-                    materialLabel_globalToggleHotkey.Text += e.Alt ? "Alt + " : "";
-                    materialLabel_globalToggleHotkey.Text += AcceptedKeysToString[e.KeyCode];
-
-                    Properties.Settings.Default.isCtrlGHK = e.Control;
-                    Properties.Settings.Default.isShiftGHK = e.Shift;
-                    Properties.Settings.Default.isAltGHK = e.Alt;
-                    Properties.Settings.Default.GlobalHotKey = AcceptedKeysToString[e.KeyCode];
-                    EditingHotkey = false;
-                }
-            }
-            else
-            {
-                if (e.KeyCode == AcceptedKeysToString.FirstOrDefault(x => x.Value == Properties.Settings.Default.GlobalHotKey).Key)
-                    ToggleFirewall();
-            }
-        }
+        
     }
 }
