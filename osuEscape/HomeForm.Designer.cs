@@ -32,6 +32,7 @@
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(HomeForm));
             this.materialTabControl_menu = new MaterialSkin.Controls.MaterialTabControl();
             this.tabPage_main = new System.Windows.Forms.TabPage();
+            this.materialLabel_version = new MaterialSkin.Controls.MaterialLabel();
             this.panel_mapStatus = new System.Windows.Forms.Panel();
             this.materialLabel_currentMapTime = new MaterialSkin.Controls.MaterialLabel();
             this.materialMultiLineTextBox_status = new MaterialSkin.Controls.MaterialMultiLineTextBox();
@@ -93,6 +94,7 @@
             // tabPage_main
             // 
             this.tabPage_main.BackColor = System.Drawing.Color.White;
+            this.tabPage_main.Controls.Add(this.materialLabel_version);
             this.tabPage_main.Controls.Add(this.panel_mapStatus);
             this.tabPage_main.Controls.Add(this.materialSlider_refreshRate);
             this.tabPage_main.Controls.Add(this.materialLabel_submissionStatus);
@@ -109,6 +111,18 @@
             this.tabPage_main.Size = new System.Drawing.Size(540, 420);
             this.tabPage_main.TabIndex = 0;
             this.tabPage_main.Text = "Main";
+            // 
+            // materialLabel_version
+            // 
+            this.materialLabel_version.AutoSize = true;
+            this.materialLabel_version.Depth = 0;
+            this.materialLabel_version.Font = new System.Drawing.Font("Roboto", 14F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
+            this.materialLabel_version.Location = new System.Drawing.Point(484, 381);
+            this.materialLabel_version.MouseState = MaterialSkin.MouseState.HOVER;
+            this.materialLabel_version.Name = "materialLabel_version";
+            this.materialLabel_version.Size = new System.Drawing.Size(44, 19);
+            this.materialLabel_version.TabIndex = 16;
+            this.materialLabel_version.Text = "v1.3.1";
             // 
             // panel_mapStatus
             // 
@@ -418,9 +432,9 @@
             this.materialLabel_globalToggleHotkey.Location = new System.Drawing.Point(13, 344);
             this.materialLabel_globalToggleHotkey.MouseState = MaterialSkin.MouseState.HOVER;
             this.materialLabel_globalToggleHotkey.Name = "materialLabel_globalToggleHotkey";
-            this.materialLabel_globalToggleHotkey.Size = new System.Drawing.Size(179, 19);
+            this.materialLabel_globalToggleHotkey.Size = new System.Drawing.Size(161, 19);
             this.materialLabel_globalToggleHotkey.TabIndex = 21;
-            this.materialLabel_globalToggleHotkey.Text = "Global Toggle Hotkey: F6";
+            this.materialLabel_globalToggleHotkey.Text = "Global Toggle Hotkey: ";
             // 
             // materialLabel_osuPath
             // 
@@ -734,5 +748,6 @@
         private MaterialSkin.Controls.MaterialButton materialButton_changeTheme;
         private System.Windows.Forms.Panel panel_mapStatus;
         private MaterialSkin.Controls.MaterialButton materialButton_changeToggleKey;
+        private MaterialSkin.Controls.MaterialLabel materialLabel_version;
     }
 }

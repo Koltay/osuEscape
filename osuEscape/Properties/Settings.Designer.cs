@@ -205,49 +205,25 @@ namespace osuEscape.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("False")]
-        public bool isCtrlGHK {
-            get {
-                return ((bool)(this["isCtrlGHK"]));
-            }
-            set {
-                this["isCtrlGHK"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("False")]
-        public bool isShiftGHK {
-            get {
-                return ((bool)(this["isShiftGHK"]));
-            }
-            set {
-                this["isShiftGHK"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("False")]
-        public bool isAltGHK {
-            get {
-                return ((bool)(this["isAltGHK"]));
-            }
-            set {
-                this["isAltGHK"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("F7")]
+        [global::System.Configuration.DefaultSettingValueAttribute("F6")]
         public string GlobalHotKey {
             get {
                 return ((string)(this["GlobalHotKey"]));
             }
             set {
                 this["GlobalHotKey"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("0")]
+        public int ModifierKeys {
+            get {
+                return ((int)(this["ModifierKeys"]));
+            }
+            set {
+                this["ModifierKeys"] = value;
             }
         }
     }

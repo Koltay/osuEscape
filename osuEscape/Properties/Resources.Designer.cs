@@ -61,6 +61,15 @@ namespace osuEscape.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to v{0}.
+        /// </summary>
+        internal static string CurrentVersion {
+            get {
+                return ResourceManager.GetString("CurrentVersion", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
         internal static System.Drawing.Bitmap icon_32 {

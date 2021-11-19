@@ -3,6 +3,7 @@ using MaterialSkin.Controls;
 using Microsoft.Win32;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using osuEscape.Properties;
 using OsuMemoryDataProvider;
 using OsuMemoryDataProvider.OsuMemoryModels;
 using OsuMemoryDataProvider.OsuMemoryModels.Direct;
@@ -14,6 +15,7 @@ using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Reflection;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -32,6 +34,10 @@ namespace osuEscape
         private readonly CancellationTokenSource cts = new();
 
         private bool isAllowConnection = true;
+
+        // hotkey attempt
+        // Keyboard hook for multiple keys
+        private readonly KeyboardHook keyboardHook = new();
 
         // score upload
         private static readonly HttpClient client = new();
@@ -88,10 +94,18 @@ namespace osuEscape
             [Keys.D8] = "8",
             [Keys.D9] = "9",
             [Keys.D0] = "0",
+            [Keys.F1] = "F1",
+            [Keys.F2] = "F2",
+            [Keys.F3] = "F3",
+            [Keys.F4] = "F4",
+            [Keys.F5] = "F5",
             [Keys.F6] = "F6",
             [Keys.F7] = "F7",
             [Keys.F8] = "F8",
             [Keys.F9] = "F9",
+            [Keys.F10] = "F10",
+            [Keys.F11] = "F11",
+            [Keys.F12] = "F12",
             [Keys.OemMinus] = "-",
             [Keys.Oemplus] = "=",
             [Keys.OemOpenBrackets] = "[",
@@ -104,20 +118,20 @@ namespace osuEscape
             [Keys.OemPeriod] = ".",
             [Keys.OemQuestion] = "/"
         };
-        private bool EditingHotkey = false;
+        private bool isEditingHotkey = false;
         public HomeForm(string osuWindowTitleHint)
         {
             _osuWindowTitleHint = osuWindowTitleHint;
 
             InitializeComponent();
 
+            materialLabel_version.Text = string.Format(Resources.CurrentVersion, Assembly.GetEntryAssembly().GetName().Version);
+
             //Initialize material skin manager
             materialSkinManager = MaterialSkinManager.Instance;
             materialSkinManager.EnforceBackcolorOnAllComponents = false;
             materialSkinManager.AddFormToManage(this);
             //color scheme declared in allowconnection()
-
-
 
             _sreader = StructuredOsuMemoryReader.Instance.GetInstanceForWindowTitleHint(osuWindowTitleHint);
 
@@ -126,7 +140,6 @@ namespace osuEscape
             {
                 AppClosing();
             }
-
 
             // for ui resizing
             // editor pixels offset (50px)
@@ -140,6 +153,10 @@ namespace osuEscape
             HideData();
 
             SettingFormUpdate();
+
+            keyboardHook.KeyPressed += new EventHandler<KeyPressedEventArgs>(hook_KeyPressed);
+            keyboardHook.RegisterHotKey((ModifierKeys)Properties.Settings.Default.ModifierKeys,
+                                        KeysToString.FirstOrDefault(x => x.Value == Properties.Settings.Default.GlobalHotKey).Key);
         }
 
         #region Initialize and OnLoad
@@ -195,11 +212,7 @@ namespace osuEscape
             materialSkinManager.Theme = (MaterialSkinManager.Themes)Properties.Settings.Default.Theme;
             materialButton_changeTheme.Text = (Properties.Settings.Default.Theme == 0 ? "Dark Mode" : "Light Mode");
 
-            materialLabel_globalToggleHotkey.Text = "Global Toggle Hotkey: ";
-            materialLabel_globalToggleHotkey.Text += Properties.Settings.Default.isCtrlGHK ? "Ctrl + " : "";
-            materialLabel_globalToggleHotkey.Text += Properties.Settings.Default.isShiftGHK ? "Shift + " : "";
-            materialLabel_globalToggleHotkey.Text += Properties.Settings.Default.isAltGHK ? "Alt + " : "";
-            materialLabel_globalToggleHotkey.Text += Properties.Settings.Default.GlobalHotKey;
+            GlobalHotkeyTextBoxUpdate();
         }
 
         private void OsuEscape_Load(object sender, EventArgs e)
@@ -447,7 +460,7 @@ namespace osuEscape
                                   $"AR: {baseAddresses.Beatmap.Ar} CS: {baseAddresses.Beatmap.Cs} HP: {baseAddresses.Beatmap.Hp} OD: {baseAddresses.Beatmap.Od}{Environment.NewLine}" +
                                   $"Gamemode: {(Gamemode)baseAddresses.GeneralData.GameMode}{Environment.NewLine}" +
                                   $"Map Status: {(BeatmapStatus)baseAddresses.Beatmap.Status}{Environment.NewLine}" +
-                                  $"Mods: {(Mods)baseAddresses.GeneralData.Mods}"                                  
+                                  $"Mods: {(Mods)baseAddresses.GeneralData.Mods}"
                                   ;
 
                             materialMultiLineTextBox_currentPlayingData.Text =
@@ -640,6 +653,8 @@ namespace osuEscape
         {
             notifyIcon_osuEscape.Visible = enabled;
             this.ShowInTaskbar = !enabled;
+
+            //GlobalHotkeyRegister();
         }
 
         #endregion
@@ -744,7 +759,7 @@ namespace osuEscape
         }
         private void materialButton_changeToggleKey_Click(object sender, EventArgs e)
         {
-            EditingHotkey = true;
+            isEditingHotkey = true;
             materialLabel_globalToggleHotkey.Text = "Press Key(s) as Global Toggle Hotkey...";
         }
 
@@ -773,43 +788,34 @@ namespace osuEscape
 
         private void HomeForm_KeyDown(object sender, KeyEventArgs e)
         {
-            if (EditingHotkey)
+            if (isEditingHotkey)
             {
+                // cancel changes
                 if (e.KeyCode == Keys.Escape)
                 {
-                    // cancel changes
-                    materialLabel_globalToggleHotkey.Text = "Global Toggle Hotkey: ";
-                    materialLabel_globalToggleHotkey.Text += Properties.Settings.Default.isCtrlGHK ? "Ctrl + " : "";
-                    materialLabel_globalToggleHotkey.Text += Properties.Settings.Default.isShiftGHK ? "Shift + " : "";
-                    materialLabel_globalToggleHotkey.Text += Properties.Settings.Default.isAltGHK ? "Alt + " : "";
-                    materialLabel_globalToggleHotkey.Text += Properties.Settings.Default.GlobalHotKey;
-                    EditingHotkey = false;
+                    GlobalHotkeyTextBoxUpdate();
+                    isEditingHotkey = false;
                 }
                 else if (KeysToString.ContainsKey(e.KeyCode))
                 {
-                    materialLabel_globalToggleHotkey.Text = "Global Toggle Hotkey: ";
-                    materialLabel_globalToggleHotkey.Text += e.Control ? "Ctrl + " : "";
-                    materialLabel_globalToggleHotkey.Text += e.Shift ? "Shift + " : "";
-                    materialLabel_globalToggleHotkey.Text += e.Alt ? "Alt + " : "";
-                    materialLabel_globalToggleHotkey.Text += KeysToString[e.KeyCode];
+                    keyboardHook.Dispose();
 
-                    Properties.Settings.Default.isCtrlGHK = e.Control;
-                    Properties.Settings.Default.isShiftGHK = e.Shift;
-                    Properties.Settings.Default.isAltGHK = e.Alt;
-                    Properties.Settings.Default.GlobalHotKey = KeysToString[e.KeyCode];
-                    EditingHotkey = false;
+                    // user settings
+                    Properties.Settings.Default.ModifierKeys = 0;
+                    Properties.Settings.Default.ModifierKeys += e.Alt ? 1 : 0;
+                    Properties.Settings.Default.ModifierKeys += e.Control ? 2 : 0;
+                    Properties.Settings.Default.ModifierKeys += e.Shift ? 4 : 0;
+
+                    // ui
+                    GlobalHotkeyTextBoxUpdate();
+
+                    keyboardHook.RegisterHotKey((ModifierKeys)Properties.Settings.Default.ModifierKeys,
+                                        KeysToString.FirstOrDefault(x => x.Value == Properties.Settings.Default.GlobalHotKey).Key);
 
                     System.Media.SystemSounds.Asterisk.Play();
-                }
-            }
-            else
-            {
-                if (e.KeyCode == KeysToString.FirstOrDefault(x => x.Value == Properties.Settings.Default.GlobalHotKey).Key &&
-                    e.Control == Properties.Settings.Default.isCtrlGHK &&
-                    e.Shift == Properties.Settings.Default.isShiftGHK &&
-                    e.Alt == Properties.Settings.Default.isAltGHK)
 
-                    ToggleFirewall();
+                    isEditingHotkey = false;
+                }
             }
         }
 
@@ -1040,6 +1046,37 @@ namespace osuEscape
             ToggleSystemTray(false);
         }
 
-        
+        private void hook_KeyPressed(object sender, KeyPressedEventArgs e)
+        {
+            ToggleFirewall();
+        }
+
+        private void GlobalHotkeyTextBoxUpdate()
+        {
+            int modifierKeys = Properties.Settings.Default.ModifierKeys;
+            bool isCtrl = false;
+            bool isAlt = false;
+            bool isShift = false;
+
+            if (modifierKeys >= 4)
+            {
+                isShift = true;
+                modifierKeys -= 4;
+            }
+            if (modifierKeys >= 2)
+            {
+                isCtrl = true;
+                modifierKeys -= 2;
+            }
+            if (modifierKeys == 1)
+            {
+                isAlt = true;                
+            }
+            materialLabel_globalToggleHotkey.Text = "Global Toggle Hotkey: ";
+            materialLabel_globalToggleHotkey.Text += isCtrl ? "Ctrl + " : "";
+            materialLabel_globalToggleHotkey.Text += isShift ? "Shift + " : "";
+            materialLabel_globalToggleHotkey.Text += isAlt ? "Alt + " : "";
+            materialLabel_globalToggleHotkey.Text += Properties.Settings.Default.GlobalHotKey;
+        }
     }
 }
