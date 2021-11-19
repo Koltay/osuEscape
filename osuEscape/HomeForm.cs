@@ -409,8 +409,11 @@ namespace osuEscape
                             try
                             {
                                 string lastLine = File.ReadLines(beatmapLocation).Last();
-
-                                lastNoteOffset = Convert.ToInt32(lastLine.Split(',')[2]); // 0: x-coordinate, 1: y-coordinate, 2: audio offset
+                                int commaCount = lastLine.Where(x => x == ',').Count();
+                                if (commaCount == 5) // circle or slider, slider has 7 parameters but without endTime
+                                    lastNoteOffset = Convert.ToInt32(lastLine.Split(',')[2]);
+                                else if (commaCount == 6) // spinner, endTime
+                                    lastNoteOffset = Convert.ToInt32(lastLine.Split(',')[5]);
                             }
                             catch (Exception ex) // random exceptions happening
                             {
@@ -460,7 +463,7 @@ namespace osuEscape
                                   $"AR: {baseAddresses.Beatmap.Ar} CS: {baseAddresses.Beatmap.Cs} HP: {baseAddresses.Beatmap.Hp} OD: {baseAddresses.Beatmap.Od}{Environment.NewLine}" +
                                   $"Gamemode: {(Gamemode)baseAddresses.GeneralData.GameMode}{Environment.NewLine}" +
                                   $"Map Status: {(BeatmapStatus)baseAddresses.Beatmap.Status}{Environment.NewLine}" +
-                                  $"Mods: {(Mods)baseAddresses.GeneralData.Mods}"
+                                  $"Mods: {(Mods)baseAddresses.GeneralData.Mods}" 
                                   ;
 
                             materialMultiLineTextBox_currentPlayingData.Text =
@@ -469,7 +472,7 @@ namespace osuEscape
                                 $"Player Recent Combo: {baseAddresses.Player.Combo}{Environment.NewLine}" +
                                 $"Player Best Combo: {baseAddresses.Player.MaxCombo}{Environment.NewLine}" +
                                 $"Accuracy: {baseAddresses.Player.Accuracy:0.00}{Environment.NewLine}" +
-                                $"300: {baseAddresses.Player.Hit300} 100: {baseAddresses.Player.Hit100} 50: {baseAddresses.Player.Hit50} Miss: {baseAddresses.Player.HitMiss}"
+                                $"300: {baseAddresses.Player.Hit300} 100: {baseAddresses.Player.Hit100} 50: {baseAddresses.Player.Hit50} Miss: {baseAddresses.Player.HitMiss}{Environment.NewLine}"
                                 ;
 
                             materialMultiLineTextBox_currentMapTime.Text = $"{baseAddresses.GeneralData.AudioTime}";
