@@ -338,7 +338,7 @@ namespace osuEscape
                         _sreader.TryRead(baseAddresses.ResultsScreen);
 
 
-                        if (Properties.Settings.Default.isAutoDisconnect && materialCheckbox_autoDisconnect.Enabled && isAllowConnection)
+                        if (Properties.Settings.Default.isAutoDisconnect && materialCheckbox_autoDisconnect.Enabled && Properties.Settings.Default.isAllowConnection)
                         {
                             // upload if only it is not a replay
                             // miss count == 0 means full comboing 
@@ -371,10 +371,10 @@ namespace osuEscape
                                         {
                                             isUploaded = true;
 
-                                            isAllowConnection = true;
-
+                                            // to avoid toggling twice for same score submission,
+                                            // isAllowConnection has to be set as true again
+                                            Properties.Settings.Default.isAllowConnection = true;
                                             ToggleFirewall();
-                                            // to avoid toggling twice for same score submission
                                         }
                                     }
 
@@ -432,7 +432,7 @@ namespace osuEscape
                             baseAddresses.Player.Combo == baseAddresses.Player.MaxCombo &&
                             baseAddresses.Player.HitMiss == 0 &&
                             baseAddresses.Player.Accuracy >= Properties.Settings.Default.submitAcc &&
-                            !isAllowConnection)
+                            !Properties.Settings.Default.isAllowConnection)
                         {
                             ToggleFirewall();
                         }
@@ -504,9 +504,9 @@ namespace osuEscape
             else
             {
                 // toggle the connection status
-                isAllowConnection = !isAllowConnection;
+                Properties.Settings.Default.isAllowConnection = !Properties.Settings.Default.isAllowConnection;
 
-                AllowConnection(isAllowConnection);
+                AllowConnection(Properties.Settings.Default.isAllowConnection);
 
                 ToggleSound(Properties.Settings.Default.isToggleSound);
 
@@ -578,8 +578,8 @@ namespace osuEscape
                     "advfirewall firewall add rule name=\"osu block\" dir=out action=block program=" + filename;
                 cmd.Start();
 
-                // Disable block rule at start to avoid unneeded disconnection
-                isAllowConnection = false;
+                // block rule enables depends on last connection
+                Properties.Settings.Default.isAllowConnection = !Properties.Settings.Default.isAllowConnection;
                 ToggleFirewall();
             }
         }

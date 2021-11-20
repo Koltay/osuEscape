@@ -226,5 +226,17 @@ namespace osuEscape.Properties {
                 this["ModifierKeys"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool isAllowConnection {
+            get {
+                return ((bool)(this["isAllowConnection"]));
+            }
+            set {
+                this["isAllowConnection"] = value;
+            }
+        }
     }
 }
