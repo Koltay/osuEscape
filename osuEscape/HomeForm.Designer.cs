@@ -693,6 +693,7 @@
             this.MaximizeBox = false;
             this.Name = "HomeForm";
             this.Text = "osu! Escape";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.HomeForm_FormClosing);
             this.Load += new System.EventHandler(this.OsuEscape_Load);
             this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.HomeForm_KeyDown);
             this.Resize += new System.EventHandler(this.HomeForm_Resize);

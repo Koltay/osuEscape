@@ -410,10 +410,12 @@ namespace osuEscape
                             {
                                 string lastLine = File.ReadLines(beatmapLocation).Last();
                                 int commaCount = lastLine.Where(x => x == ',').Count();
-                                if (commaCount == 5) // circle or slider, slider has 7 parameters but without endTime
+                                if (commaCount == 5) // circle
                                     lastNoteOffset = Convert.ToInt32(lastLine.Split(',')[2]);
                                 else if (commaCount == 6) // spinner, endTime
                                     lastNoteOffset = Convert.ToInt32(lastLine.Split(',')[5]);
+                                else // slider
+                                    lastNoteOffset = Convert.ToInt32(lastLine.Split(',')[2]);
                             }
                             catch (Exception ex) // random exceptions happening
                             {
@@ -455,9 +457,6 @@ namespace osuEscape
                     {
                         _ = Invoke((MethodInvoker)(() =>
                         {
-                            //full data
-                            //textBox_Data.Text = JsonConvert.SerializeObject(baseAddresses, Formatting.Indented); 
-
                             materialMultiLineTextBox_mapData.Text =
                                   $"Map: {baseAddresses.Beatmap.MapString}{Environment.NewLine}" +
                                   $"AR: {baseAddresses.Beatmap.Ar} CS: {baseAddresses.Beatmap.Cs} HP: {baseAddresses.Beatmap.Hp} OD: {baseAddresses.Beatmap.Od}{Environment.NewLine}" +
@@ -772,15 +771,21 @@ namespace osuEscape
         #region FormClose
         private void Application_ApplicationExit(object sender, EventArgs e)
         {
-            // save the last position of the application
-            if (this.WindowState != FormWindowState.Minimized)
-                Properties.Settings.Default.appLocation = this.Location;
+            //if (materialCheckbox_minimizeToSystemTray.Checked)
+            //{
+            //    this.WindowState = FormWindowState.Minimized;
+            //    ToggleSystemTray(materialCheckbox_minimizeToSystemTray.Checked);
+            //    ContextMenuStripUpdate();
+            //}
 
-            Properties.Settings.Default.Save();
+            //// save the last position of the application
+            //if (this.WindowState != FormWindowState.Minimized)
+            //    Properties.Settings.Default.appLocation = this.Location;
+
+            //Properties.Settings.Default.Save();
         }
         private void AppClosing()
         {
-            cts.Cancel();
             cts.Dispose();
             this.Close();
         }
@@ -901,20 +906,20 @@ namespace osuEscape
 
         private void CheckBoxesUpdateStatus()
         {
-            materialCheckbox_runAtStartup.Invalidate();
-            materialCheckbox_runAtStartup.Update();
-            materialCheckbox_minimizeToSystemTray.Invalidate();
-            materialCheckbox_minimizeToSystemTray.Update();
-            materialCheckbox_toggleWithSound.Invalidate();
-            materialCheckbox_toggleWithSound.Update();
-            materialCheckbox_topMost.Invalidate();
-            materialCheckbox_topMost.Update();
-            materialCheckbox_hideData.Invalidate();
-            materialCheckbox_hideData.Update();
-            materialCheckbox_submitIfFC.Invalidate();
-            materialCheckbox_submitIfFC.Update();
-            materialCheckbox_autoDisconnect.Invalidate();
-            materialCheckbox_autoDisconnect.Update();
+            List<MaterialCheckbox> checkBoxesList = new();
+            checkBoxesList.Add(materialCheckbox_runAtStartup);
+            checkBoxesList.Add(materialCheckbox_minimizeToSystemTray);
+            checkBoxesList.Add(materialCheckbox_toggleWithSound);
+            checkBoxesList.Add(materialCheckbox_topMost);
+            checkBoxesList.Add(materialCheckbox_hideData);
+            checkBoxesList.Add(materialCheckbox_submitIfFC);
+            checkBoxesList.Add(materialCheckbox_autoDisconnect);
+
+            foreach (MaterialCheckbox mc in checkBoxesList)
+            {
+                mc.Invalidate();
+                mc.Update();
+            }
 
             //tabPages'color also needs to update
             materialTabSelector_main.Invalidate();
@@ -1023,11 +1028,11 @@ namespace osuEscape
 
         private void HomeForm_Resize(object sender, EventArgs e)
         {
-            if (materialCheckbox_minimizeToSystemTray.Checked && this.WindowState == FormWindowState.Minimized)
-            {
-                ToggleSystemTray(materialCheckbox_minimizeToSystemTray.Checked);
-                ContextMenuStripUpdate();
-            }
+            //if (materialCheckbox_minimizeToSystemTray.Checked && this.WindowState == FormWindowState.Minimized)
+            //{
+            //    ToggleSystemTray(materialCheckbox_minimizeToSystemTray.Checked);
+            //    ContextMenuStripUpdate();
+            //}
         }
 
         private static void ShowMessageBox(string message)
@@ -1080,6 +1085,25 @@ namespace osuEscape
             materialLabel_globalToggleHotkey.Text += isShift ? "Shift + " : "";
             materialLabel_globalToggleHotkey.Text += isAlt ? "Alt + " : "";
             materialLabel_globalToggleHotkey.Text += Properties.Settings.Default.GlobalHotKey;
+        }
+
+        private void HomeForm_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            if (materialCheckbox_minimizeToSystemTray.Checked && !notifyIcon_osuEscape.Visible)
+            {
+                // cancel closing the applcation
+                e.Cancel = true;
+
+                this.WindowState = FormWindowState.Minimized;
+                ToggleSystemTray(materialCheckbox_minimizeToSystemTray.Checked);
+                ContextMenuStripUpdate();
+            }
+
+            // save the last position of the application
+            if (this.WindowState != FormWindowState.Minimized)
+                Properties.Settings.Default.appLocation = this.Location;
+
+            Properties.Settings.Default.Save();
         }
     }
 }
