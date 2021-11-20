@@ -33,29 +33,9 @@ namespace osuEscape
         private readonly StructuredOsuMemoryReader _sreader;
         private readonly CancellationTokenSource cts = new();
 
-        private bool isAllowConnection = true;
-
-        // hotkey attempt
+        // Hotkey
         // Keyboard hook for multiple keys
         private readonly KeyboardHook keyboardHook = new();
-
-        // score upload
-        private static readonly HttpClient client = new();
-        private static int lastNoteOffset = -1;
-        private static List<int> recentUploadScoreList = new();
-
-        //resize ui
-        private Size FormSize_init;
-        private Point labelSubmissionStatus_Location_init;
-        private Point panel_MapStatus_Location_init;
-        private Size button_Toggle_Size_init;
-
-        readonly MaterialSkinManager materialSkinManager;
-
-        //Startup registry key and value
-        private static readonly string StartupKey = "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run";
-        private static readonly string StartupValue = System.Reflection.Assembly.GetExecutingAssembly().GetName().Name;
-
         private static readonly Dictionary<Keys, string> KeysToString = new()
         {
             [Keys.A] = "A",
@@ -119,6 +99,25 @@ namespace osuEscape
             [Keys.OemQuestion] = "/"
         };
         private bool isEditingHotkey = false;
+
+        // score upload
+        private static readonly HttpClient client = new();
+        private static int lastNoteOffset = -1;
+        private static List<int> recentUploadScoreList = new();
+
+        // resize ui variables
+        private Size FormSize_init;
+        private Point labelSubmissionStatus_Location_init;
+        private Point panel_MapStatus_Location_init;
+        private Size button_Toggle_Size_init;
+
+        readonly MaterialSkinManager materialSkinManager;
+
+        // Startup registry key and value
+        private static readonly string StartupKey = "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run";
+        private static readonly string StartupValue = System.Reflection.Assembly.GetExecutingAssembly().GetName().Name;
+
+        
         public HomeForm(string osuWindowTitleHint)
         {
             _osuWindowTitleHint = osuWindowTitleHint;
@@ -142,14 +141,13 @@ namespace osuEscape
             }
 
             // for ui resizing
-            // editor pixels offset (50px)
+            // design editor pixels offset (50px)
             this.Size = new Size(this.Size.Width, this.Size.Height - 50);
             FormSize_init = this.Size;
             labelSubmissionStatus_Location_init = materialLabel_submissionStatus.Location;
             panel_MapStatus_Location_init = panel_mapStatus.Location;
             button_Toggle_Size_init = materialButton_toggle.Size;
 
-            // isHideData changes ui size
             HideData();
 
             SettingFormUpdate();
@@ -1024,15 +1022,6 @@ namespace osuEscape
                 materialLabel_MapData.Visible = false;
                 materialMultiLineTextBox_mapData.Visible = false;
             }
-        }
-
-        private void HomeForm_Resize(object sender, EventArgs e)
-        {
-            //if (materialCheckbox_minimizeToSystemTray.Checked && this.WindowState == FormWindowState.Minimized)
-            //{
-            //    ToggleSystemTray(materialCheckbox_minimizeToSystemTray.Checked);
-            //    ContextMenuStripUpdate();
-            //}
         }
 
         private static void ShowMessageBox(string message)

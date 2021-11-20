@@ -336,7 +336,7 @@
             this.materialButton_changeToggleKey.Depth = 0;
             this.materialButton_changeToggleKey.HighEmphasis = true;
             this.materialButton_changeToggleKey.Icon = null;
-            this.materialButton_changeToggleKey.Location = new System.Drawing.Point(351, 359);
+            this.materialButton_changeToggleKey.Location = new System.Drawing.Point(351, 300);
             this.materialButton_changeToggleKey.Margin = new System.Windows.Forms.Padding(4, 6, 4, 6);
             this.materialButton_changeToggleKey.MouseState = MaterialSkin.MouseState.HOVER;
             this.materialButton_changeToggleKey.Name = "materialButton_changeToggleKey";
@@ -359,7 +359,7 @@
             this.materialButton_changeTheme.Depth = 0;
             this.materialButton_changeTheme.HighEmphasis = true;
             this.materialButton_changeTheme.Icon = null;
-            this.materialButton_changeTheme.Location = new System.Drawing.Point(390, 62);
+            this.materialButton_changeTheme.Location = new System.Drawing.Point(390, 9);
             this.materialButton_changeTheme.Margin = new System.Windows.Forms.Padding(4, 6, 4, 6);
             this.materialButton_changeTheme.MouseState = MaterialSkin.MouseState.HOVER;
             this.materialButton_changeTheme.Name = "materialButton_changeTheme";
@@ -410,7 +410,7 @@
             this.materialButton_findOsuLocation.Depth = 0;
             this.materialButton_findOsuLocation.HighEmphasis = true;
             this.materialButton_findOsuLocation.Icon = null;
-            this.materialButton_findOsuLocation.Location = new System.Drawing.Point(339, 9);
+            this.materialButton_findOsuLocation.Location = new System.Drawing.Point(339, 356);
             this.materialButton_findOsuLocation.Margin = new System.Windows.Forms.Padding(4, 6, 4, 6);
             this.materialButton_findOsuLocation.MouseState = MaterialSkin.MouseState.HOVER;
             this.materialButton_findOsuLocation.Name = "materialButton_findOsuLocation";
@@ -631,7 +631,7 @@
             this.materialLabel_focus.AutoSize = true;
             this.materialLabel_focus.Depth = 0;
             this.materialLabel_focus.Font = new System.Drawing.Font("Roboto", 14F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
-            this.materialLabel_focus.Location = new System.Drawing.Point(390, 21);
+            this.materialLabel_focus.Location = new System.Drawing.Point(409, 21);
             this.materialLabel_focus.MouseState = MaterialSkin.MouseState.HOVER;
             this.materialLabel_focus.Name = "materialLabel_focus";
             this.materialLabel_focus.Size = new System.Drawing.Size(103, 19);
@@ -696,7 +696,6 @@
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.HomeForm_FormClosing);
             this.Load += new System.EventHandler(this.OsuEscape_Load);
             this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.HomeForm_KeyDown);
-            this.Resize += new System.EventHandler(this.HomeForm_Resize);
             this.materialTabControl_menu.ResumeLayout(false);
             this.tabPage_main.ResumeLayout(false);
             this.tabPage_main.PerformLayout();
