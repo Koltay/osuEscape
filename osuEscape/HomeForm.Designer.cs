@@ -663,6 +663,7 @@
             // 
             this.notifyIcon_osuEscape.Icon = ((System.Drawing.Icon)(resources.GetObject("notifyIcon_osuEscape.Icon")));
             this.notifyIcon_osuEscape.Text = "osu!Escape";
+            this.notifyIcon_osuEscape.Visible = true;
             this.notifyIcon_osuEscape.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.notifyIcon_osuEscape_MouseDoubleClick);
             // 
             // materialTabSelector_main

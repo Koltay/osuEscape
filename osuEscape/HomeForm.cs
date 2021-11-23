@@ -27,7 +27,7 @@ namespace osuEscape
 
     public partial class HomeForm : MaterialForm
     {
-
+        // osu data reader
         private readonly string _osuWindowTitleHint;
         private int _readDelay = 33;
         private readonly StructuredOsuMemoryReader _sreader;
@@ -111,13 +111,16 @@ namespace osuEscape
         private Point panel_MapStatus_Location_init;
         private Size button_Toggle_Size_init;
 
+        // material skin ui
         readonly MaterialSkinManager materialSkinManager;
 
         // Startup registry key and value
         private static readonly string StartupKey = "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run";
         private static readonly string StartupValue = System.Reflection.Assembly.GetExecutingAssembly().GetName().Name;
 
-        
+        private bool isItemQuit = false;
+
+
         public HomeForm(string osuWindowTitleHint)
         {
             _osuWindowTitleHint = osuWindowTitleHint;
@@ -126,19 +129,12 @@ namespace osuEscape
 
             materialLabel_version.Text = string.Format(Resources.CurrentVersion, Assembly.GetEntryAssembly().GetName().Version);
 
-            //Initialize material skin manager
+            // Initialize material skin manager
             materialSkinManager = MaterialSkinManager.Instance;
             materialSkinManager.EnforceBackcolorOnAllComponents = false;
             materialSkinManager.AddFormToManage(this);
-            //color scheme declared in allowconnection()
 
             _sreader = StructuredOsuMemoryReader.Instance.GetInstanceForWindowTitleHint(osuWindowTitleHint);
-
-            // check if osu!Escape is already opened
-            if (Process.GetProcessesByName("osuEscape").Length > 1)
-            {
-                AppClosing();
-            }
 
             // for ui resizing
             // design editor pixels offset (50px)
@@ -148,13 +144,20 @@ namespace osuEscape
             panel_MapStatus_Location_init = panel_mapStatus.Location;
             button_Toggle_Size_init = materialButton_toggle.Size;
 
+            // ui 
             HideData();
-
             SettingFormUpdate();
 
+            // hotkey
             keyboardHook.KeyPressed += new EventHandler<KeyPressedEventArgs>(hook_KeyPressed);
             keyboardHook.RegisterHotKey((ModifierKeys)Properties.Settings.Default.ModifierKeys,
                                         KeysToString.FirstOrDefault(x => x.Value == Properties.Settings.Default.GlobalHotKey).Key);
+
+            // avoid opening osu!Escape twice
+            if (Process.GetProcessesByName("osuEscape").Length > 1)
+            {
+                AppClosing();
+            }
         }
 
         #region Initialize and OnLoad
@@ -221,8 +224,6 @@ namespace osuEscape
 
             osuDataReaderAsync();
 
-            Application.ApplicationExit += new EventHandler(Application_ApplicationExit);
-
             // open the app at the previous location 
             this.Location = Properties.Settings.Default.appLocation;
 
@@ -256,7 +257,7 @@ namespace osuEscape
 
         #region Main Functions
 
-        #region osu data reader
+        #region osu! Data Reader
 
         private async void osuDataReaderAsync()
         {
@@ -420,8 +421,9 @@ namespace osuEscape
                                 Console.WriteLine(ex.Message);
                             }
                         }
-                        // using last note offset to determine if the map ended, after that we determine if it is an "FC"
-                        // zero misscount means full combo / dropped some sliderends / sliderbreak at start
+                        // using last note offset to determine if the map ended
+                        // then determine if it is an "FC"
+                        // "FC": 0 misscount / dropped some sliderends / sliderbreak at start
                         // above or equal to the required acc
                         // if there is block connection, disable the block rule
                         if (
@@ -651,10 +653,7 @@ namespace osuEscape
         #region System Tray
         private void ToggleSystemTray(bool enabled)
         {
-            notifyIcon_osuEscape.Visible = enabled;
             this.ShowInTaskbar = !enabled;
-
-            //GlobalHotkeyRegister();
         }
 
         #endregion
@@ -673,6 +672,7 @@ namespace osuEscape
         }
         private void Item_quit_Click(object sender, EventArgs e)
         {
+            isItemQuit = true;
             AppClosing();
         }
 
@@ -726,7 +726,7 @@ namespace osuEscape
 
         private void materialButton_checkApi_Click(object sender, EventArgs e)
         {
-            CheckAPIKeyAsync();
+            VerifyAPIKeyAsync();
         }
 
         private void materialButton_findOsuLocation_Click(object sender, EventArgs e)
@@ -767,21 +767,6 @@ namespace osuEscape
         #endregion
 
         #region FormClose
-        private void Application_ApplicationExit(object sender, EventArgs e)
-        {
-            //if (materialCheckbox_minimizeToSystemTray.Checked)
-            //{
-            //    this.WindowState = FormWindowState.Minimized;
-            //    ToggleSystemTray(materialCheckbox_minimizeToSystemTray.Checked);
-            //    ContextMenuStripUpdate();
-            //}
-
-            //// save the last position of the application
-            //if (this.WindowState != FormWindowState.Minimized)
-            //    Properties.Settings.Default.appLocation = this.Location;
-
-            //Properties.Settings.Default.Save();
-        }
         private void AppClosing()
         {
             cts.Dispose();
@@ -869,7 +854,7 @@ namespace osuEscape
             return result;
         }
 
-        private async void CheckAPIKeyAsync()
+        private async void VerifyAPIKeyAsync()
         {
             // verifying api key using one of the osu! api urls
             // using get_beatmaps as it requires the least parameter
@@ -1078,9 +1063,9 @@ namespace osuEscape
 
         private void HomeForm_FormClosing(object sender, FormClosingEventArgs e)
         {
-            if (materialCheckbox_minimizeToSystemTray.Checked && !notifyIcon_osuEscape.Visible)
+            if (materialCheckbox_minimizeToSystemTray.Checked && !isItemQuit)
             {
-                // cancel closing the applcation
+                // cancel form closing event
                 e.Cancel = true;
 
                 this.WindowState = FormWindowState.Minimized;
