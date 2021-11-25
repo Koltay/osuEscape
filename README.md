@@ -31,7 +31,7 @@
 
 ## Why API is needed for this application? Is it safe?
  
- - This application uses [osu! API v1](https://github.com/ppy/osu-api/wiki) to get your recent uploaded score ([get_user_recent](https://github.com/ppy/osu-api/wiki#url-7)) and automatically disconnect after uploading
+ - This application uses [osu! API v1](https://github.com/ppy/osu-api/wiki) to get user's recent uploaded score and automatically disconnect after uploading
  - For users who is concerned about the API usage, please feel free to not use it :D
 
 ## How to use this application?
