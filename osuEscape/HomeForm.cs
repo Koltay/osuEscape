@@ -539,16 +539,16 @@ namespace osuEscape
 
                 materialSkinManager.ColorScheme = isAllow ?
                 new ColorScheme(
-                        Primary.Indigo500,
-                        Primary.Indigo700,
-                        Primary.Indigo100,
+                        Primary.Grey500,
+                        Primary.Grey700,
+                        Primary.Grey600,
                         Accent.Green400,
                         TextShade.WHITE)
                 :
                 new ColorScheme(
-                        Primary.Indigo500,
-                        Primary.Indigo700,
-                        Primary.Indigo100,
+                        Primary.Grey500,
+                        Primary.Grey700,
+                        Primary.Grey600,
                         Accent.Red400,
                         TextShade.WHITE);
             }));
