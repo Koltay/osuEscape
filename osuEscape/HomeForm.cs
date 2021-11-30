@@ -251,6 +251,17 @@ namespace osuEscape
                     FindOsuLocation();
                 }
             }
+
+            #region Tooltip setup
+            toolTips.SetToolTip(materialCheckbox_autoDisconnect, "Enabling this option will automatically disconnect after the recent score is submitted.");
+            toolTips.SetToolTip(materialCheckbox_hideData, "Enabling this option will hide osu! data from Main. It is recommended to enable this option");
+            toolTips.SetToolTip(materialCheckbox_toggleWithSound, "Enabling this option will toggle firewall with system notification sound.");
+            toolTips.SetToolTip(materialCheckbox_topMost, "Enabling this option will overlap all the other application even if it is not focused.");
+            toolTips.SetToolTip(materialCheckbox_runAtStartup, "Enabling this option will allow osu!Escape to run automatically when the system is booted.");
+            toolTips.SetToolTip(materialCheckbox_minimizeToSystemTray, "Enabling this option will hide osu!Escape to taskbar when clicking the close button.");
+            toolTips.SetToolTip(materialCheckbox_submitIfFC, "Enabling this option will automatically submit before jumping into result screen if the set score meets the requirement.");
+
+            #endregion
         }
 
         #endregion
@@ -337,7 +348,9 @@ namespace osuEscape
                         _sreader.TryRead(baseAddresses.ResultsScreen);
 
 
-                        if (Properties.Settings.Default.isAutoDisconnect && materialCheckbox_autoDisconnect.Enabled && Properties.Settings.Default.isAllowConnection)
+                        if (Properties.Settings.Default.isAutoDisconnect && 
+                            materialCheckbox_autoDisconnect.Enabled && 
+                            Properties.Settings.Default.isAllowConnection)
                         {
                             // upload if only it is not a replay
                             // miss count == 0 means full comboing 
@@ -370,10 +383,9 @@ namespace osuEscape
                                         {
                                             isUploaded = true;
 
-                                            // to avoid toggling twice for same score submission,
-                                            // isAllowConnection has to be set as true again
-                                            Properties.Settings.Default.isAllowConnection = true;
                                             ToggleFirewall();
+
+                                            break;
                                         }
                                     }
 
@@ -396,7 +408,6 @@ namespace osuEscape
 
                         if (readUsingProperty)
                         {
-                            //Testing reading of reference types(other than string)
                             _sreader.TryReadProperty(baseAddresses.Player, nameof(Player.Mods), out var dummyResult);
                         }
 
@@ -404,31 +415,17 @@ namespace osuEscape
                         if (beatmapLastNoteOffset == -9999)
                         {
                             string beatmapLocation = $"{Properties.Settings.Default.osuPath}\\Songs\\{baseAddresses.Beatmap.FolderName}\\{baseAddresses.Beatmap.OsuFileName}";
-
                             try
-                            {
-                                // read the file format version
-                                // string firstLine = File.ReadLines(beatmapLocation).First();
-                                //int version = Convert.ToInt32(firstLine.Split(" ").Last().Replace("v", ""));
-                                //Debug.WriteLine("version:" + version);
-
-                                string lastLine = File.ReadLines(beatmapLocation).Last();
-                                //int commaCount = lastLine.Where(x => x == ',').Count();
-                                //if (commaCount == 5) // circle
-                                //    beatmapLastNoteOffset = Convert.ToInt32(lastLine.Split(',')[2]);
-                                //else if (commaCount == 6) // spinner, endTime
-                                //    beatmapLastNoteOffset = Convert.ToInt32(lastLine.Split(',')[5]);
-                                //else // slider
-                                //    beatmapLastNoteOffset = Convert.ToInt32(lastLine.Split(',')[2]);                                
-                                 
-                                foreach (string str in lastLine.Split(","))
+                            {                    
+                                // read the last line to find offset
+                                foreach (string str in File.ReadLines(beatmapLocation).Last().Split(","))
                                 {
                                     beatmapLastNoteOffset = Math.Max(beatmapLastNoteOffset,Convert.ToInt32(str));
                                 }
 
                                 Debug.WriteLine("offset: " + beatmapLastNoteOffset);
                             }
-                            catch (Exception ex) // random exceptions happening
+                            catch (Exception ex)
                             {
                                 Console.WriteLine(ex.Message);
                             }

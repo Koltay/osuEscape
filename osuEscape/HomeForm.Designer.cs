@@ -69,6 +69,7 @@
             this.quitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.notifyIcon_osuEscape = new System.Windows.Forms.NotifyIcon(this.components);
             this.materialTabSelector_main = new MaterialSkin.Controls.MaterialTabSelector();
+            this.toolTips = new System.Windows.Forms.ToolTip(this.components);
             this.materialTabControl_menu.SuspendLayout();
             this.tabPage_main.SuspendLayout();
             this.panel_mapStatus.SuspendLayout();
@@ -750,5 +751,6 @@
         private System.Windows.Forms.Panel panel_mapStatus;
         private MaterialSkin.Controls.MaterialButton materialButton_changeToggleKey;
         private MaterialSkin.Controls.MaterialLabel materialLabel_version;
+        private System.Windows.Forms.ToolTip toolTips;
     }
 }
