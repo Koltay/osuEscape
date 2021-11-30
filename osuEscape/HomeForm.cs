@@ -102,7 +102,7 @@ namespace osuEscape
 
         // score upload
         private static readonly HttpClient client = new();
-        private static int lastNoteOffset = -1;
+        private static int beatmapLastNoteOffset = -9999;
         private static List<int> recentUploadScoreList = new();
 
         // resize ui variables
@@ -324,7 +324,7 @@ namespace osuEscape
                     {
                         _sreader.TryRead(baseAddresses.SongSelectionScores);
 
-                        lastNoteOffset = -1;
+                        beatmapLastNoteOffset = -9999;
                     }
                     else
                     {
@@ -401,20 +401,32 @@ namespace osuEscape
                         }
 
                         // only read the audio offset if it is not the previous beatmap
-                        if (lastNoteOffset == -1)
+                        if (beatmapLastNoteOffset == -9999)
                         {
                             string beatmapLocation = $"{Properties.Settings.Default.osuPath}\\Songs\\{baseAddresses.Beatmap.FolderName}\\{baseAddresses.Beatmap.OsuFileName}";
 
                             try
                             {
+                                // read the file format version
+                                //string firstLine = File.ReadLines(beatmapLocation).First();
+                                //int version = Convert.ToInt32(firstLine.Split(" ").Last().Replace("v", ""));
+                                //Debug.WriteLine("version:" + version);
+
                                 string lastLine = File.ReadLines(beatmapLocation).Last();
-                                int commaCount = lastLine.Where(x => x == ',').Count();
-                                if (commaCount == 5) // circle
-                                    lastNoteOffset = Convert.ToInt32(lastLine.Split(',')[2]);
-                                else if (commaCount == 6) // spinner, endTime
-                                    lastNoteOffset = Convert.ToInt32(lastLine.Split(',')[5]);
-                                else // slider
-                                    lastNoteOffset = Convert.ToInt32(lastLine.Split(',')[2]);
+                                //int commaCount = lastLine.Where(x => x == ',').Count();
+                                //if (commaCount == 5) // circle
+                                //    beatmapLastNoteOffset = Convert.ToInt32(lastLine.Split(',')[2]);
+                                //else if (commaCount == 6) // spinner, endTime
+                                //    beatmapLastNoteOffset = Convert.ToInt32(lastLine.Split(',')[5]);
+                                //else // slider
+                                //    beatmapLastNoteOffset = Convert.ToInt32(lastLine.Split(',')[2]);                                
+                                 
+                                foreach (string str in lastLine.Split(","))
+                                {
+                                    beatmapLastNoteOffset = Math.Max(beatmapLastNoteOffset,Convert.ToInt32(str));
+                                }
+
+                                Debug.WriteLine("offset: " + beatmapLastNoteOffset);
                             }
                             catch (Exception ex) // random exceptions happening
                             {
@@ -428,7 +440,7 @@ namespace osuEscape
                         // if there is block connection, disable the block rule
                         if (
                             Properties.Settings.Default.isSubmitIfFC &&
-                            baseAddresses.GeneralData.AudioTime >= lastNoteOffset &&
+                            baseAddresses.GeneralData.AudioTime >= beatmapLastNoteOffset &&
                             baseAddresses.Player.Combo == baseAddresses.Player.MaxCombo &&
                             baseAddresses.Player.HitMiss == 0 &&
                             baseAddresses.Player.Accuracy >= Properties.Settings.Default.submitAcc &&
