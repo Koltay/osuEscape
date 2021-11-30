@@ -344,9 +344,9 @@ namespace osuEscape
                             if (!baseAddresses.Player.IsReplay &&
                                 baseAddresses.Player.MaxCombo != 0)
                             {
-                                //upload if only the map is ranked or loved
-                                if (baseAddresses.Beatmap.Status == ((short)BeatmapStatus.Ranked) ||
-                                    baseAddresses.Beatmap.Status == ((short)BeatmapStatus.Loved))
+                                // do not upload if the map is pending or not submitted
+                                if (baseAddresses.Beatmap.Status != ((short)BeatmapStatus.Pending) &&
+                                    baseAddresses.Beatmap.Status != ((short)BeatmapStatus.NotSubmitted))
                                 {
                                     materialLabel_submissionStatus.BeginInvoke((MethodInvoker)delegate
                                     {
@@ -408,7 +408,7 @@ namespace osuEscape
                             try
                             {
                                 // read the file format version
-                                //string firstLine = File.ReadLines(beatmapLocation).First();
+                                // string firstLine = File.ReadLines(beatmapLocation).First();
                                 //int version = Convert.ToInt32(firstLine.Split(" ").Last().Replace("v", ""));
                                 //Debug.WriteLine("version:" + version);
 
