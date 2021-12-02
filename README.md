@@ -1,7 +1,9 @@
 # osu! Escape
-![image](https://user-images.githubusercontent.com/73950784/142169604-775b49d4-fa5c-4355-bd43-4dbc106518fd.png)
+![image](https://user-images.githubusercontent.com/73950784/144431649-48b10f29-f2ee-4e28-a373-d7db5e070328.png)
 
-![image](https://user-images.githubusercontent.com/73950784/142169568-17415c54-2ec6-4b46-b2d5-f93420bd77d8.png)
+![image](https://user-images.githubusercontent.com/73950784/144431804-574c08c8-868f-4393-9362-6173a533fcb7.png)
+
+![image](https://user-images.githubusercontent.com/73950784/144431910-b4650e39-5aea-45f3-93aa-c5c953d83e4c.png)
  
  This project provides osu! score submission blocking, which is conducted by applying the blocking rule in your PC's advanced firewall
  
@@ -22,10 +24,10 @@
  
  This application is currently available on osu! standard except osu! lazer 
  
- - Global Toggle Key: Toggle the connection using the F6 Key
+ - Global Toggle Key: Toggle the connection using the F6 Key (Changeable, supports multiple modifier keys)
  - Score Details/ Map Details display ([ProcessMemoryDataFinder](https://github.com/Piotrekol/ProcessMemoryDataFinder) by Piotrekol)
- - Auto submission: Before switching to the results screen, if the *"full combo"* scores meet the requirement inputted by user, it would automatically connect back to the server for uploading scores
- - Auto blocking: Disconnect from the server after uploading the recent score (API needed)
+ - Auto Submission: Before switching to the results screen, if the *"full combo"* scores meet the requirement inputted by user, it would automatically connect back to the server for uploading scores
+ - Auto Blocking: Disconnect from the server after uploading the recent score (API needed)
  
  *Dropping slider ends still count as a "full combo"
 
