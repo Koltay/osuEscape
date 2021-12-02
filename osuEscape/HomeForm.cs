@@ -123,6 +123,9 @@ namespace osuEscape
         {
             _osuWindowTitleHint = osuWindowTitleHint;
 
+            if (!string.IsNullOrEmpty(_osuWindowTitleHint)) Text += $": {_osuWindowTitleHint}";
+            Text += " " + string.Format(Resources.CurrentVersion, Assembly.GetEntryAssembly().GetName().Version);
+
             InitializeComponent();
 
             // Initialize material skin manager
@@ -141,7 +144,7 @@ namespace osuEscape
 
             // ui 
             HideData();
-            SettingFormUpdate();
+            SettingFormInit();
 
             // hotkey
             keyboardHook.KeyPressed += new EventHandler<KeyPressedEventArgs>(hook_KeyPressed);
@@ -192,7 +195,7 @@ namespace osuEscape
         #endregion
 
 
-        private void SettingFormUpdate()
+        private void SettingFormInit()
         {
             // UI Update with saved user settings
             materialSwitch_runAtStartup.Checked = Properties.Settings.Default.isStartup;
@@ -266,154 +269,194 @@ namespace osuEscape
 
         private async void osuDataReaderAsync()
         {
-            if (!string.IsNullOrEmpty(_osuWindowTitleHint)) Text += $": {_osuWindowTitleHint}";
-            Text += " " + string.Format(Resources.CurrentVersion, Assembly.GetEntryAssembly().GetName().Version);
-
             await Task.Run(async () =>
             {
-                Stopwatch stopwatch;
+            Stopwatch stopwatch;
 
-                double readTimeMs;
+            double readTimeMs;
 
-                _sreader.WithTimes = true;
+            _sreader.WithTimes = true;
 
-                var readUsingProperty = false;
+            var readUsingProperty = false;
 
-                var baseAddresses = new OsuBaseAddresses();
+            var baseAddresses = new OsuBaseAddresses();
 
-                while (true)
+            while (true)
+            {
+                if (cts.IsCancellationRequested)
+                    return;
+
+                if (!_sreader.CanRead)
                 {
-                    if (cts.IsCancellationRequested)
-                        return;
+                    await Task.Delay(_readDelay);
 
-                    if (!_sreader.CanRead)
-                    {
-                        Invoke((MethodInvoker)(() =>
-                        {
-                            //if (ReadInt(baseAddresses.GeneralData, nameof(GeneralData.RawStatus)) == -5)
-                            //    materialMultiLineTextBox_osuStatus.Text = "NotRunning";
-                        }));
+                    continue;
+                }
 
-                        await Task.Delay(_readDelay);
+                stopwatch = Stopwatch.StartNew();
+                if (readUsingProperty)
+                {
+                    baseAddresses.Beatmap.Id = ReadInt(baseAddresses.Beatmap, nameof(CurrentBeatmap.Id));
+                    baseAddresses.Beatmap.SetId = ReadInt(baseAddresses.Beatmap, nameof(CurrentBeatmap.SetId));
+                    baseAddresses.Beatmap.MapString = ReadString(baseAddresses.Beatmap, nameof(CurrentBeatmap.MapString));
+                    baseAddresses.Beatmap.FolderName = ReadString(baseAddresses.Beatmap, nameof(CurrentBeatmap.FolderName));
+                    baseAddresses.Beatmap.OsuFileName = ReadString(baseAddresses.Beatmap, nameof(CurrentBeatmap.OsuFileName));
+                    baseAddresses.Beatmap.Md5 = ReadString(baseAddresses.Beatmap, nameof(CurrentBeatmap.Md5));
+                    baseAddresses.Beatmap.Ar = ReadFloat(baseAddresses.Beatmap, nameof(CurrentBeatmap.Ar));
+                    baseAddresses.Beatmap.Cs = ReadFloat(baseAddresses.Beatmap, nameof(CurrentBeatmap.Cs));
+                    baseAddresses.Beatmap.Hp = ReadFloat(baseAddresses.Beatmap, nameof(CurrentBeatmap.Hp));
+                    baseAddresses.Beatmap.Od = ReadFloat(baseAddresses.Beatmap, nameof(CurrentBeatmap.Od));
+                    baseAddresses.Beatmap.Status = ReadShort(baseAddresses.Beatmap, nameof(CurrentBeatmap.Status));
+                    baseAddresses.Skin.Folder = ReadString(baseAddresses.Skin, nameof(Skin.Folder));
+                    baseAddresses.GeneralData.RawStatus = ReadInt(baseAddresses.GeneralData, nameof(GeneralData.RawStatus));
+                    baseAddresses.GeneralData.GameMode = ReadInt(baseAddresses.GeneralData, nameof(GeneralData.GameMode));
+                    baseAddresses.GeneralData.Retries = ReadInt(baseAddresses.GeneralData, nameof(GeneralData.Retries));
+                    baseAddresses.GeneralData.AudioTime = ReadInt(baseAddresses.GeneralData, nameof(GeneralData.AudioTime));
+                    baseAddresses.GeneralData.Mods = ReadInt(baseAddresses.GeneralData, nameof(GeneralData.Mods));
+                }
+                else
+                {
+                    _sreader.TryRead(baseAddresses.Beatmap);
+                    _sreader.TryRead(baseAddresses.Skin);
+                    _sreader.TryRead(baseAddresses.GeneralData);
+                }
 
-                        continue;
-                    }
+                if (baseAddresses.GeneralData.OsuStatus == OsuMemoryStatus.SongSelect)
+                {
+                    _sreader.TryRead(baseAddresses.SongSelectionScores);
 
-                    stopwatch = Stopwatch.StartNew();
+                    beatmapLastNoteOffset = -9999;
+                }
+                else
+                {
+                    baseAddresses.SongSelectionScores.Scores.Clear();
+                }
+
+
+                if (baseAddresses.GeneralData.OsuStatus == OsuMemoryStatus.ResultsScreen)
+                {
+                    _sreader.TryRead(baseAddresses.ResultsScreen);
+                }
+
+
+                if (baseAddresses.GeneralData.OsuStatus == OsuMemoryStatus.Playing)
+                {
+                    _sreader.TryRead(baseAddresses.Player);
+                    _sreader.TryRead(baseAddresses.LeaderBoard);
+                    _sreader.TryRead(baseAddresses.KeyOverlay);
+
                     if (readUsingProperty)
                     {
-                        baseAddresses.Beatmap.Id = ReadInt(baseAddresses.Beatmap, nameof(CurrentBeatmap.Id));
-                        baseAddresses.Beatmap.SetId = ReadInt(baseAddresses.Beatmap, nameof(CurrentBeatmap.SetId));
-                        baseAddresses.Beatmap.MapString = ReadString(baseAddresses.Beatmap, nameof(CurrentBeatmap.MapString));
-                        baseAddresses.Beatmap.FolderName = ReadString(baseAddresses.Beatmap, nameof(CurrentBeatmap.FolderName));
-                        baseAddresses.Beatmap.OsuFileName = ReadString(baseAddresses.Beatmap, nameof(CurrentBeatmap.OsuFileName));
-                        baseAddresses.Beatmap.Md5 = ReadString(baseAddresses.Beatmap, nameof(CurrentBeatmap.Md5));
-                        baseAddresses.Beatmap.Ar = ReadFloat(baseAddresses.Beatmap, nameof(CurrentBeatmap.Ar));
-                        baseAddresses.Beatmap.Cs = ReadFloat(baseAddresses.Beatmap, nameof(CurrentBeatmap.Cs));
-                        baseAddresses.Beatmap.Hp = ReadFloat(baseAddresses.Beatmap, nameof(CurrentBeatmap.Hp));
-                        baseAddresses.Beatmap.Od = ReadFloat(baseAddresses.Beatmap, nameof(CurrentBeatmap.Od));
-                        baseAddresses.Beatmap.Status = ReadShort(baseAddresses.Beatmap, nameof(CurrentBeatmap.Status));
-                        baseAddresses.Skin.Folder = ReadString(baseAddresses.Skin, nameof(Skin.Folder));
-                        baseAddresses.GeneralData.RawStatus = ReadInt(baseAddresses.GeneralData, nameof(GeneralData.RawStatus));
-                        baseAddresses.GeneralData.GameMode = ReadInt(baseAddresses.GeneralData, nameof(GeneralData.GameMode));
-                        baseAddresses.GeneralData.Retries = ReadInt(baseAddresses.GeneralData, nameof(GeneralData.Retries));
-                        baseAddresses.GeneralData.AudioTime = ReadInt(baseAddresses.GeneralData, nameof(GeneralData.AudioTime));
-                        baseAddresses.GeneralData.Mods = ReadInt(baseAddresses.GeneralData, nameof(GeneralData.Mods));
-                    }
-                    else
-                    {
-                        _sreader.TryRead(baseAddresses.Beatmap);
-                        _sreader.TryRead(baseAddresses.Skin);
-                        _sreader.TryRead(baseAddresses.GeneralData);
+                        _sreader.TryReadProperty(baseAddresses.Player, nameof(Player.Mods), out var dummyResult);
                     }
 
-                    if (baseAddresses.GeneralData.OsuStatus == OsuMemoryStatus.SongSelect)
+                    // only read the audio offset if it is not the previous beatmap
+                    if (beatmapLastNoteOffset == -9999)
                     {
-                        _sreader.TryRead(baseAddresses.SongSelectionScores);
-
-                        beatmapLastNoteOffset = -9999;
-                    }
-                    else
-                    {
-                        baseAddresses.SongSelectionScores.Scores.Clear();
-                    }
-
-
-                    if (baseAddresses.GeneralData.OsuStatus == OsuMemoryStatus.ResultsScreen)
-                    {
-                        _sreader.TryRead(baseAddresses.ResultsScreen);                        
-                    }
-
-
-                    if (baseAddresses.GeneralData.OsuStatus == OsuMemoryStatus.Playing)
-                    {
-                        _sreader.TryRead(baseAddresses.Player);
-                        _sreader.TryRead(baseAddresses.LeaderBoard);
-                        _sreader.TryRead(baseAddresses.KeyOverlay);
-
-                        if (readUsingProperty)
+                        await Task.Run(() =>
                         {
-                            _sreader.TryReadProperty(baseAddresses.Player, nameof(Player.Mods), out var dummyResult);
-                        }
-
-                        // only read the audio offset if it is not the previous beatmap
-                        if (beatmapLastNoteOffset == -9999)
-                        {
-                            await Task.Run(() =>
+                            string beatmapLocation = $"{Properties.Settings.Default.osuPath}\\Songs\\{baseAddresses.Beatmap.FolderName}\\{baseAddresses.Beatmap.OsuFileName}";
+                            try
                             {
-                                string beatmapLocation = $"{Properties.Settings.Default.osuPath}\\Songs\\{baseAddresses.Beatmap.FolderName}\\{baseAddresses.Beatmap.OsuFileName}";
-                                try
-                                {
                                     // read the last line to find offset
                                     foreach (string str in File.ReadLines(beatmapLocation).Last().Split(","))
-                                    {
-                                        beatmapLastNoteOffset = Math.Max(beatmapLastNoteOffset, Convert.ToInt32(str));
-                                    }
-
-                                    Debug.WriteLine("offset: " + beatmapLastNoteOffset);
-                                }
-                                catch (Exception ex)
                                 {
-                                    Console.WriteLine(ex.Message);
+                                    beatmapLastNoteOffset = Math.Max(beatmapLastNoteOffset, Convert.ToInt32(str));
                                 }
-                            });
-                        }
 
-                        // *** Auto Connection has to be done on playing status to avoid connection checking, which takes ~30s
-                        // using beatmap's last note offset to determine if the map ended
-                        // then determine if it is an "FC"
-                        // "FC": 0 misscount / dropped some sliderends / sliderbreak at start
-                        // submit if it is above or equal to the required acc
-                        // if there is block connection, disable the block rule
-                        if (
-                            Properties.Settings.Default.isSubmitIfFC &&
-                            baseAddresses.GeneralData.AudioTime >= beatmapLastNoteOffset &&
-                            beatmapLastNoteOffset >= 0 &&
-                            baseAddresses.Player.Combo == baseAddresses.Player.MaxCombo &&
-                            baseAddresses.Player.HitMiss == 0 &&
-                            baseAddresses.Player.Accuracy >= Properties.Settings.Default.submitAcc &&
-                            !Properties.Settings.Default.isAllowConnection)
-                        {
-                            ToggleFirewall();
-                            isSetScore = true;
-                        }
+                                Debug.WriteLine("offset: " + beatmapLastNoteOffset);
+                            }
+                            catch (Exception ex)
+                            {
+                                Console.WriteLine(ex.Message);
+                            }
+                        });
                     }
-                    else
+
+                    // *** Auto Connection has to be done on playing status to avoid connection checking, which takes ~30s
+                    // using beatmap's last note offset to determine if the map ended
+                    // then determine if it is an "FC"
+                    // "FC": 0 misscount / dropped some sliderends / sliderbreak at start
+                    // submit if it is above or equal to the required acc
+                    // if there is block connection, disable the block rule
+                    if (Properties.Settings.Default.isSubmitIfFC &&
+                        baseAddresses.GeneralData.AudioTime >= beatmapLastNoteOffset &&
+                        beatmapLastNoteOffset >= 0 &&
+                        baseAddresses.Player.Combo == baseAddresses.Player.MaxCombo &&
+                        baseAddresses.Player.HitMiss == 0 &&
+                        baseAddresses.Player.Accuracy >= Properties.Settings.Default.submitAcc &&
+                        !Properties.Settings.Default.isAllowConnection)
                     {
-                        baseAddresses.LeaderBoard.Players.Clear();
+                        ToggleFirewall();
+                        isSetScore = true;
                     }
+                }
+                else
+                {
+                    baseAddresses.LeaderBoard.Players.Clear();
+                }
 
-                    // score submission
-                    // upload if only it is not a replay
-                    // miss count == 0 means full comboing 
-                    // do not upload if the map is pending or not submitted
+                // score submission
+                // upload if only it is not a replay
+                // miss count == 0 means full comboing 
+                // do not upload if the map is pending or not submitted
+                if (isSetScore &&
+                    Properties.Settings.Default.isAutoDisconnect &&
+                    Properties.Settings.Default.isAllowConnection &&
+                    !baseAddresses.Player.IsReplay &&
+                    baseAddresses.Beatmap.Status != ((short)BeatmapStatus.Pending) &&
+                    baseAddresses.Beatmap.Status != ((short)BeatmapStatus.NotSubmitted) &&
+                    baseAddresses.GeneralData.OsuStatus != OsuMemoryStatus.Playing)
+                {
+                    _ = Invoke((MethodInvoker)(async () =>
+                    {
+
+                        materialLabel_submissionStatus.BeginInvoke((MethodInvoker)delegate
+                        {
+                            materialLabel_SubmissionStatus_TextChanged("Uploading recent score...");
+                        });
+
+                        // submission frequency test
+                        await Task.Delay(750);
+
+                        // GET Method of user's recent score (osu! api v1)
+                        // get the recent 3 scores, even though there is multiple submissions at one connection
+                        // the recent score could still be recognized
+                        List<int> recentUploadScoreList = await GetUserRecentScoreAsync(baseAddresses.Player.Username, 3);
+
+                        bool isRecentSetScoreUploaded = false;
+
+                        foreach (int responseScore in recentUploadScoreList)
+                        {
+                                // the score player recently submitted
+                                if (responseScore == baseAddresses.Player.Score)
+                            {
+                                isRecentSetScoreUploaded = true;
+
+                                Properties.Settings.Default.isAllowConnection = true;
+                                ToggleFirewall();
+
+                                isSetScore = false;
+
+                                break;
+                            }
+                        }
+
+                        materialLabel_submissionStatus.BeginInvoke((MethodInvoker)delegate
+                        {
+                            string text = isRecentSetScoreUploaded ? "Uploaded recent score." : "";
+                            materialLabel_SubmissionStatus_TextChanged(text);
+                        });
+                    }));
+                }
+
                     if (isSetScore &&
                         Properties.Settings.Default.isAutoDisconnect &&
                         Properties.Settings.Default.isAllowConnection &&
                         !baseAddresses.Player.IsReplay &&
-                        baseAddresses.Player.MaxCombo != 0 &&
                         baseAddresses.Beatmap.Status != ((short)BeatmapStatus.Pending) &&
-                        baseAddresses.Beatmap.Status != ((short)BeatmapStatus.NotSubmitted))
+                        baseAddresses.Beatmap.Status != ((short)BeatmapStatus.NotSubmitted) &&
+                        baseAddresses.GeneralData.OsuStatus != OsuMemoryStatus.Playing)
                     {
                         
                         materialLabel_submissionStatus.BeginInvoke((MethodInvoker)delegate
@@ -518,7 +561,7 @@ namespace osuEscape
 
                 ToggleSound(Properties.Settings.Default.isToggleSound);
 
-                CheckBoxesUpdateStatus();
+                SettingFormUpdate();
             }
         }
 
@@ -799,6 +842,7 @@ namespace osuEscape
                     Properties.Settings.Default.ModifierKeys += e.Alt ? 1 : 0;
                     Properties.Settings.Default.ModifierKeys += e.Control ? 2 : 0;
                     Properties.Settings.Default.ModifierKeys += e.Shift ? 4 : 0;
+                    Properties.Settings.Default.GlobalHotKey = KeysToString[e.KeyCode];
 
                     // ui
                     GlobalHotkeyTextBoxUpdate();
@@ -887,48 +931,51 @@ namespace osuEscape
                 materialSwitch_autoDisconnect.Checked = false;
             }
 
-            CheckBoxesUpdateStatus();
+            SettingFormUpdate();
         }
 
-        private void CheckBoxesUpdateStatus()
+        private void SettingFormUpdate()
         {
-            // Invalidate to update new color
-            List<MaterialSwitch> checkBoxList = new()
-            {
-                materialSwitch_runAtStartup,
-                materialSwitch_minimizeToSystemTray,
-                materialSwitch_toggleWithSound,
-                materialSwitch_topMost,
-                materialSwitch_hideData,
-                materialSwitch_submitIfFC,
-                materialSwitch_autoDisconnect
-            };
+            Invoke((MethodInvoker) delegate
+            {                
+                // Invalidate to update new color
+                List<MaterialSwitch> checkBoxList = new()
+                {
+                    materialSwitch_runAtStartup,
+                    materialSwitch_minimizeToSystemTray,
+                    materialSwitch_toggleWithSound,
+                    materialSwitch_topMost,
+                    materialSwitch_hideData,
+                    materialSwitch_submitIfFC,
+                    materialSwitch_autoDisconnect
+                };
 
-            List<MaterialButton> buttonList = new()
-            {
-                materialButton_Theme,
-                materialButton_findOsuLocation,
-                materialButton_changeToggleKey,
-                materialButton_checkApi
-            };
+                List<MaterialButton> buttonList = new()
+                {
+                    materialButton_Theme,
+                    materialButton_findOsuLocation,
+                    materialButton_changeToggleKey,
+                    materialButton_checkApi
+                };
 
-            foreach (MaterialSwitch ms in checkBoxList)
-            {
-                ms.Invalidate();
-                ms.Update();
-            }
+                foreach (MaterialSwitch ms in checkBoxList)
+                {
+                    ms.Invalidate();
+                    ms.Update();
+                }
 
-            foreach (MaterialButton mb in buttonList)
-            {
-                mb.Invalidate();
-                mb.Update();
-            }
+                foreach (MaterialButton mb in buttonList)
+                {
+                    mb.Invalidate();
+                    mb.Update();
+                }
 
-            materialTabSelector.Invalidate();
-            materialTabSelector.Update();
+                materialTabSelector.Invalidate();
+                materialTabSelector.Update();
 
-            materialSlider_refreshRate.Invalidate();
-            materialSlider_refreshRate.Update();
+                materialSlider_refreshRate.Invalidate();
+                materialSlider_refreshRate.Update();                
+            });
         }
         #endregion
 
