@@ -205,7 +205,7 @@ namespace osuEscape
             materialCheckbox_autoDisconnect.Checked = Properties.Settings.Default.isAutoDisconnect;
             materialCheckbox_autoDisconnect.Enabled = Properties.Settings.Default.isAPIKeyVerified;
             materialTextBox_apiInput.Text = Properties.Settings.Default.userApiKey;
-            materialMultiLineTextBox_submitAcc.Text = $"{Properties.Settings.Default.submitAcc}";
+            numericUpDown_submitAcc.Value = Properties.Settings.Default.submitAcc;
             materialSkinManager.Theme = (MaterialSkinManager.Themes)Properties.Settings.Default.Theme;
             materialButton_Theme.Text = (Properties.Settings.Default.Theme == 0 ? "Dark Theme" : "Light Theme");
 
@@ -241,9 +241,8 @@ namespace osuEscape
                     FirewallRuleSetUp(Properties.Settings.Default.osuLocation);
                 }
                 else
-                {
-                    // if there is no saved osu location at user settings,
-                    // initialize this function to find osu! location
+                {                    
+                    // initialize to find osu! location if it's first opened
                     FindOsuLocation();
                 }
             }
@@ -893,25 +892,30 @@ namespace osuEscape
 
         private void CheckBoxesUpdateStatus()
         {
-            List<MaterialCheckbox> checkBoxList = new();
-            checkBoxList.Add(materialCheckbox_runAtStartup);
-            checkBoxList.Add(materialCheckbox_minimizeToSystemTray);
-            checkBoxList.Add(materialCheckbox_toggleWithSound);
-            checkBoxList.Add(materialCheckbox_topMost);
-            checkBoxList.Add(materialCheckbox_hideData);
-            checkBoxList.Add(materialCheckbox_submitIfFC);
-            checkBoxList.Add(materialCheckbox_autoDisconnect);
-
-            List<MaterialButton> buttonList = new List<MaterialButton>();
-            buttonList.Add(materialButton_Theme);
-            buttonList.Add(materialButton_findOsuLocation);
-            buttonList.Add(materialButton_changeToggleKey);
-            buttonList.Add(materialButton_checkApi);
-
-            foreach (MaterialCheckbox mc in checkBoxList)
+            // Invalidate to update new color
+            List<MaterialSwitch> checkBoxList = new()
             {
-                mc.Invalidate();
-                mc.Update();
+                materialCheckbox_runAtStartup,
+                materialCheckbox_minimizeToSystemTray,
+                materialCheckbox_toggleWithSound,
+                materialCheckbox_topMost,
+                materialCheckbox_hideData,
+                materialCheckbox_submitIfFC,
+                materialCheckbox_autoDisconnect
+            };
+
+            List<MaterialButton> buttonList = new()
+            {
+                materialButton_Theme,
+                materialButton_findOsuLocation,
+                materialButton_changeToggleKey,
+                materialButton_checkApi
+            };
+
+            foreach (MaterialSwitch ms in checkBoxList)
+            {
+                ms.Invalidate();
+                ms.Update();
             }
 
             foreach (MaterialButton mb in buttonList)
@@ -920,9 +924,11 @@ namespace osuEscape
                 mb.Update();
             }
 
-            //tabPages'color also needs to update
             materialTabSelector.Invalidate();
             materialTabSelector.Update();
+
+            materialSlider_refreshRate.Invalidate();
+            materialSlider_refreshRate.Update();
         }
 
 
@@ -958,18 +964,6 @@ namespace osuEscape
         }
 
         #endregion
-        private void materialMultiLineTextBox_submitAcc_TextChanged(object sender, EventArgs e)
-        {
-            // reset the accuracy to 100 to avoid unneeded submission
-            if (Convert.ToInt32(materialMultiLineTextBox_submitAcc.Text) > 100 ||
-                Convert.ToInt32(materialMultiLineTextBox_submitAcc.Text) < 0 ||
-                materialMultiLineTextBox_submitAcc.Text.Equals(""))
-            {
-                materialMultiLineTextBox_submitAcc.Text = "100";
-            }
-
-            Properties.Settings.Default.submitAcc = Convert.ToInt32(materialMultiLineTextBox_submitAcc.Text);
-        }
 
         private void materialLabel_SubmissionStatus_TextChanged(string str)
         {
@@ -1127,6 +1121,11 @@ namespace osuEscape
             }
 
             base.Dispose(disposing);
+        }
+
+        private void numericUpDown1_ValueChanged(object sender, EventArgs e)
+        {
+            Properties.Settings.Default.submitAcc = Convert.ToInt32(numericUpDown_submitAcc.Value);
         }
     }
 }
