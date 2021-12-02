@@ -196,14 +196,14 @@ namespace osuEscape
         private void SettingFormUpdate()
         {
             // UI Update with saved user settings
-            materialCheckbox_runAtStartup.Checked = Properties.Settings.Default.isStartup;
-            materialCheckbox_toggleWithSound.Checked = Properties.Settings.Default.isToggleSound;
-            materialCheckbox_minimizeToSystemTray.Checked = Properties.Settings.Default.isSystemTray;
-            materialCheckbox_topMost.Checked = Properties.Settings.Default.isTopMost;
-            materialCheckbox_submitIfFC.Checked = Properties.Settings.Default.isSubmitIfFC;
-            materialCheckbox_hideData.Checked = Properties.Settings.Default.isHideData;
-            materialCheckbox_autoDisconnect.Checked = Properties.Settings.Default.isAutoDisconnect;
-            materialCheckbox_autoDisconnect.Enabled = Properties.Settings.Default.isAPIKeyVerified;
+            materialSwitch_runAtStartup.Checked = Properties.Settings.Default.isStartup;
+            materialSwitch_toggleWithSound.Checked = Properties.Settings.Default.isToggleSound;
+            materialSwitch_minimizeToSystemTray.Checked = Properties.Settings.Default.isSystemTray;
+            materialSwitch_topMost.Checked = Properties.Settings.Default.isTopMost;
+            materialSwitch_submitIfFC.Checked = Properties.Settings.Default.isSubmitIfFC;
+            materialSwitch_hideData.Checked = Properties.Settings.Default.isHideData;
+            materialSwitch_autoDisconnect.Checked = Properties.Settings.Default.isAutoDisconnect;
+            materialSwitch_autoDisconnect.Enabled = Properties.Settings.Default.isAPIKeyVerified;
             materialTextBox_apiInput.Text = Properties.Settings.Default.userApiKey;
             numericUpDown_submitAcc.Value = Properties.Settings.Default.submitAcc;
             materialSkinManager.Theme = (MaterialSkinManager.Themes)Properties.Settings.Default.Theme;
@@ -248,13 +248,13 @@ namespace osuEscape
             }
 
             #region Tooltip setup
-            toolTips.SetToolTip(materialCheckbox_autoDisconnect, "Enabling this option will automatically disconnect after the recent score is submitted.");
-            toolTips.SetToolTip(materialCheckbox_hideData, "Enabling this option will hide osu! data from Main. It is recommended to enable this option");
-            toolTips.SetToolTip(materialCheckbox_toggleWithSound, "Enabling this option will toggle firewall with system notification sound.");
-            toolTips.SetToolTip(materialCheckbox_topMost, "Enabling this option will overlap all the other application even if it is not focused.");
-            toolTips.SetToolTip(materialCheckbox_runAtStartup, "Enabling this option will allow osu!Escape to run automatically when the system is booted.");
-            toolTips.SetToolTip(materialCheckbox_minimizeToSystemTray, "Enabling this option will hide osu!Escape to taskbar when clicking the close button.");
-            toolTips.SetToolTip(materialCheckbox_submitIfFC, "Enabling this option will automatically submit before jumping into result screen if the set score meets the requirement.");
+            toolTips.SetToolTip(materialSwitch_autoDisconnect, "Enabling this option will automatically disconnect after the recent score is submitted.");
+            toolTips.SetToolTip(materialSwitch_hideData, "Enabling this option will hide osu! data from Main. It is recommended to enable this option");
+            toolTips.SetToolTip(materialSwitch_toggleWithSound, "Enabling this option will toggle firewall with system notification sound.");
+            toolTips.SetToolTip(materialSwitch_topMost, "Enabling this option will overlap all the other application even if it is not focused.");
+            toolTips.SetToolTip(materialSwitch_runAtStartup, "Enabling this option will allow osu!Escape to run automatically when the system is booted.");
+            toolTips.SetToolTip(materialSwitch_minimizeToSystemTray, "Enabling this option will hide osu!Escape to taskbar when clicking the close button.");
+            toolTips.SetToolTip(materialSwitch_submitIfFC, "Enabling this option will automatically submit before jumping into result screen if the set score meets the requirement.");
 
             #endregion
         }
@@ -690,40 +690,40 @@ namespace osuEscape
 
         private void materialCheckbox_autoDisconnect_CheckedChanged(object sender, EventArgs e)
         {
-            Properties.Settings.Default.isAutoDisconnect = materialCheckbox_autoDisconnect.Checked;
+            Properties.Settings.Default.isAutoDisconnect = materialSwitch_autoDisconnect.Checked;
         }
 
         private void materialCheckbox_submitIfFC_CheckedChanged(object sender, EventArgs e)
         {
-            Properties.Settings.Default.isSubmitIfFC = materialCheckbox_submitIfFC.Checked;
+            Properties.Settings.Default.isSubmitIfFC = materialSwitch_submitIfFC.Checked;
         }
 
         private void materialCheckbox_hideData_CheckedChanged(object sender, EventArgs e)
         {
-            Properties.Settings.Default.isHideData = materialCheckbox_hideData.Checked;
+            Properties.Settings.Default.isHideData = materialSwitch_hideData.Checked;
         }
 
         private void materialCheckbox_topMost_CheckedChanged(object sender, EventArgs e)
         {
-            Properties.Settings.Default.isTopMost = materialCheckbox_topMost.Checked;
-            this.TopMost = materialCheckbox_topMost.Checked;
+            Properties.Settings.Default.isTopMost = materialSwitch_topMost.Checked;
+            this.TopMost = materialSwitch_topMost.Checked;
         }
 
         private void materialCheckbox_toggleWithSound_CheckedChanged(object sender, EventArgs e)
         {
-            Properties.Settings.Default.isToggleSound = materialCheckbox_toggleWithSound.Checked;
+            Properties.Settings.Default.isToggleSound = materialSwitch_toggleWithSound.Checked;
         }
 
         private void materialCheckbox_minimizeToSystemTray_CheckedChanged(object sender, EventArgs e)
         {
-            Properties.Settings.Default.isSystemTray = materialCheckbox_minimizeToSystemTray.Checked;
+            Properties.Settings.Default.isSystemTray = materialSwitch_minimizeToSystemTray.Checked;
         }
 
         private void materialCheckbox_runAtStartup_CheckedChanged(object sender, EventArgs e)
         {
-            Properties.Settings.Default.isStartup = materialCheckbox_runAtStartup.Checked;
+            Properties.Settings.Default.isStartup = materialSwitch_runAtStartup.Checked;
 
-            StartupSetUp(materialCheckbox_runAtStartup.Checked);
+            StartupSetUp(materialSwitch_runAtStartup.Checked);
         }
 
         #endregion
@@ -861,7 +861,6 @@ namespace osuEscape
         {
             // verifying api key using one of the osu! api urls
             // using get_beatmaps as it requires the least parameter
-            // result does not matter, only success status code is needed
 
             var url = $"https://osu.ppy.sh/api/get_beatmaps?k={materialTextBox_apiInput.Text}&b=100&m=0";
 
@@ -874,17 +873,18 @@ namespace osuEscape
             var response = await client.SendAsync(request, CancellationToken.None);
 
             Properties.Settings.Default.isAPIKeyVerified = response.IsSuccessStatusCode;
-            materialCheckbox_autoDisconnect.Enabled = response.IsSuccessStatusCode;
+            materialSwitch_autoDisconnect.Enabled = response.IsSuccessStatusCode;
 
             if (response.IsSuccessStatusCode)
             {
+                // only success status code is needed
                 // response content is not needed
                 Properties.Settings.Default.userApiKey = materialTextBox_apiInput.Text;
             }
             else
             {
                 IncorrectAPITextOutput();
-                materialCheckbox_autoDisconnect.Checked = false;
+                materialSwitch_autoDisconnect.Checked = false;
             }
 
             CheckBoxesUpdateStatus();
@@ -895,13 +895,13 @@ namespace osuEscape
             // Invalidate to update new color
             List<MaterialSwitch> checkBoxList = new()
             {
-                materialCheckbox_runAtStartup,
-                materialCheckbox_minimizeToSystemTray,
-                materialCheckbox_toggleWithSound,
-                materialCheckbox_topMost,
-                materialCheckbox_hideData,
-                materialCheckbox_submitIfFC,
-                materialCheckbox_autoDisconnect
+                materialSwitch_runAtStartup,
+                materialSwitch_minimizeToSystemTray,
+                materialSwitch_toggleWithSound,
+                materialSwitch_topMost,
+                materialSwitch_hideData,
+                materialSwitch_submitIfFC,
+                materialSwitch_autoDisconnect
             };
 
             List<MaterialButton> buttonList = new()
@@ -946,20 +946,20 @@ namespace osuEscape
         }
         private void APIRequiredCheckBoxesEnabled()
         {
-            if (materialCheckbox_autoDisconnect.InvokeRequired)
+            if (materialSwitch_autoDisconnect.InvokeRequired)
             {
-                materialCheckbox_autoDisconnect.Invoke(new MethodInvoker(delegate
+                materialSwitch_autoDisconnect.Invoke(new MethodInvoker(delegate
                 {
-                    materialCheckbox_autoDisconnect.Enabled = Properties.Settings.Default.isAPIKeyVerified;
-                    if (!materialCheckbox_autoDisconnect.Enabled)
-                        materialCheckbox_autoDisconnect.Checked = false;
+                    materialSwitch_autoDisconnect.Enabled = Properties.Settings.Default.isAPIKeyVerified;
+                    if (!materialSwitch_autoDisconnect.Enabled)
+                        materialSwitch_autoDisconnect.Checked = false;
                 }));
             }
             else
             {
-                materialCheckbox_autoDisconnect.Enabled = Properties.Settings.Default.isAPIKeyVerified;
-                if (!materialCheckbox_autoDisconnect.Enabled)
-                    materialCheckbox_autoDisconnect.Checked = false;
+                materialSwitch_autoDisconnect.Enabled = Properties.Settings.Default.isAPIKeyVerified;
+                if (!materialSwitch_autoDisconnect.Enabled)
+                    materialSwitch_autoDisconnect.Checked = false;
             }
         }
 
@@ -972,10 +972,7 @@ namespace osuEscape
 
         private void materialSlider_refreshRate_Click(object sender, EventArgs e)
         {
-            _readDelay = materialSlider_refreshRate.Value;
-
-            if (materialSlider_refreshRate.Value < 50)
-                _readDelay = 50;
+            _readDelay = materialSlider_refreshRate.Value < 50 ? 50 : materialSlider_refreshRate.Value;
         }
         private void materialTabControl_menu_Selected(object sender, TabControlEventArgs e)
         {
@@ -1080,19 +1077,14 @@ namespace osuEscape
 
         private void HomeForm_FormClosing(object sender, FormClosingEventArgs e)
         {
-            if (materialCheckbox_minimizeToSystemTray.Checked && !isItemQuit)
+            if (materialSwitch_minimizeToSystemTray.Checked && !isItemQuit)
             {
                 // cancel form closing event
                 e.Cancel = true;
 
                 this.WindowState = FormWindowState.Minimized;
-                ToggleSystemTray(materialCheckbox_minimizeToSystemTray.Checked);
+                ToggleSystemTray(materialSwitch_minimizeToSystemTray.Checked);
                 ContextMenuStripUpdate();
-            }
-            else
-            {
-                // taskbar
-                notifyIcon_osuEscape.Visible = false;
             }
 
             // save the last position of the application
