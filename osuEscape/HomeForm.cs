@@ -27,7 +27,7 @@ namespace osuEscape
 
     public partial class HomeForm : MaterialForm
     {
-        // osu data reader
+        // osu! data reader
         private readonly string _osuWindowTitleHint;
         private int _readDelay = 50;
         private readonly StructuredOsuMemoryReader _sreader;
@@ -108,24 +108,25 @@ namespace osuEscape
         // resize ui variables
         private Size FormSize_init;
         private Point labelSubmissionStatus_Location_init;
-        private Point panel_MapStatus_Location_init;
         private Size button_Toggle_Size_init;
 
         // material skin ui
         readonly MaterialSkinManager materialSkinManager;
 
-        // Startup registry key and value
+        // startup
         private static readonly string StartupKey = "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run";
         private static readonly string StartupValue = System.Reflection.Assembly.GetExecutingAssembly().GetName().Name;
 
         private bool isItemQuit = false;
+
+        private bool isSetScore = false;
         public HomeForm(string osuWindowTitleHint)
         {
             _osuWindowTitleHint = osuWindowTitleHint;
 
             InitializeComponent();
 
-            materialLabel_version.Text = string.Format(Resources.CurrentVersion, Assembly.GetEntryAssembly().GetName().Version);
+            osuWindowTitleHint += string.Format(Resources.CurrentVersion, Assembly.GetEntryAssembly().GetName().Version);
 
             // Initialize material skin manager
             materialSkinManager = MaterialSkinManager.Instance;
@@ -135,11 +136,10 @@ namespace osuEscape
             _sreader = StructuredOsuMemoryReader.Instance.GetInstanceForWindowTitleHint(osuWindowTitleHint);
 
             // for ui resizing
-            // design editor pixels offset (50px)
+            // design editor pixels height offset (50px)
             this.Size = new Size(this.Size.Width, this.Size.Height - 50);
             FormSize_init = this.Size;
             labelSubmissionStatus_Location_init = materialLabel_submissionStatus.Location;
-            panel_MapStatus_Location_init = panel_mapStatus.Location;
             button_Toggle_Size_init = materialButton_toggle.Size;
 
             // ui 
@@ -292,8 +292,8 @@ namespace osuEscape
                     {
                         Invoke((MethodInvoker)(() =>
                         {
-                            if (ReadInt(baseAddresses.GeneralData, nameof(GeneralData.RawStatus)) == -5)
-                                materialMultiLineTextBox_osuStatus.Text = "NotRunning";
+                            //if (ReadInt(baseAddresses.GeneralData, nameof(GeneralData.RawStatus)) == -5)
+                            //    materialMultiLineTextBox_osuStatus.Text = "NotRunning";
                         }));
 
                         await Task.Delay(_readDelay);
@@ -343,57 +343,7 @@ namespace osuEscape
 
                     if (baseAddresses.GeneralData.OsuStatus == OsuMemoryStatus.ResultsScreen)
                     {
-                        _sreader.TryRead(baseAddresses.ResultsScreen);
-
-
-                        if (Properties.Settings.Default.isAutoDisconnect && 
-                            materialCheckbox_autoDisconnect.Enabled && 
-                            Properties.Settings.Default.isAllowConnection)
-                        {
-                            // upload if only it is not a replay
-                            // miss count == 0 means full comboing 
-                            if (!baseAddresses.Player.IsReplay &&
-                                baseAddresses.Player.MaxCombo != 0)
-                            {
-                                // do not upload if the map is pending or not submitted
-                                if (baseAddresses.Beatmap.Status != ((short)BeatmapStatus.Pending) &&
-                                    baseAddresses.Beatmap.Status != ((short)BeatmapStatus.NotSubmitted))
-                                {
-                                    materialLabel_submissionStatus.BeginInvoke((MethodInvoker)delegate
-                                    {
-                                        materialLabel_SubmissionStatus_TextChanged("Ready to upload recent score.");
-                                    });
-
-                                    await Task.Delay(1000);
-
-                                    // GET Method of user's recent score (osu! api v1)
-                                    // get the recent 3 scores, even though there is multiple submissions at one connection
-                                    // the recent score could still be recognized
-                                    recentUploadScoreList = await GetUserRecentScoreAsync(baseAddresses.Player.Username, 3);
-
-                                    bool isUploaded = false;
-
-                                    foreach (int responseScore in recentUploadScoreList)
-                                    {
-                                        // the score player recently submitted
-                                        if (responseScore == baseAddresses.Player.Score)
-                                        {
-                                            isUploaded = true;
-
-                                            ToggleFirewall();
-
-                                            break;
-                                        }
-                                    }
-
-                                    materialLabel_submissionStatus.BeginInvoke((MethodInvoker)delegate
-                                    {
-                                        string text = isUploaded ? "SUCCESS: Uploaded recent score." : "FAILED: Did not upload recent score.";
-                                        materialLabel_SubmissionStatus_TextChanged(text);
-                                    });
-                                }
-                            }
-                        }
+                        _sreader.TryRead(baseAddresses.ResultsScreen);                        
                     }
 
 
@@ -447,12 +397,64 @@ namespace osuEscape
                             !Properties.Settings.Default.isAllowConnection)
                         {
                             ToggleFirewall();
+                            isSetScore = true;
                         }
                     }
                     else
                     {
                         baseAddresses.LeaderBoard.Players.Clear();
                     }
+
+                    // score submission
+                    // upload if only it is not a replay
+                    // miss count == 0 means full comboing 
+                    // do not upload if the map is pending or not submitted
+                    if (isSetScore &&
+                        Properties.Settings.Default.isAutoDisconnect &&
+                        Properties.Settings.Default.isAllowConnection &&
+                        !baseAddresses.Player.IsReplay &&
+                        baseAddresses.Player.MaxCombo != 0 &&
+                        baseAddresses.Beatmap.Status != ((short)BeatmapStatus.Pending) &&
+                        baseAddresses.Beatmap.Status != ((short)BeatmapStatus.NotSubmitted))
+                    {
+                        
+                        materialLabel_submissionStatus.BeginInvoke((MethodInvoker)delegate
+                        {
+                            materialLabel_SubmissionStatus_TextChanged("Uploading recent score...");
+                        });
+
+                        // submission frequency test
+                        await Task.Delay(750);
+
+                        // GET Method of user's recent score (osu! api v1)
+                        // get the recent 3 scores, even though there is multiple submissions at one connection
+                        // the recent score could still be recognized
+                        recentUploadScoreList = await GetUserRecentScoreAsync(baseAddresses.Player.Username, 3);
+
+                        bool isRecentSetScoreUploaded = false;
+
+                        foreach (int responseScore in recentUploadScoreList)
+                        {
+                            // the score player recently submitted
+                            if (responseScore == baseAddresses.Player.Score)
+                            {
+                                isRecentSetScoreUploaded = true;
+
+                                ToggleFirewall();
+
+                                isSetScore = false;
+
+                                break;
+                            }
+                        }
+
+                        materialLabel_submissionStatus.BeginInvoke((MethodInvoker)delegate
+                        {
+                            string text = isRecentSetScoreUploaded ? "SUCCESS: Uploaded recent score." : "FAILED: Not yet uploaded score.";
+                            materialLabel_SubmissionStatus_TextChanged(text);
+                        });                                                   
+                    }
+
 
                     var hitErrors = baseAddresses.Player?.HitErrors;
                     if (hitErrors != null)
@@ -485,9 +487,6 @@ namespace osuEscape
                                 $"Accuracy: {baseAddresses.Player.Accuracy:0.00}{Environment.NewLine}" +
                                 $"300: {baseAddresses.Player.Hit300} 100: {baseAddresses.Player.Hit100} 50: {baseAddresses.Player.Hit50} Miss: {baseAddresses.Player.HitMiss}{Environment.NewLine}"
                                 ;
-
-                            materialMultiLineTextBox_currentMapTime.Text = $"{baseAddresses.GeneralData.AudioTime}";
-                            materialMultiLineTextBox_osuStatus.Text = $"{baseAddresses.GeneralData.OsuStatus}";
                         }));
                     }
                     catch (ObjectDisposedException)
@@ -915,8 +914,8 @@ namespace osuEscape
             }
 
             //tabPages'color also needs to update
-            materialTabSelector_main.Invalidate();
-            materialTabSelector_main.Update();
+            materialTabSelector.Invalidate();
+            materialTabSelector.Update();
         }
 
 
@@ -991,15 +990,14 @@ namespace osuEscape
                 this.MinimumSize = FormSize_init;
 
                 materialLabel_submissionStatus.Location = labelSubmissionStatus_Location_init;
-                panel_mapStatus.Location = panel_MapStatus_Location_init;
                 materialButton_toggle.Size = button_Toggle_Size_init;
                 materialLabel_MapData.Visible = true;
                 materialMultiLineTextBox_mapData.Visible = true;
 
                 APIRequiredCheckBoxesEnabled();
             }
-            //avoid button focus
-            materialLabel_focus.Focus();
+            // label avoid button focus
+            materialLabel_avoidButtonFocus.Focus();
         }
 
         private void HideData()
@@ -1007,15 +1005,20 @@ namespace osuEscape
             if (Properties.Settings.Default.isHideData)
             {
                 // hide data, smaller ui
-                this.MinimumSize = new Size(500, 275);
+                this.MinimumSize = new Size(391, 275);
                 this.Size = this.MinimumSize;
                 this.MaximumSize = this.Size;
 
                 materialLabel_submissionStatus.Location = new Point(14, 140);
-                panel_mapStatus.Location = new Point(330, 5);
                 materialButton_toggle.Size = new Size(300, 120);
                 materialLabel_MapData.Visible = false;
                 materialMultiLineTextBox_mapData.Visible = false;
+            }
+            else
+            {
+                this.MinimumSize = new Size(this.Size.Width - 160, this.Size.Height);
+                this.Size = this.MinimumSize;
+                this.MaximumSize = this.Size;
             }
         }
 
@@ -1091,6 +1094,24 @@ namespace osuEscape
                 Properties.Settings.Default.appLocation = this.Location;
 
             Properties.Settings.Default.Save();
+        }
+
+        protected override void Dispose (bool disposing)
+        {
+            if (disposing)
+            {
+                if (components != null)
+                {
+                    components.Dispose();
+                }
+
+                // Dispose stuff here
+                cts.Dispose();
+                keyboardHook.Dispose();
+                _sreader.Dispose();
+            }
+
+            base.Dispose(disposing);
         }
     }
 }

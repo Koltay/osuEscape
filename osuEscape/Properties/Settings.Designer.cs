@@ -97,7 +97,7 @@ namespace osuEscape.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("33")]
+        [global::System.Configuration.DefaultSettingValueAttribute("50")]
         public int refreshRate {
             get {
                 return ((int)(this["refreshRate"]));
