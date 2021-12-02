@@ -103,7 +103,6 @@ namespace osuEscape
         // score upload
         private static readonly HttpClient client = new();
         private static int beatmapLastNoteOffset = -9999;
-        private static List<int> recentUploadScoreList = new();
 
         // resize ui variables
         private Size FormSize_init;
@@ -428,7 +427,7 @@ namespace osuEscape
                         // GET Method of user's recent score (osu! api v1)
                         // get the recent 3 scores, even though there is multiple submissions at one connection
                         // the recent score could still be recognized
-                        recentUploadScoreList = await GetUserRecentScoreAsync(baseAddresses.Player.Username, 3);
+                        List<int> recentUploadScoreList = await GetUserRecentScoreAsync(baseAddresses.Player.Username, 3);
 
                         bool isRecentSetScoreUploaded = false;
 
@@ -439,6 +438,7 @@ namespace osuEscape
                             {
                                 isRecentSetScoreUploaded = true;
 
+                                Properties.Settings.Default.isAllowConnection = true;
                                 ToggleFirewall();
 
                                 isSetScore = false;
@@ -449,7 +449,7 @@ namespace osuEscape
 
                         materialLabel_submissionStatus.BeginInvoke((MethodInvoker)delegate
                         {
-                            string text = isRecentSetScoreUploaded ? "Uploaded recent score." : "Not yet uploaded score.";
+                            string text = isRecentSetScoreUploaded ? "Uploaded recent score." : "";
                             materialLabel_SubmissionStatus_TextChanged(text);
                         });                                                   
                     }
@@ -930,9 +930,6 @@ namespace osuEscape
             materialSlider_refreshRate.Invalidate();
             materialSlider_refreshRate.Update();
         }
-
-
-
         #endregion
 
         #region API Required Options
