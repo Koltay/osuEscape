@@ -126,8 +126,6 @@ namespace osuEscape
 
             InitializeComponent();
 
-            osuWindowTitleHint += string.Format(Resources.CurrentVersion, Assembly.GetEntryAssembly().GetName().Version);
-
             // Initialize material skin manager
             materialSkinManager = MaterialSkinManager.Instance;
             materialSkinManager.EnforceBackcolorOnAllComponents = false;
@@ -154,7 +152,7 @@ namespace osuEscape
             // avoid opening osu!Escape twice
             if (Process.GetProcessesByName("osuEscape").Length > 1)
             {
-                AppClosing();
+                this.Close();
             }
         }
 
@@ -209,7 +207,7 @@ namespace osuEscape
             materialTextBox_apiInput.Text = Properties.Settings.Default.userApiKey;
             materialMultiLineTextBox_submitAcc.Text = $"{Properties.Settings.Default.submitAcc}";
             materialSkinManager.Theme = (MaterialSkinManager.Themes)Properties.Settings.Default.Theme;
-            materialButton_changeTheme.Text = (Properties.Settings.Default.Theme == 0 ? "Dark Mode" : "Light Mode");
+            materialButton_Theme.Text = (Properties.Settings.Default.Theme == 0 ? "Dark Theme" : "Light Theme");
 
             GlobalHotkeyTextBoxUpdate();
         }
@@ -271,6 +269,8 @@ namespace osuEscape
         private async void osuDataReaderAsync()
         {
             if (!string.IsNullOrEmpty(_osuWindowTitleHint)) Text += $": {_osuWindowTitleHint}";
+            Text += " " + string.Format(Resources.CurrentVersion, Assembly.GetEntryAssembly().GetName().Version);
+
             await Task.Run(async () =>
             {
                 Stopwatch stopwatch;
@@ -450,7 +450,7 @@ namespace osuEscape
 
                         materialLabel_submissionStatus.BeginInvoke((MethodInvoker)delegate
                         {
-                            string text = isRecentSetScoreUploaded ? "SUCCESS: Uploaded recent score." : "FAILED: Not yet uploaded score.";
+                            string text = isRecentSetScoreUploaded ? "Uploaded recent score." : "Not yet uploaded score.";
                             materialLabel_SubmissionStatus_TextChanged(text);
                         });                                                   
                     }
@@ -548,16 +548,16 @@ namespace osuEscape
 
                 materialSkinManager.ColorScheme = isAllow ?
                 new ColorScheme(
+                        Primary.Grey800,
+                        Primary.Grey900,
                         Primary.Grey500,
-                        Primary.Grey700,
-                        Primary.Grey600,
-                        Accent.Green400,
+                        Accent.Green700,
                         TextShade.WHITE)
                 :
                 new ColorScheme(
+                        Primary.Grey800,
+                        Primary.Grey900,
                         Primary.Grey500,
-                        Primary.Grey700,
-                        Primary.Grey600,
                         Accent.Red400,
                         TextShade.WHITE);
             }));
@@ -682,7 +682,7 @@ namespace osuEscape
         private void Item_quit_Click(object sender, EventArgs e)
         {
             isItemQuit = true;
-            AppClosing();
+            this.Close();
         }
 
         #endregion
@@ -752,8 +752,12 @@ namespace osuEscape
         {
             // light mode toggles to dark mode
             materialSkinManager.Theme = materialSkinManager.Theme == MaterialSkinManager.Themes.DARK ? MaterialSkinManager.Themes.LIGHT : MaterialSkinManager.Themes.DARK;
+
+            // user setting
             Properties.Settings.Default.Theme = materialSkinManager.Theme == MaterialSkinManager.Themes.DARK ? 1 : 0;
-            materialButton_changeTheme.Text = materialSkinManager.Theme == MaterialSkinManager.Themes.DARK ? "Light Mode" : "Dark Mode";
+
+            // ui button text
+            materialButton_Theme.Text = materialSkinManager.Theme == MaterialSkinManager.Themes.DARK ? "Light Theme" : "Dark Theme";
         }
         private void materialButton_toggle_Click(object sender, EventArgs e)
         {
@@ -772,15 +776,6 @@ namespace osuEscape
             materialLabel_globalToggleHotkey.Text = "Press Key(s) as Global Toggle Hotkey...";
         }
 
-
-        #endregion
-
-        #region FormClose
-        private void AppClosing()
-        {
-            cts.Dispose();
-            this.Close();
-        }
 
         #endregion
 
@@ -898,19 +893,31 @@ namespace osuEscape
 
         private void CheckBoxesUpdateStatus()
         {
-            List<MaterialCheckbox> checkBoxesList = new();
-            checkBoxesList.Add(materialCheckbox_runAtStartup);
-            checkBoxesList.Add(materialCheckbox_minimizeToSystemTray);
-            checkBoxesList.Add(materialCheckbox_toggleWithSound);
-            checkBoxesList.Add(materialCheckbox_topMost);
-            checkBoxesList.Add(materialCheckbox_hideData);
-            checkBoxesList.Add(materialCheckbox_submitIfFC);
-            checkBoxesList.Add(materialCheckbox_autoDisconnect);
+            List<MaterialCheckbox> checkBoxList = new();
+            checkBoxList.Add(materialCheckbox_runAtStartup);
+            checkBoxList.Add(materialCheckbox_minimizeToSystemTray);
+            checkBoxList.Add(materialCheckbox_toggleWithSound);
+            checkBoxList.Add(materialCheckbox_topMost);
+            checkBoxList.Add(materialCheckbox_hideData);
+            checkBoxList.Add(materialCheckbox_submitIfFC);
+            checkBoxList.Add(materialCheckbox_autoDisconnect);
 
-            foreach (MaterialCheckbox mc in checkBoxesList)
+            List<MaterialButton> buttonList = new List<MaterialButton>();
+            buttonList.Add(materialButton_Theme);
+            buttonList.Add(materialButton_findOsuLocation);
+            buttonList.Add(materialButton_changeToggleKey);
+            buttonList.Add(materialButton_checkApi);
+
+            foreach (MaterialCheckbox mc in checkBoxList)
             {
                 mc.Invalidate();
                 mc.Update();
+            }
+
+            foreach (MaterialButton mb in buttonList)
+            {
+                mb.Invalidate();
+                mb.Update();
             }
 
             //tabPages'color also needs to update
@@ -1088,6 +1095,11 @@ namespace osuEscape
                 ToggleSystemTray(materialCheckbox_minimizeToSystemTray.Checked);
                 ContextMenuStripUpdate();
             }
+            else
+            {
+                // taskbar
+                notifyIcon_osuEscape.Visible = false;
+            }
 
             // save the last position of the application
             if (this.WindowState != FormWindowState.Minimized)
@@ -1108,7 +1120,10 @@ namespace osuEscape
                 // Dispose stuff here
                 cts.Dispose();
                 keyboardHook.Dispose();
-                _sreader.Dispose();
+                if (!_sreader.CanRead)
+                {
+                    _sreader.Dispose();
+                }
             }
 
             base.Dispose(disposing);

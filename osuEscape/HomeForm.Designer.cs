@@ -24,19 +24,18 @@
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(HomeForm));
             this.materialTabControl_menu = new MaterialSkin.Controls.MaterialTabControl();
             this.tabPage_main = new System.Windows.Forms.TabPage();
-            this.materialLabel_avoidButtonFocus = new MaterialSkin.Controls.MaterialLabel();
-            this.materialLabel_version = new MaterialSkin.Controls.MaterialLabel();
             this.materialLabel_submissionStatus = new MaterialSkin.Controls.MaterialLabel();
             this.materialMultiLineTextBox_currentPlayingData = new MaterialSkin.Controls.MaterialMultiLineTextBox();
             this.materialLabel_currentPlayingData = new MaterialSkin.Controls.MaterialLabel();
             this.materialMultiLineTextBox_mapData = new MaterialSkin.Controls.MaterialMultiLineTextBox();
             this.materialLabel_MapData = new MaterialSkin.Controls.MaterialLabel();
             this.materialButton_toggle = new MaterialSkin.Controls.MaterialButton();
+            this.materialLabel_avoidButtonFocus = new MaterialSkin.Controls.MaterialLabel();
             this.tabPage_settings = new System.Windows.Forms.TabPage();
             this.materialSlider_refreshRate = new MaterialSkin.Controls.MaterialSlider();
             this.materialLabel1 = new MaterialSkin.Controls.MaterialLabel();
             this.materialButton_changeToggleKey = new MaterialSkin.Controls.MaterialButton();
-            this.materialButton_changeTheme = new MaterialSkin.Controls.MaterialButton();
+            this.materialButton_Theme = new MaterialSkin.Controls.MaterialButton();
             this.materialTextBox_apiInput = new MaterialSkin.Controls.MaterialTextBox2();
             this.materialButton_findOsuLocation = new MaterialSkin.Controls.MaterialButton();
             this.materialLabel_globalToggleHotkey = new MaterialSkin.Controls.MaterialLabel();
@@ -82,7 +81,6 @@
             // tabPage_main
             // 
             this.tabPage_main.BackColor = System.Drawing.Color.White;
-            this.tabPage_main.Controls.Add(this.materialLabel_version);
             this.tabPage_main.Controls.Add(this.materialLabel_submissionStatus);
             this.tabPage_main.Controls.Add(this.materialMultiLineTextBox_currentPlayingData);
             this.tabPage_main.Controls.Add(this.materialLabel_currentPlayingData);
@@ -97,30 +95,6 @@
             this.tabPage_main.Size = new System.Drawing.Size(540, 420);
             this.tabPage_main.TabIndex = 0;
             this.tabPage_main.Text = "Main";
-            // 
-            // materialLabel_avoidButtonFocus
-            // 
-            this.materialLabel_avoidButtonFocus.AutoSize = true;
-            this.materialLabel_avoidButtonFocus.Depth = 0;
-            this.materialLabel_avoidButtonFocus.Font = new System.Drawing.Font("Roboto", 14F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
-            this.materialLabel_avoidButtonFocus.Location = new System.Drawing.Point(177, 37);
-            this.materialLabel_avoidButtonFocus.MouseState = MaterialSkin.MouseState.HOVER;
-            this.materialLabel_avoidButtonFocus.Name = "materialLabel_avoidButtonFocus";
-            this.materialLabel_avoidButtonFocus.Size = new System.Drawing.Size(107, 19);
-            this.materialLabel_avoidButtonFocus.TabIndex = 17;
-            this.materialLabel_avoidButtonFocus.Text = "materialLabel2";
-            // 
-            // materialLabel_version
-            // 
-            this.materialLabel_version.AutoSize = true;
-            this.materialLabel_version.Depth = 0;
-            this.materialLabel_version.Font = new System.Drawing.Font("Roboto", 14F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
-            this.materialLabel_version.Location = new System.Drawing.Point(331, 379);
-            this.materialLabel_version.MouseState = MaterialSkin.MouseState.HOVER;
-            this.materialLabel_version.Name = "materialLabel_version";
-            this.materialLabel_version.Size = new System.Drawing.Size(44, 19);
-            this.materialLabel_version.TabIndex = 16;
-            this.materialLabel_version.Text = "v1.3.1";
             // 
             // materialLabel_submissionStatus
             // 
@@ -209,13 +183,25 @@
             this.materialButton_toggle.UseVisualStyleBackColor = true;
             this.materialButton_toggle.Click += new System.EventHandler(this.materialButton_toggle_Click);
             // 
+            // materialLabel_avoidButtonFocus
+            // 
+            this.materialLabel_avoidButtonFocus.AutoSize = true;
+            this.materialLabel_avoidButtonFocus.Depth = 0;
+            this.materialLabel_avoidButtonFocus.Font = new System.Drawing.Font("Roboto", 14F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
+            this.materialLabel_avoidButtonFocus.Location = new System.Drawing.Point(177, 37);
+            this.materialLabel_avoidButtonFocus.MouseState = MaterialSkin.MouseState.HOVER;
+            this.materialLabel_avoidButtonFocus.Name = "materialLabel_avoidButtonFocus";
+            this.materialLabel_avoidButtonFocus.Size = new System.Drawing.Size(107, 19);
+            this.materialLabel_avoidButtonFocus.TabIndex = 17;
+            this.materialLabel_avoidButtonFocus.Text = "materialLabel2";
+            // 
             // tabPage_settings
             // 
             this.tabPage_settings.BackColor = System.Drawing.Color.White;
             this.tabPage_settings.Controls.Add(this.materialSlider_refreshRate);
             this.tabPage_settings.Controls.Add(this.materialLabel1);
             this.tabPage_settings.Controls.Add(this.materialButton_changeToggleKey);
-            this.tabPage_settings.Controls.Add(this.materialButton_changeTheme);
+            this.tabPage_settings.Controls.Add(this.materialButton_Theme);
             this.tabPage_settings.Controls.Add(this.materialTextBox_apiInput);
             this.tabPage_settings.Controls.Add(this.materialButton_findOsuLocation);
             this.tabPage_settings.Controls.Add(this.materialLabel_globalToggleHotkey);
@@ -247,10 +233,11 @@
             this.materialSlider_refreshRate.MouseState = MaterialSkin.MouseState.HOVER;
             this.materialSlider_refreshRate.Name = "materialSlider_refreshRate";
             this.materialSlider_refreshRate.RangeMax = 1000;
-            this.materialSlider_refreshRate.RangeMin = 33;
+            this.materialSlider_refreshRate.RangeMin = 50;
             this.materialSlider_refreshRate.Size = new System.Drawing.Size(146, 40);
             this.materialSlider_refreshRate.TabIndex = 28;
             this.materialSlider_refreshRate.Text = "";
+            this.materialSlider_refreshRate.UseAccentColor = true;
             this.materialSlider_refreshRate.Click += new System.EventHandler(this.materialSlider_refreshRate_Click);
             // 
             // materialLabel1
@@ -284,31 +271,31 @@
             this.materialButton_changeToggleKey.Text = "Change Toggle Key";
             this.materialButton_changeToggleKey.TextAlign = System.Drawing.ContentAlignment.BottomCenter;
             this.materialButton_changeToggleKey.Type = MaterialSkin.Controls.MaterialButton.MaterialButtonType.Contained;
-            this.materialButton_changeToggleKey.UseAccentColor = false;
+            this.materialButton_changeToggleKey.UseAccentColor = true;
             this.materialButton_changeToggleKey.UseVisualStyleBackColor = true;
             this.materialButton_changeToggleKey.Click += new System.EventHandler(this.materialButton_changeToggleKey_Click);
             // 
-            // materialButton_changeTheme
+            // materialButton_Theme
             // 
-            this.materialButton_changeTheme.AutoSize = false;
-            this.materialButton_changeTheme.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.materialButton_changeTheme.Density = MaterialSkin.Controls.MaterialButton.MaterialButtonDensity.Default;
-            this.materialButton_changeTheme.Depth = 0;
-            this.materialButton_changeTheme.HighEmphasis = true;
-            this.materialButton_changeTheme.Icon = null;
-            this.materialButton_changeTheme.Location = new System.Drawing.Point(390, 9);
-            this.materialButton_changeTheme.Margin = new System.Windows.Forms.Padding(4, 6, 4, 6);
-            this.materialButton_changeTheme.MouseState = MaterialSkin.MouseState.HOVER;
-            this.materialButton_changeTheme.Name = "materialButton_changeTheme";
-            this.materialButton_changeTheme.NoAccentTextColor = System.Drawing.Color.Empty;
-            this.materialButton_changeTheme.Size = new System.Drawing.Size(142, 41);
-            this.materialButton_changeTheme.TabIndex = 25;
-            this.materialButton_changeTheme.TabStop = false;
-            this.materialButton_changeTheme.Text = "Mode";
-            this.materialButton_changeTheme.Type = MaterialSkin.Controls.MaterialButton.MaterialButtonType.Contained;
-            this.materialButton_changeTheme.UseAccentColor = false;
-            this.materialButton_changeTheme.UseVisualStyleBackColor = true;
-            this.materialButton_changeTheme.Click += new System.EventHandler(this.materialButton_changeTheme_Click);
+            this.materialButton_Theme.AutoSize = false;
+            this.materialButton_Theme.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.materialButton_Theme.Density = MaterialSkin.Controls.MaterialButton.MaterialButtonDensity.Default;
+            this.materialButton_Theme.Depth = 0;
+            this.materialButton_Theme.HighEmphasis = true;
+            this.materialButton_Theme.Icon = null;
+            this.materialButton_Theme.Location = new System.Drawing.Point(390, 9);
+            this.materialButton_Theme.Margin = new System.Windows.Forms.Padding(4, 6, 4, 6);
+            this.materialButton_Theme.MouseState = MaterialSkin.MouseState.HOVER;
+            this.materialButton_Theme.Name = "materialButton_Theme";
+            this.materialButton_Theme.NoAccentTextColor = System.Drawing.Color.Empty;
+            this.materialButton_Theme.Size = new System.Drawing.Size(142, 41);
+            this.materialButton_Theme.TabIndex = 25;
+            this.materialButton_Theme.TabStop = false;
+            this.materialButton_Theme.Text = "Theme";
+            this.materialButton_Theme.Type = MaterialSkin.Controls.MaterialButton.MaterialButtonType.Contained;
+            this.materialButton_Theme.UseAccentColor = true;
+            this.materialButton_Theme.UseVisualStyleBackColor = true;
+            this.materialButton_Theme.Click += new System.EventHandler(this.materialButton_changeTheme_Click);
             // 
             // materialTextBox_apiInput
             // 
@@ -357,7 +344,7 @@
             this.materialButton_findOsuLocation.TabStop = false;
             this.materialButton_findOsuLocation.Text = "find osu!.exe location";
             this.materialButton_findOsuLocation.Type = MaterialSkin.Controls.MaterialButton.MaterialButtonType.Contained;
-            this.materialButton_findOsuLocation.UseAccentColor = false;
+            this.materialButton_findOsuLocation.UseAccentColor = true;
             this.materialButton_findOsuLocation.UseVisualStyleBackColor = true;
             this.materialButton_findOsuLocation.Click += new System.EventHandler(this.materialButton_findOsuLocation_Click);
             // 
@@ -420,7 +407,7 @@
             this.materialButton_checkApi.TabStop = false;
             this.materialButton_checkApi.Text = "Check";
             this.materialButton_checkApi.Type = MaterialSkin.Controls.MaterialButton.MaterialButtonType.Contained;
-            this.materialButton_checkApi.UseAccentColor = false;
+            this.materialButton_checkApi.UseAccentColor = true;
             this.materialButton_checkApi.UseVisualStyleBackColor = true;
             this.materialButton_checkApi.Click += new System.EventHandler(this.materialButton_checkApi_Click);
             // 
@@ -673,9 +660,8 @@
         private MaterialSkin.Controls.MaterialButton materialButton_findOsuLocation;
         private MaterialSkin.Controls.MaterialTabSelector materialTabSelector;
         private MaterialSkin.Controls.MaterialTextBox2 materialTextBox_apiInput;
-        private MaterialSkin.Controls.MaterialButton materialButton_changeTheme;
+        private MaterialSkin.Controls.MaterialButton materialButton_Theme;
         private MaterialSkin.Controls.MaterialButton materialButton_changeToggleKey;
-        private MaterialSkin.Controls.MaterialLabel materialLabel_version;
         private System.Windows.Forms.ToolTip toolTips;
         private MaterialSkin.Controls.MaterialSlider materialSlider_refreshRate;
         private MaterialSkin.Controls.MaterialLabel materialLabel1;
