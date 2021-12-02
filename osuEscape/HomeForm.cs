@@ -36,7 +36,7 @@ namespace osuEscape
         // Hotkey
         // Keyboard hook for multiple keys
         private readonly KeyboardHook keyboardHook = new();
-        private static readonly Dictionary<Keys, string> KeysToString = new()
+        private static readonly Dictionary<Keys, string> KeysToStringDictionary = new()
         {
             [Keys.A] = "A",
             [Keys.B] = "B",
@@ -122,10 +122,7 @@ namespace osuEscape
         public HomeForm(string osuWindowTitleHint)
         {
             _osuWindowTitleHint = osuWindowTitleHint;
-
-            if (!string.IsNullOrEmpty(_osuWindowTitleHint)) Text += $": {_osuWindowTitleHint}";
-            Text += " " + string.Format(Resources.CurrentVersion, Assembly.GetEntryAssembly().GetName().Version);
-
+            
             InitializeComponent();
 
             // Initialize material skin manager
@@ -149,7 +146,7 @@ namespace osuEscape
             // hotkey
             keyboardHook.KeyPressed += new EventHandler<KeyPressedEventArgs>(hook_KeyPressed);
             keyboardHook.RegisterHotKey((ModifierKeys)Properties.Settings.Default.ModifierKeys,
-                                        KeysToString.FirstOrDefault(x => x.Value == Properties.Settings.Default.GlobalHotKey).Key);
+                                        KeysToStringDictionary.FirstOrDefault(x => x.Value == Properties.Settings.Default.GlobalHotKey).Key);
 
             // avoid opening osu!Escape twice
             if (Process.GetProcessesByName("osuEscape").Length > 1)
@@ -250,6 +247,7 @@ namespace osuEscape
             }
 
             #region Tooltip setup
+
             toolTips.SetToolTip(materialSwitch_autoDisconnect, "Enabling this option will automatically disconnect after the recent score is submitted.");
             toolTips.SetToolTip(materialSwitch_hideData, "Enabling this option will hide osu! data from Main. It is recommended to enable this option");
             toolTips.SetToolTip(materialSwitch_toggleWithSound, "Enabling this option will toggle firewall with system notification sound.");
@@ -269,6 +267,9 @@ namespace osuEscape
 
         private async void osuDataReaderAsync()
         {
+            if (!string.IsNullOrEmpty(_osuWindowTitleHint)) Text += $": {_osuWindowTitleHint}";
+            Text += " " + string.Format(Resources.CurrentVersion, Assembly.GetEntryAssembly().GetName().Version);
+
             await Task.Run(async () =>
             {
             Stopwatch stopwatch;
@@ -629,7 +630,7 @@ namespace osuEscape
                     "advfirewall firewall add rule name=\"osu block\" dir=out action=block program=" + filename;
                 cmd.Start();
 
-                // block rule enables depends on last connection
+                // block rule depends on previous user's connection (default: allow)
                 Properties.Settings.Default.isAllowConnection = !Properties.Settings.Default.isAllowConnection;
                 ToggleFirewall();
             }
@@ -680,7 +681,7 @@ namespace osuEscape
 
         #endregion
 
-        #region CheckBoxes
+        #region CheckBoxes related 
 
         #region Run at Startup
         public static void StartupSetUp(bool enabled)
@@ -729,7 +730,7 @@ namespace osuEscape
 
         #endregion
 
-        #region Checkboxes
+        #region Checkboxes' Checked changed
 
         private void materialCheckbox_autoDisconnect_CheckedChanged(object sender, EventArgs e)
         {
@@ -805,7 +806,7 @@ namespace osuEscape
         {
             if (Properties.Settings.Default.osuLocation == "")
             {
-                ShowMessageBox("Invalid Location");
+                ShowMessageBox("ERROR: Invalid osu! location.");
             }
             else
             {
@@ -833,7 +834,7 @@ namespace osuEscape
                     GlobalHotkeyTextBoxUpdate();
                     isEditingHotkey = false;
                 }
-                else if (KeysToString.ContainsKey(e.KeyCode))
+                else if (KeysToStringDictionary.ContainsKey(e.KeyCode))
                 {
                     keyboardHook.Dispose();
 
@@ -842,13 +843,13 @@ namespace osuEscape
                     Properties.Settings.Default.ModifierKeys += e.Alt ? 1 : 0;
                     Properties.Settings.Default.ModifierKeys += e.Control ? 2 : 0;
                     Properties.Settings.Default.ModifierKeys += e.Shift ? 4 : 0;
-                    Properties.Settings.Default.GlobalHotKey = KeysToString[e.KeyCode];
+                    Properties.Settings.Default.GlobalHotKey = KeysToStringDictionary[e.KeyCode];
 
                     // ui
                     GlobalHotkeyTextBoxUpdate();
 
                     keyboardHook.RegisterHotKey((ModifierKeys)Properties.Settings.Default.ModifierKeys,
-                                        KeysToString.FirstOrDefault(x => x.Value == Properties.Settings.Default.GlobalHotKey).Key);
+                                        KeysToStringDictionary.FirstOrDefault(x => x.Value == Properties.Settings.Default.GlobalHotKey).Key);
 
                     System.Media.SystemSounds.Asterisk.Play();
 
