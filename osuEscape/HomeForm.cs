@@ -29,7 +29,7 @@ namespace osuEscape
     {
         // osu data reader
         private readonly string _osuWindowTitleHint;
-        private int _readDelay = 33;
+        private int _readDelay = 50;
         private readonly StructuredOsuMemoryReader _sreader;
         private readonly CancellationTokenSource cts = new();
 
@@ -119,8 +119,6 @@ namespace osuEscape
         private static readonly string StartupValue = System.Reflection.Assembly.GetExecutingAssembly().GetName().Name;
 
         private bool isItemQuit = false;
-
-
         public HomeForm(string osuWindowTitleHint)
         {
             _osuWindowTitleHint = osuWindowTitleHint;
@@ -209,7 +207,7 @@ namespace osuEscape
             materialCheckbox_autoDisconnect.Checked = Properties.Settings.Default.isAutoDisconnect;
             materialCheckbox_autoDisconnect.Enabled = Properties.Settings.Default.isAPIKeyVerified;
             materialTextBox_apiInput.Text = Properties.Settings.Default.userApiKey;
-            materialMultiLineTextBox_submitAcc.Text = Properties.Settings.Default.submitAcc.ToString();
+            materialMultiLineTextBox_submitAcc.Text = $"{Properties.Settings.Default.submitAcc}";
             materialSkinManager.Theme = (MaterialSkinManager.Themes)Properties.Settings.Default.Theme;
             materialButton_changeTheme.Text = (Properties.Settings.Default.Theme == 0 ? "Dark Mode" : "Light Mode");
 
@@ -295,7 +293,7 @@ namespace osuEscape
                         Invoke((MethodInvoker)(() =>
                         {
                             if (ReadInt(baseAddresses.GeneralData, nameof(GeneralData.RawStatus)) == -5)
-                                materialMultiLineTextBox_status.Text = "NotRunning";
+                                materialMultiLineTextBox_osuStatus.Text = "NotRunning";
                         }));
 
                         await Task.Delay(_readDelay);
@@ -363,11 +361,10 @@ namespace osuEscape
                                 {
                                     materialLabel_submissionStatus.BeginInvoke((MethodInvoker)delegate
                                     {
-                                        Label_SubmissionStatus_TextChanged("Ready to upload recent score.");
+                                        materialLabel_SubmissionStatus_TextChanged("Ready to upload recent score.");
                                     });
 
-                                    // delay the task for 1.5s to let the score submitted first
-                                    await Task.Delay(1500);
+                                    await Task.Delay(1000);
 
                                     // GET Method of user's recent score (osu! api v1)
                                     // get the recent 3 scores, even though there is multiple submissions at one connection
@@ -392,7 +389,7 @@ namespace osuEscape
                                     materialLabel_submissionStatus.BeginInvoke((MethodInvoker)delegate
                                     {
                                         string text = isUploaded ? "SUCCESS: Uploaded recent score." : "FAILED: Did not upload recent score.";
-                                        Label_SubmissionStatus_TextChanged(text);
+                                        materialLabel_SubmissionStatus_TextChanged(text);
                                     });
                                 }
                             }
@@ -414,30 +411,36 @@ namespace osuEscape
                         // only read the audio offset if it is not the previous beatmap
                         if (beatmapLastNoteOffset == -9999)
                         {
-                            string beatmapLocation = $"{Properties.Settings.Default.osuPath}\\Songs\\{baseAddresses.Beatmap.FolderName}\\{baseAddresses.Beatmap.OsuFileName}";
-                            try
-                            {                    
-                                // read the last line to find offset
-                                foreach (string str in File.ReadLines(beatmapLocation).Last().Split(","))
-                                {
-                                    beatmapLastNoteOffset = Math.Max(beatmapLastNoteOffset,Convert.ToInt32(str));
-                                }
-
-                                Debug.WriteLine("offset: " + beatmapLastNoteOffset);
-                            }
-                            catch (Exception ex)
+                            await Task.Run(() =>
                             {
-                                Console.WriteLine(ex.Message);
-                            }
+                                string beatmapLocation = $"{Properties.Settings.Default.osuPath}\\Songs\\{baseAddresses.Beatmap.FolderName}\\{baseAddresses.Beatmap.OsuFileName}";
+                                try
+                                {
+                                    // read the last line to find offset
+                                    foreach (string str in File.ReadLines(beatmapLocation).Last().Split(","))
+                                    {
+                                        beatmapLastNoteOffset = Math.Max(beatmapLastNoteOffset, Convert.ToInt32(str));
+                                    }
+
+                                    Debug.WriteLine("offset: " + beatmapLastNoteOffset);
+                                }
+                                catch (Exception ex)
+                                {
+                                    Console.WriteLine(ex.Message);
+                                }
+                            });
                         }
-                        // using last note offset to determine if the map ended
+
+                        // *** Auto Connection has to be done on playing status to avoid connection checking, which takes ~30s
+                        // using beatmap's last note offset to determine if the map ended
                         // then determine if it is an "FC"
                         // "FC": 0 misscount / dropped some sliderends / sliderbreak at start
-                        // above or equal to the required acc
+                        // submit if it is above or equal to the required acc
                         // if there is block connection, disable the block rule
                         if (
                             Properties.Settings.Default.isSubmitIfFC &&
                             baseAddresses.GeneralData.AudioTime >= beatmapLastNoteOffset &&
+                            beatmapLastNoteOffset >= 0 &&
                             baseAddresses.Player.Combo == baseAddresses.Player.MaxCombo &&
                             baseAddresses.Player.HitMiss == 0 &&
                             baseAddresses.Player.Accuracy >= Properties.Settings.Default.submitAcc &&
@@ -484,9 +487,7 @@ namespace osuEscape
                                 ;
 
                             materialMultiLineTextBox_currentMapTime.Text = $"{baseAddresses.GeneralData.AudioTime}";
-                            materialMultiLineTextBox_status.Text = $"{baseAddresses.GeneralData.OsuStatus}";
-
-
+                            materialMultiLineTextBox_osuStatus.Text = $"{baseAddresses.GeneralData.OsuStatus}";
                         }));
                     }
                     catch (ObjectDisposedException)
@@ -647,7 +648,7 @@ namespace osuEscape
             {
                 RegistryKey key = Registry.CurrentUser.OpenSubKey(StartupKey, true);
                 if (enabled)
-                    key.SetValue(StartupValue, Application.ExecutablePath.ToString());
+                    key.SetValue(StartupValue, $"{Application.ExecutablePath}");
                 else
                     key.DeleteValue(StartupValue, false);
                 key.Close();
@@ -964,7 +965,7 @@ namespace osuEscape
             Properties.Settings.Default.submitAcc = Convert.ToInt32(materialMultiLineTextBox_submitAcc.Text);
         }
 
-        private void Label_SubmissionStatus_TextChanged(string str)
+        private void materialLabel_SubmissionStatus_TextChanged(string str)
         {
             materialLabel_submissionStatus.Text = "Submission Status: " + str;
         }
@@ -973,8 +974,8 @@ namespace osuEscape
         {
             _readDelay = materialSlider_refreshRate.Value;
 
-            if (materialSlider_refreshRate.Value < 33)
-                _readDelay = 33;
+            if (materialSlider_refreshRate.Value < 50)
+                _readDelay = 50;
         }
         private void materialTabControl_menu_Selected(object sender, TabControlEventArgs e)
         {
@@ -1054,15 +1055,18 @@ namespace osuEscape
                 isShift = true;
                 modifierKeys -= 4;
             }
+
             if (modifierKeys >= 2)
             {
                 isCtrl = true;
                 modifierKeys -= 2;
             }
+
             if (modifierKeys == 1)
             {
                 isAlt = true;                
             }
+
             materialLabel_globalToggleHotkey.Text = "Global Toggle Hotkey: ";
             materialLabel_globalToggleHotkey.Text += isCtrl ? "Ctrl + " : "";
             materialLabel_globalToggleHotkey.Text += isShift ? "Shift + " : "";
