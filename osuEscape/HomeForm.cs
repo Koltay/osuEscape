@@ -402,56 +402,6 @@ namespace osuEscape
                         baseAddresses.Beatmap.Status != ((short)BeatmapStatus.NotSubmitted) &&
                         baseAddresses.GeneralData.OsuStatus != OsuMemoryStatus.Playing)
                     {
-                        _ = Invoke((MethodInvoker)(async () =>
-                        {
-
-                            materialLabel_submissionStatus.BeginInvoke((MethodInvoker)delegate
-                            {
-                                materialLabel_SubmissionStatus_TextChanged("Uploading recent score...");
-                            });
-
-                            // submission frequency test
-                            await Task.Delay(750);
-
-                            // GET Method of user's recent score (osu! api v1)
-                            // get the recent 3 scores, even though there is multiple submissions at one connection
-                            // the recent score could still be recognized
-                            List<int> recentUploadScoreList = await GetUserRecentScoreAsync(baseAddresses.Player.Username, 3);
-
-                            bool isRecentSetScoreUploaded = false;
-
-                            foreach (int responseScore in recentUploadScoreList)
-                            {
-                                // the score player recently submitted
-                                if (responseScore == baseAddresses.Player.Score)
-                                {
-                                    isRecentSetScoreUploaded = true;
-
-                                    Properties.Settings.Default.isAllowConnection = true;
-                                    ToggleFirewall();
-
-                                    isSetScore = false;
-
-                                    break;
-                                }
-                            }
-
-                            materialLabel_submissionStatus.BeginInvoke((MethodInvoker)delegate
-                            {
-                                string text = isRecentSetScoreUploaded ? "Uploaded recent score." : "";
-                                materialLabel_SubmissionStatus_TextChanged(text);
-                            });
-                        }));
-                    }
-
-                    if (isSetScore &&
-                        Properties.Settings.Default.isAutoDisconnect &&
-                        Properties.Settings.Default.isAllowConnection &&
-                        !baseAddresses.Player.IsReplay &&
-                        baseAddresses.Beatmap.Status != ((short)BeatmapStatus.Pending) &&
-                        baseAddresses.Beatmap.Status != ((short)BeatmapStatus.NotSubmitted) &&
-                        baseAddresses.GeneralData.OsuStatus != OsuMemoryStatus.Playing)
-                    {
 
                         materialLabel_submissionStatus.BeginInvoke((MethodInvoker)delegate
                         {
