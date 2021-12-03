@@ -373,13 +373,15 @@ namespace osuEscape
                         // "FC": 0 misscount / dropped some sliderends / sliderbreak at start
                         // submit if it is above or equal to the required acc
                         // if there is block connection, disable the block rule
+                        // upload if it is not a replay
                         if (Properties.Settings.Default.isSubmitIfFC &&
                             baseAddresses.GeneralData.AudioTime >= beatmapLastNoteOffset &&
                             beatmapLastNoteOffset >= 0 &&
                             baseAddresses.Player.Combo == baseAddresses.Player.MaxCombo &&
                             baseAddresses.Player.HitMiss == 0 &&
                             baseAddresses.Player.Accuracy >= Properties.Settings.Default.submitAcc &&
-                            !Properties.Settings.Default.isAllowConnection)
+                            !Properties.Settings.Default.isAllowConnection &&
+                            !baseAddresses.Player.IsReplay)
                         {
                             ToggleFirewall();
                             isSetScore = true;
