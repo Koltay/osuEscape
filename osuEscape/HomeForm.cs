@@ -218,31 +218,25 @@ namespace osuEscape
 
             osuDataReaderAsync();
 
-            // open the app at the previous location 
-            this.Location = Properties.Settings.Default.appLocation;
+            // open the app at the previous position (location on window) 
+            this.Location = Properties.Settings.Default.appPosition;
 
-            // getting osu! directory from running process
-            string str = GetOsuPath();
+            // get osu! directory from running process)
+            Properties.Settings.Default.osuLocation = Process.GetProcessesByName("osu!").Length == 0
+                                                    ? Properties.Settings.Default.osuLocation
+                                                    : Process.GetProcessesByName("osu!").FirstOrDefault().MainModule.FileName;
 
-            if (str != "")
+            // let user manually find the osu directory if it's still finding
+            if (Properties.Settings.Default.osuLocation == string.Empty)
             {
-                Properties.Settings.Default.osuLocation = Process.GetProcessesByName("osu!").FirstOrDefault().MainModule.FileName;
-
-                UpdateOsuLocationText();
-
-                FirewallRuleSetUp(Properties.Settings.Default.osuLocation);
+                // if the app is first opened and there is no existing osu! process
+                OFD_FindOsuLocation();
             }
             else
             {
-                if (Properties.Settings.Default.osuLocation.Contains("osu!"))
-                {
-                    FirewallRuleSetUp(Properties.Settings.Default.osuLocation);
-                }
-                else
-                {
-                    // initialize to find osu! location if it's first opened
-                    FindOsuLocation();
-                }
+                UpdateOsuLocationText();
+
+                FirewallRuleSetUp(Properties.Settings.Default.osuLocation);
             }
 
             #region Tooltip setup
@@ -642,7 +636,7 @@ namespace osuEscape
         #region Find osu! location
 
 
-        private void FindOsuLocation()
+        private void OFD_FindOsuLocation()
         {
             OpenFileDialog ofd = new()
             {
@@ -651,20 +645,21 @@ namespace osuEscape
 
             if (ofd.ShowDialog() == DialogResult.OK)
             {
-                if (ofd.FileName.Contains("osu!.exe"))
+                if (!ofd.FileName.Contains("osu!.exe"))
                 {
-                    FirewallRuleSetUp(ofd.FileName);
+                    // run again until user finds osu.exe or user cancelled the action
+                    OFD_FindOsuLocation();
                 }
                 else
                 {
-                    // run again until user finds osu.exe or user cancelled the action
-                    FindOsuLocation();
+                    Properties.Settings.Default.osuLocation = ofd.FileName;
                 }
             }
         }
 
         private void UpdateOsuLocationText()
         {
+            // osuPath: osuLocation without osu.exe at the end
             string osuPath = String.Join("\\", Properties.Settings.Default.osuLocation.Split('\\').Reverse().Skip(1).Reverse()) + "\\";
 
             Properties.Settings.Default.osuPath = osuPath;
@@ -672,7 +667,7 @@ namespace osuEscape
             materialLabel_osuPath.Text = "osu! Path: " + osuPath;
         }
 
-        private static string GetOsuPath()
+        private static string GetOsuProcessPath()
         {
             return Process.GetProcessesByName("osu!").Length == 0 ? "" : Process.GetProcessesByName("osu!").FirstOrDefault().MainModule.FileName;
         }
@@ -782,7 +777,7 @@ namespace osuEscape
 
         private void materialButton_findOsuLocation_Click(object sender, EventArgs e)
         {
-            FindOsuLocation();
+            OFD_FindOsuLocation();
         }
 
         private void materialButton_changeTheme_Click(object sender, EventArgs e)
@@ -1133,7 +1128,7 @@ namespace osuEscape
 
             // save the last position of the application
             if (this.WindowState != FormWindowState.Minimized)
-                Properties.Settings.Default.appLocation = this.Location;
+                Properties.Settings.Default.appPosition = this.Location;
 
             Properties.Settings.Default.Save();
         }
@@ -1148,12 +1143,10 @@ namespace osuEscape
                 }
 
                 // Dispose stuff here
+                cts.Cancel();
                 cts.Dispose();
+
                 keyboardHook.Dispose();
-                if (!_sreader.CanRead)
-                {
-                    _sreader.Dispose();
-                }
             }
 
             base.Dispose(disposing);

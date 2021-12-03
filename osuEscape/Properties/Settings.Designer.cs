@@ -61,7 +61,7 @@ namespace osuEscape.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
         public bool isToggleSound {
             get {
                 return ((bool)(this["isToggleSound"]));
@@ -74,12 +74,12 @@ namespace osuEscape.Properties {
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("0, 0")]
-        public global::System.Drawing.Point appLocation {
+        public global::System.Drawing.Point appPosition {
             get {
-                return ((global::System.Drawing.Point)(this["appLocation"]));
+                return ((global::System.Drawing.Point)(this["appPosition"]));
             }
             set {
-                this["appLocation"] = value;
+                this["appPosition"] = value;
             }
         }
         
