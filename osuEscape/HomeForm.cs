@@ -118,6 +118,7 @@ namespace osuEscape
         private bool isItemQuit = false;
 
         private bool isSetScore = false;
+        private string previousSubmittedScoreMd5 = string.Empty;
         public HomeForm(string osuWindowTitleHint)
         {
             _osuWindowTitleHint = osuWindowTitleHint;
@@ -349,31 +350,66 @@ namespace osuEscape
                         {
                             await Task.Run(() =>
                             {
-                                string beatmapLocation = $"{Properties.Settings.Default.osuPath}\\Songs\\{baseAddresses.Beatmap.FolderName}\\{baseAddresses.Beatmap.OsuFileName}";
-                                try
-                                {
-                                    // read the last line to find offset
-                                    foreach (string str in File.ReadLines(beatmapLocation).Last().Split(","))
-                                    {
-                                        beatmapLastNoteOffset = Math.Max(beatmapLastNoteOffset, Convert.ToInt32(str));
-                                    }
+                                string beatmapFile = $"{Properties.Settings.Default.osuPath}\\Songs\\{baseAddresses.Beatmap.FolderName}\\{baseAddresses.Beatmap.OsuFileName}";
+                                
+                                foreach (string str in File.ReadLines(beatmapFile).Last().Split(","))
+                                {       
+                                    if (Int32.TryParse(str, out var value))
+                                    beatmapLastNoteOffset = Math.Max(beatmapLastNoteOffset, value);
+                                }
 
-                                    Debug.WriteLine("offset: " + beatmapLastNoteOffset);
-                                }
-                                catch (Exception ex)
+                                // special case: slider 
+                                // file format v14 test
+                                // hitobject format in .osu file: x,y,time,type,hitSound,curveType|curvePoints,slides,length,edgeSounds,edgeSets,hitSample
+                                // FORMULA: length / (SliderMultiplier*100) * beatLength
+                                // assume the slider is curved
+
+                                if (File.ReadLines(beatmapFile).Last().Split(",")[3] == "2" ||
+                                    File.ReadLines(beatmapFile).Last().Split(",")[3] == "6")
                                 {
-                                    Console.WriteLine(ex.Message);
+                                    // [7] is the length of slider (format above)
+                                    int sliderLength = Convert.ToInt32(File.ReadLines(beatmapFile).Last().Split(",")[7]);
+                                    double sliderMultiplier = Convert.ToDouble(File.ReadLines(beatmapFile).First(x => x.Contains("SliderMultiplier:"))[17..]);
+                                    double beatLength = 0;
+                                    string timingPoint = File.ReadLines(beatmapFile).Where(x => x.Contains("TimingPoints")).First();
+                                    int timingPointIndex = timingPoint.IndexOf("TimingPoints");
+                                    for (int i = timingPointIndex; i < File.ReadLines(beatmapFile).Count(); i++)
+                                    {
+                                        // check the corresponding timing point
+                                        // three cases: exact timing point / extra timing point after the slider / timing point before the slider
+
+                                        if (Int32.TryParse(File.ReadAllLines(beatmapFile)[i].Split(",")[0],out var value))
+                                        {
+                                            if (value > beatmapLastNoteOffset ||
+                                            File.ReadAllLines(beatmapFile)[i] == null)
+                                            {
+                                                beatLength = Convert.ToDouble(File.ReadAllLines(beatmapFile)[i - 1].Split(",")[1]);
+                                                break;
+                                            }
+                                            else if (value == beatmapLastNoteOffset)
+                                            {
+                                                beatLength = Convert.ToDouble(File.ReadAllLines(beatmapFile)[i].Split(",")[1]);
+                                                break;
+                                            }
+                                        }
+                                    }
+                                    int sliderOffset = (int) Math.Round(sliderLength / (sliderMultiplier * 100) * beatLength);
+                                    beatmapLastNoteOffset -= sliderOffset;
+
+                                    Debug.WriteLine("slider offset: " + sliderOffset);
                                 }
+                                Debug.WriteLine("offset: " + beatmapLastNoteOffset);
                             });
                         }
 
-                        // *** Auto Connection has to be done on playing status to avoid connection checking, which takes ~30s
-                        // using beatmap's last note offset to determine if the map ended
-                        // then determine if it is an "FC"
+                        // 1. Auto Connection has to be done on playing status for instant connection,
+                        //  connection checking on resultsscreen could be avoided, which takes ~30s
+                        // 2. Using beatmap's last note offset to determine if the map ended
+                        // 3. Determine if it is an "FC"
                         // "FC": 0 misscount / dropped some sliderends / sliderbreak at start
-                        // submit if it is above or equal to the required acc
-                        // if there is block connection, disable the block rule
-                        // upload if it is not a replay
+                        // 4. Submit if it is above or equal to the required acc, not a replay
+                        // 5. If there is already blocked connection, disable the block rule
+                        // Verify Md5 to avoid false auto connection on same beatmap set
                         if (Properties.Settings.Default.isSubmitIfFC &&
                             baseAddresses.GeneralData.AudioTime >= beatmapLastNoteOffset &&
                             beatmapLastNoteOffset >= 0 &&
@@ -381,7 +417,8 @@ namespace osuEscape
                             baseAddresses.Player.HitMiss == 0 &&
                             baseAddresses.Player.Accuracy >= Properties.Settings.Default.submitAcc &&
                             !Properties.Settings.Default.isAllowConnection &&
-                            !baseAddresses.Player.IsReplay)
+                            !baseAddresses.Player.IsReplay &&
+                            previousSubmittedScoreMd5 != baseAddresses.Beatmap.Md5)
                         {
                             ToggleFirewall();
                             isSetScore = true;
@@ -404,6 +441,7 @@ namespace osuEscape
                         baseAddresses.Beatmap.Status != ((short)BeatmapStatus.NotSubmitted) &&
                         baseAddresses.GeneralData.OsuStatus != OsuMemoryStatus.Playing)
                     {
+                        previousSubmittedScoreMd5 = baseAddresses.Beatmap.Md5;
 
                         materialLabel_submissionStatus.BeginInvoke((MethodInvoker)delegate
                         {
