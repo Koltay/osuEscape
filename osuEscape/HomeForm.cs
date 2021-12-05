@@ -368,9 +368,9 @@ namespace osuEscape
                                     File.ReadLines(beatmapFile).Last().Split(",")[3] == "6")
                                 {
                                     // [7] is the length of slider (format above)
-                                    int sliderLength = Convert.ToInt32(File.ReadLines(beatmapFile).Last().Split(",")[7]);
-                                    double sliderMultiplier = Convert.ToDouble(File.ReadLines(beatmapFile).First(x => x.Contains("SliderMultiplier:"))[17..]);
-                                    double beatLength = 0;
+                                    decimal sliderLength = Convert.ToDecimal(File.ReadLines(beatmapFile).Last().Split(",")[7]);
+                                    decimal sliderMultiplier = Convert.ToDecimal(File.ReadLines(beatmapFile).First(x => x.Contains("SliderMultiplier:"))[17..]);
+                                    decimal beatLength = 0;
                                     string timingPoint = File.ReadLines(beatmapFile).Where(x => x.Contains("TimingPoints")).First();
                                     int timingPointIndex = timingPoint.IndexOf("TimingPoints");
                                     for (int i = timingPointIndex; i < File.ReadLines(beatmapFile).Count(); i++)
@@ -383,12 +383,12 @@ namespace osuEscape
                                             if (value > beatmapLastNoteOffset ||
                                             File.ReadAllLines(beatmapFile)[i] == null)
                                             {
-                                                beatLength = Convert.ToDouble(File.ReadAllLines(beatmapFile)[i - 1].Split(",")[1]);
+                                                beatLength = Convert.ToDecimal(File.ReadAllLines(beatmapFile)[i - 1].Split(",")[1]);
                                                 break;
                                             }
                                             else if (value == beatmapLastNoteOffset)
                                             {
-                                                beatLength = Convert.ToDouble(File.ReadAllLines(beatmapFile)[i].Split(",")[1]);
+                                                beatLength = Convert.ToDecimal(File.ReadAllLines(beatmapFile)[i].Split(",")[1]);
                                                 break;
                                             }
                                         }
