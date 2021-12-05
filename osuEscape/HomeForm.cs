@@ -358,7 +358,7 @@ namespace osuEscape
                                     beatmapLastNoteOffset = Math.Max(beatmapLastNoteOffset, value);
                                 }
 
-                                // special case: slider 
+                                // special case: slider (and reverse slider)
                                 // file format v14 test
                                 // hitobject format in .osu file: x,y,time,type,hitSound,curveType|curvePoints,slides,length,edgeSounds,edgeSets,hitSample
                                 // FORMULA: length / (SliderMultiplier*100) * beatLength
@@ -367,36 +367,52 @@ namespace osuEscape
                                 if (File.ReadLines(beatmapFile).Last().Split(",")[3] == "2" ||
                                     File.ReadLines(beatmapFile).Last().Split(",")[3] == "6")
                                 {
-                                    // [7] is the length of slider (format above)
-                                    decimal sliderLength = Convert.ToDecimal(File.ReadLines(beatmapFile).Last().Split(",")[7]);
+                                    // [7] is the length of slider (format stated above)
+                                    decimal sliderPixelLength = Convert.ToDecimal(File.ReadLines(beatmapFile).Last().Split(",")[7]);
+
+                                    // reverse slider 
+                                    int sliderRepeatCount = Convert.ToInt32(File.ReadLines(beatmapFile).Last().Split(",")[6]);
+
                                     decimal sliderMultiplier = Convert.ToDecimal(File.ReadLines(beatmapFile).First(x => x.Contains("SliderMultiplier:"))[17..]);
                                     decimal beatLength = 0;
-                                    string timingPoint = File.ReadLines(beatmapFile).Where(x => x.Contains("TimingPoints")).First();
-                                    int timingPointIndex = timingPoint.IndexOf("TimingPoints");
-                                    for (int i = timingPointIndex; i < File.ReadLines(beatmapFile).Count(); i++)
+
+                                    for (int i = File.ReadLines(beatmapFile).
+                                        First(x => x.Contains("TimingPoints")).
+                                        IndexOf("TimingPoints"); 
+                                        i < File.ReadLines(beatmapFile).Count(); i++)
                                     {
                                         // check the corresponding timing point
                                         // three cases: exact timing point / extra timing point after the slider / timing point before the slider
 
-                                        if (Int32.TryParse(File.ReadAllLines(beatmapFile)[i].Split(",")[0],out var value))
+                                        if (Int32.TryParse(File.ReadAllLines(beatmapFile)[i].Split(",")[0],out var timingPoint))
                                         {
-                                            if (value > beatmapLastNoteOffset ||
+                                            if (timingPoint > beatmapLastNoteOffset ||
                                             File.ReadAllLines(beatmapFile)[i] == null)
                                             {
                                                 beatLength = Convert.ToDecimal(File.ReadAllLines(beatmapFile)[i - 1].Split(",")[1]);
                                                 break;
                                             }
-                                            else if (value == beatmapLastNoteOffset)
+                                            else if (timingPoint == beatmapLastNoteOffset)
                                             {
                                                 beatLength = Convert.ToDecimal(File.ReadAllLines(beatmapFile)[i].Split(",")[1]);
                                                 break;
                                             }
                                         }
                                     }
-                                    int sliderOffset = (int) Math.Round(sliderLength / (sliderMultiplier * 100) * beatLength);
-                                    beatmapLastNoteOffset -= sliderOffset;
+                                    int sliderOffset = (int) Math.Round(sliderPixelLength / (sliderMultiplier * 100) * beatLength * sliderRepeatCount);
+
+
+                                    //test
+                                    var pixelsPerBeat = sliderMultiplier * beatLength;
+                                    var sliderLengthInBeats = (sliderPixelLength * sliderRepeatCount) / pixelsPerBeat;
+                                    var sliderLengthInMs = pixelsPerBeat * sliderLengthInBeats;
+                                    //
+
+                                    //beatmapLastNoteOffset -= sliderOffset;
+                                    beatmapLastNoteOffset += (int) sliderLengthInMs;
 
                                     Debug.WriteLine("slider offset: " + sliderOffset);
+                                    Debug.WriteLine("slider length in ms: " + sliderLengthInMs);
                                 }
                                 Debug.WriteLine("offset: " + beatmapLastNoteOffset);
                             });
@@ -1134,7 +1150,6 @@ namespace osuEscape
 
                 // Dispose stuff here
                 cts.Cancel();
-                cts.Dispose();
 
                 keyboardHook.Dispose();
             }
