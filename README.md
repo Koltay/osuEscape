@@ -26,7 +26,7 @@
  
  - Global Toggle Key: Toggle the connection using the F6 Key (Changeable, supports multiple modifier keys)
  - Score Details/ Map Details display ([ProcessMemoryDataFinder](https://github.com/Piotrekol/ProcessMemoryDataFinder) by Piotrekol)
- - Auto Submission: Before switching to the results screen, if the *"full combo"* scores meet the requirement inputted by user, it would automatically connect back to the server for uploading scores
+ - Auto Submission: Before switching to the results screen, if the *"full combo"* score meets the requirement inputted by user, there would be automatic connection to the server for uploading score
  - Auto Blocking: Disconnect from the server after uploading the recent score (API needed)
  
  *Dropping slider ends still count as a "full combo"
