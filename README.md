@@ -24,23 +24,47 @@
  
  This application is currently available on osu! standard except osu! lazer 
  
- - Global Toggle Key: Toggle the connection using the F6 Key (Changeable, supports multiple modifier keys)
- - Score Details/ Map Details display ([ProcessMemoryDataFinder](https://github.com/Piotrekol/ProcessMemoryDataFinder) by Piotrekol)
- - Auto Submission: Before switching to the results screen, if the *"full combo"* score meets the requirement inputted by user, there would be automatic connection to the server for uploading score
- - Auto Blocking: Disconnect from the server after uploading the recent score (API needed)
+ - **Global Toggle Key:** 
+ > Toggle the connection using the F6 Key (Changeable, supports multiple modifier keys)
+ 
+ - **Score Details/ Map Details display** 
+ > [ProcessMemoryDataFinder](https://github.com/Piotrekol/ProcessMemoryDataFinder) by Piotrekol
+ 
+ - **Auto Submission:** 
+ > After players hit the last note of the beatmap, *"full combo"* score meeting the requirement would be submitted 
+  
+ > The score would be submitted to the server while players are on results screen
+ 
+ - **Auto Blocking:** 
+ > Automatically disconnect player from the server after uploading the recent score (API needed)
+ 
+ > Auto blocking also avoid uploading other scores by the players
  
  *Dropping slider ends still count as a "full combo"
 
 ## Why API is needed for this application? Is it safe?
  
- - This application uses [osu! API v1](https://github.com/ppy/osu-api/wiki) to get user's recent uploaded score and automatically disconnect after uploading
- - For users who is concerned about the API usage, please feel free to not use it :D
+ This application uses [osu! API v1](https://github.com/ppy/osu-api/wiki) to get user's recent uploaded score and automatically disconnect after uploading.
+ 
+ As for the users who are concerned about the API usage, please feel free to not use it :D
 
 ## How to use this application?
+
 There will be video showcase  after the new UI is completed!
 
+## How to check if the firewall rule is working or not?
+
+Win + R and type "wf.msc" in "Run" box
+
+![image](https://user-images.githubusercontent.com/73950784/145205485-2d47cb8d-14a2-44d9-b534-e79efaf6cc9b.png)
+
+There should be "osu block" rule enabled while blocking the connection
+
+![firewall rule](https://user-images.githubusercontent.com/73950784/145205745-baa4cc17-292f-4b01-a313-8fa8abc6add0.png)
+
+
 ## <3
- Thank you to those who contributed to this project (Listed in ascending order by osu! IGN):
+ Thank you to those who gave positive feedback or contributed to this project (Listed in ascending order by osu! IGN):
  
  Testing: 
  - Hellotomlol225
@@ -49,6 +73,7 @@ There will be video showcase  after the new UI is completed!
  - Takanashi Ako
  
  Coding: 
+ - DenierNezzar
  - Shion Maker
  
  ## Licenses
