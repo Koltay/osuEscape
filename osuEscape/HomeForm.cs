@@ -151,6 +151,7 @@ namespace osuEscape
             // avoid opening osu!Escape twice
             if (Process.GetProcessesByName("osuEscape").Length > 1)
             {
+                notifyIcon_osuEscape.Visible = false;
                 this.Close();
             }
         }
@@ -358,11 +359,12 @@ namespace osuEscape
                                     beatmapLastNoteOffset = Math.Max(beatmapLastNoteOffset, value);
                                 }
 
+                                Debug.WriteLine("Before slider calculation offset: " + beatmapLastNoteOffset);
+
                                 // special case: slider (and reverse slider)
                                 // file format v14 test
-                                // hitobject format in .osu file: x,y,time,type,hitSound,curveType|curvePoints,slides,length,edgeSounds,edgeSets,hitSample
-                                // FORMULA: length / (SliderMultiplier*100) * beatLength
-                                // assume the slider is curved
+                                // Hit object syntax: x,y,time,type,hitSound,curveType|curvePoints,slides,length,edgeSounds,edgeSets,hitSample
+                                // 2 and 6 mean slider in type
 
                                 if (File.ReadLines(beatmapFile).Last().Split(",")[3] == "2" ||
                                     File.ReadLines(beatmapFile).Last().Split(",")[3] == "6")
@@ -373,47 +375,64 @@ namespace osuEscape
                                     // reverse slider 
                                     int sliderRepeatCount = Convert.ToInt32(File.ReadLines(beatmapFile).Last().Split(",")[6]);
 
-                                    decimal sliderMultiplier = Convert.ToDecimal(File.ReadLines(beatmapFile).First(x => x.Contains("SliderMultiplier:"))[17..]);
+                                    decimal sliderMultiplier = 0;
                                     decimal beatLength = 0;
                                     decimal BPM = 0;
-                                    int timingPointIndex = 0;
+                                    int difficultySessionIndex = 0;
+                                    int timingPointSessionIndex = 0;
                                     string[] beatmapFileLines = File.ReadAllLines(beatmapFile);
+
+                                    // sessions
                                     for (int i = 0; i < beatmapFileLines.Length; i++)
                                     {
-                                        if (beatmapFileLines[i] == "[TimingPoints]")
+                                        if (beatmapFileLines[i] == "[Difficulty]")
                                         {
-                                            timingPointIndex = i;
-                                            break;
+                                            difficultySessionIndex = i;
+                                        }
+                                        else if (beatmapFileLines[i] == "[TimingPoints]")
+                                        {
+                                            timingPointSessionIndex = i;
                                         }
                                     }
 
-                                    for (int i = timingPointIndex + 1; i < beatmapFileLines.Length; i++)
+                                    for (int i = difficultySessionIndex + 1; i < beatmapFileLines.Length; i++)
+                                    {
+                                        if (!beatmapFileLines[i].Contains(":"))
+                                            break;
+
+                                        if (File.ReadAllLines(beatmapFile)[i].Contains("SliderMultiplier:"))
+                                            sliderMultiplier = Convert.ToDecimal(File.ReadAllLines(beatmapFile)[i][17..]);
+                                    }
+                                    // timing point syntax: time,beatLength,meter,sampleSet,sampleIndex,volume,uninherited,effects
+                                    for (int i = timingPointSessionIndex + 1; i < beatmapFileLines.Length; i++)
                                     {
                                         // check the corresponding timing point
-                                        // three cases: exact timing point / extra timing point after the slider / timing point before the slider
                                         if (!beatmapFileLines[i].Contains(","))
                                             break; 
 
                                         beatLength = Convert.ToDecimal(File.ReadAllLines(beatmapFile)[i].Split(",")[1]);          
 
+                                        // uninherited == 1, red line
                                         if (Convert.ToInt32(File.ReadAllLines(beatmapFile)[i].Split(",")[6]) == 1)
                                         {
                                             BPM = 60000 / Convert.ToDecimal(File.ReadAllLines(beatmapFile)[i].Split(",")[1]);
                                         }                                        
                                     }
 
-                                    //beatmapLastNoteOffset += (int) sliderLengthInMs;
-                                    Debug.WriteLine("BPM: " + BPM);
-
-                                    //final
                                     decimal sliderVelocity = -100 / beatLength;
-                                    int sliderLengthOffset = (int) Math.Round(600 * sliderPixelLength / (BPM * sliderMultiplier * sliderVelocity));
+                                    int sliderLengthOffset = (int) Math.Abs(Math.Round(600 * sliderPixelLength / (BPM * sliderMultiplier * sliderVelocity)));
 
                                     beatmapLastNoteOffset += sliderLengthOffset * sliderRepeatCount;
-
-                                    Debug.WriteLine("slider length offset" + sliderLengthOffset);
+#if DEBUG
+                                    Debug.WriteLine("slider velocity:" + sliderVelocity);
+                                    Debug.WriteLine("slider pixel length:" + sliderPixelLength);
+                                    Debug.WriteLine("BPM:" + BPM);
+                                    Debug.WriteLine("slider multiplier: " + sliderMultiplier);
+                                    Debug.WriteLine("repeat count: " + sliderRepeatCount);
+                                    Debug.WriteLine("slider length offset: " + sliderLengthOffset);
+#endif
                                 }
-                                Debug.WriteLine("offset: " + beatmapLastNoteOffset);
+                                Debug.WriteLine("After slider calculation offset: " + beatmapLastNoteOffset);
                             });
                         }
 
@@ -619,11 +638,12 @@ namespace osuEscape
                 cmd.StartInfo.CreateNoWindow = true;
                 cmd.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
 
-                // reset the rules if the users used this application before
+                // delete the rules if the users used this application before
                 cmd.StartInfo.Arguments =
                     "advfirewall firewall delete rule name=\"osu block\"";
                 cmd.Start();
 
+                // add rule
                 cmd.StartInfo.Arguments =
                     "advfirewall firewall add rule name=\"osu block\" dir=out action=block program=" + filename;
                 cmd.Start();
