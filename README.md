@@ -33,10 +33,10 @@
  - **Auto Submission:** 
  > After players hit the last note of the beatmap, *"full combo"* score meeting the requirement would be submitted 
   
- > The score would be submitted to the server while players are on results screen
+ > The score would be submitted to the server while players are on the results screen
  
  - **Auto Blocking:** 
- > Automatically disconnect player from the server after uploading the recent score (API needed)
+ > Automatically disconnect players from the server after uploading the recent score (API needed)
  
  > Auto blocking also avoid uploading other scores by the players
  
@@ -44,13 +44,13 @@
 
 ## Why API is needed for this application? Is it safe?
  
- This application uses [osu! API v1](https://github.com/ppy/osu-api/wiki) to get user's recent uploaded score and automatically disconnect after uploading.
+ This application uses [osu! API v1](https://github.com/ppy/osu-api/wiki) to get users' recent uploaded score and automatically disconnect after uploading.
  
  As for the users who are concerned about the API usage, please feel free to not use it :D
 
 ## How to use this application?
 
-There will be video showcase  after the new UI is completed!
+There will be a video showcase after the new UI is completed!
 
 ## How to check if the firewall rule is working or not?
 
