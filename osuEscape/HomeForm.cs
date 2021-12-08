@@ -369,7 +369,7 @@ namespace osuEscape
                                 if (File.ReadLines(beatmapFile).Last().Split(",")[3] == "2" ||
                                     File.ReadLines(beatmapFile).Last().Split(",")[3] == "6")
                                 {
-                                    // [7] is the length of slider (format stated above)
+                                    // [7] is the slider pixel length of slider (syntax above)
                                     decimal sliderPixelLength = Convert.ToDecimal(File.ReadLines(beatmapFile).Last().Split(",")[7]);
 
                                     // reverse slider 
@@ -378,9 +378,12 @@ namespace osuEscape
                                     decimal sliderMultiplier = 0;
                                     decimal beatLength = 0;
                                     decimal BPM = 0;
+                                    decimal sliderVelocity = 1;
                                     int difficultySessionIndex = 0;
                                     int timingPointSessionIndex = 0;
+                                    int sliderLengthOffset = 0;
                                     string[] beatmapFileLines = File.ReadAllLines(beatmapFile);
+                                    bool uninherited = true;
 
                                     // sessions
                                     for (int i = 0; i < beatmapFileLines.Length; i++)
@@ -403,6 +406,7 @@ namespace osuEscape
                                         if (File.ReadAllLines(beatmapFile)[i].Contains("SliderMultiplier:"))
                                             sliderMultiplier = Convert.ToDecimal(File.ReadAllLines(beatmapFile)[i][17..]);
                                     }
+
                                     // timing point syntax: time,beatLength,meter,sampleSet,sampleIndex,volume,uninherited,effects
                                     for (int i = timingPointSessionIndex + 1; i < beatmapFileLines.Length; i++)
                                     {
@@ -416,13 +420,17 @@ namespace osuEscape
                                         if (Convert.ToInt32(File.ReadAllLines(beatmapFile)[i].Split(",")[6]) == 1)
                                         {
                                             BPM = 60000 / Convert.ToDecimal(File.ReadAllLines(beatmapFile)[i].Split(",")[1]);
-                                        }                                        
+                                            uninherited = true;
+                                        }                      
+                                        else
+                                            uninherited = false;
                                     }
+                                    if (!uninherited)
+                                        sliderVelocity = -100 / beatLength;
 
-                                    decimal sliderVelocity = -100 / beatLength;
-                                    int sliderLengthOffset = (int) Math.Abs(Math.Round(600 * sliderPixelLength / (BPM * sliderMultiplier * sliderVelocity)));
+                                    sliderLengthOffset = (int) Math.Abs(Math.Round(600 * sliderPixelLength / (BPM * sliderMultiplier * sliderVelocity)));
 
-                                    beatmapLastNoteOffset += sliderLengthOffset * sliderRepeatCount;
+                                    beatmapLastNoteOffset += (sliderLengthOffset * sliderRepeatCount);
 #if DEBUG
                                     Debug.WriteLine("slider velocity:" + sliderVelocity);
                                     Debug.WriteLine("slider pixel length:" + sliderPixelLength);
@@ -643,7 +651,7 @@ namespace osuEscape
                     "advfirewall firewall delete rule name=\"osu block\"";
                 cmd.Start();
 
-                // add rule
+                // add blocking rule into advanced firewall 
                 cmd.StartInfo.Arguments =
                     "advfirewall firewall add rule name=\"osu block\" dir=out action=block program=" + filename;
                 cmd.Start();
