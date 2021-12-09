@@ -14,11 +14,13 @@
  - [1E308 (Nameless player)'s score submission video (Timestamp to score submission)](https://www.youtube.com/watch?v=D7x7OXpUmss&t=647s&ab_channel=RoriSanbyaku) 
  - [DigitalHypno's disable score submission video](https://www.youtube.com/watch?v=lusAZ1fiph8&ab_channel=DigitalHypno)
  
-## Why would players want to play offline? 
+## The purpose of playing offline
  
  - [Spazza17's Fix Negative Mindset in osu! — Start Doing THIS](https://www.youtube.com/watch?v=cEyVSiY9ohU&ab_channel=Spazza17)
  
- It is proven by the osu! community that players could perform better without focusing on score leaderboards (global, country, and friends rankings) while being able to upload scores.
+ It is proven by the osu! community that players could perform better without focusing on score leaderboards (global, country, and friends rankings) 
+ 
+ While playing "offline" using osu!Escape, players would be able to upload scores with better performance.
  
  ## Features
  
@@ -42,17 +44,17 @@
  
  *Dropping slider ends still count as a "full combo"
 
-## Why API is needed for this application? Is it safe?
+## API Usage and users' common concern
  
  This application uses [osu! API v1](https://github.com/ppy/osu-api/wiki) to get users' recent uploaded score and automatically disconnect after uploading.
  
  As for the users who are concerned about the API usage, please feel free to not use it :D
 
-## How to use this application?
+## Video Showcase
 
 There will be a video showcase after the new UI is completed!
 
-## How to check if the firewall rule is working or not?
+## Ways to check if the firewall rule is working
 
 Win + R and type "wf.msc" in "Run" box
 
