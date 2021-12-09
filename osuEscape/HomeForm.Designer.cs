@@ -57,7 +57,6 @@
             this.notifyIcon_osuEscape = new System.Windows.Forms.NotifyIcon(this.components);
             this.materialTabSelector = new MaterialSkin.Controls.MaterialTabSelector();
             this.toolTips = new System.Windows.Forms.ToolTip(this.components);
-            this.materialButton_hostToggleConnection = new MaterialSkin.Controls.MaterialButton();
             this.materialTabControl_menu.SuspendLayout();
             this.tabPage_main.SuspendLayout();
             this.tabPage_settings.SuspendLayout();
@@ -83,7 +82,6 @@
             // tabPage_main
             // 
             this.tabPage_main.BackColor = System.Drawing.Color.White;
-            this.tabPage_main.Controls.Add(this.materialButton_hostToggleConnection);
             this.tabPage_main.Controls.Add(this.materialLabel_submissionStatus);
             this.tabPage_main.Controls.Add(this.materialMultiLineTextBox_currentPlayingData);
             this.tabPage_main.Controls.Add(this.materialLabel_PlayData);
@@ -596,29 +594,6 @@
             this.materialTabSelector.TabIndex = 1;
             this.materialTabSelector.TabStop = false;
             // 
-            // materialButton_hostToggleConnection
-            // 
-            this.materialButton_hostToggleConnection.AutoSize = false;
-            this.materialButton_hostToggleConnection.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.materialButton_hostToggleConnection.Density = MaterialSkin.Controls.MaterialButton.MaterialButtonDensity.Default;
-            this.materialButton_hostToggleConnection.Depth = 0;
-            this.materialButton_hostToggleConnection.Font = new System.Drawing.Font("Segoe UI", 25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
-            this.materialButton_hostToggleConnection.HighEmphasis = true;
-            this.materialButton_hostToggleConnection.Icon = null;
-            this.materialButton_hostToggleConnection.Location = new System.Drawing.Point(335, 22);
-            this.materialButton_hostToggleConnection.Margin = new System.Windows.Forms.Padding(4, 6, 4, 6);
-            this.materialButton_hostToggleConnection.MouseState = MaterialSkin.MouseState.HOVER;
-            this.materialButton_hostToggleConnection.Name = "materialButton_hostToggleConnection";
-            this.materialButton_hostToggleConnection.NoAccentTextColor = System.Drawing.Color.Empty;
-            this.materialButton_hostToggleConnection.Size = new System.Drawing.Size(100, 34);
-            this.materialButton_hostToggleConnection.TabIndex = 18;
-            this.materialButton_hostToggleConnection.TabStop = false;
-            this.materialButton_hostToggleConnection.Text = "test";
-            this.materialButton_hostToggleConnection.Type = MaterialSkin.Controls.MaterialButton.MaterialButtonType.Contained;
-            this.materialButton_hostToggleConnection.UseAccentColor = true;
-            this.materialButton_hostToggleConnection.UseVisualStyleBackColor = true;
-            this.materialButton_hostToggleConnection.Click += new System.EventHandler(this.materialButton_hostToggleConnection_Click);
-            // 
             // HomeForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
@@ -684,6 +659,5 @@
         private MaterialSkin.Controls.MaterialLabel materialLabel_focus;
         private MaterialSkin.Controls.MaterialLabel materialLabel_avoidButtonFocus;
         private System.Windows.Forms.NumericUpDown numericUpDown_submitAcc;
-        private MaterialSkin.Controls.MaterialButton materialButton_hostToggleConnection;
     }
 }
