@@ -29,7 +29,7 @@
             this.materialLabel_PlayData = new MaterialSkin.Controls.MaterialLabel();
             this.materialMultiLineTextBox_mapData = new MaterialSkin.Controls.MaterialMultiLineTextBox();
             this.materialLabel_MapData = new MaterialSkin.Controls.MaterialLabel();
-            this.materialButton_toggle = new MaterialSkin.Controls.MaterialButton();
+            this.materialButton_firewallToggleConnection = new MaterialSkin.Controls.MaterialButton();
             this.materialLabel_avoidButtonFocus = new MaterialSkin.Controls.MaterialLabel();
             this.tabPage_settings = new System.Windows.Forms.TabPage();
             this.numericUpDown_submitAcc = new System.Windows.Forms.NumericUpDown();
@@ -57,6 +57,7 @@
             this.notifyIcon_osuEscape = new System.Windows.Forms.NotifyIcon(this.components);
             this.materialTabSelector = new MaterialSkin.Controls.MaterialTabSelector();
             this.toolTips = new System.Windows.Forms.ToolTip(this.components);
+            this.materialButton_hostToggleConnection = new MaterialSkin.Controls.MaterialButton();
             this.materialTabControl_menu.SuspendLayout();
             this.tabPage_main.SuspendLayout();
             this.tabPage_settings.SuspendLayout();
@@ -82,12 +83,13 @@
             // tabPage_main
             // 
             this.tabPage_main.BackColor = System.Drawing.Color.White;
+            this.tabPage_main.Controls.Add(this.materialButton_hostToggleConnection);
             this.tabPage_main.Controls.Add(this.materialLabel_submissionStatus);
             this.tabPage_main.Controls.Add(this.materialMultiLineTextBox_currentPlayingData);
             this.tabPage_main.Controls.Add(this.materialLabel_PlayData);
             this.tabPage_main.Controls.Add(this.materialMultiLineTextBox_mapData);
             this.tabPage_main.Controls.Add(this.materialLabel_MapData);
-            this.tabPage_main.Controls.Add(this.materialButton_toggle);
+            this.tabPage_main.Controls.Add(this.materialButton_firewallToggleConnection);
             this.tabPage_main.Controls.Add(this.materialLabel_avoidButtonFocus);
             this.tabPage_main.ImageKey = "Home_32.png";
             this.tabPage_main.Location = new System.Drawing.Point(4, 27);
@@ -161,28 +163,28 @@
             this.materialLabel_MapData.TabIndex = 2;
             this.materialLabel_MapData.Text = "Map";
             // 
-            // materialButton_toggle
+            // materialButton_firewallToggleConnection
             // 
-            this.materialButton_toggle.AutoSize = false;
-            this.materialButton_toggle.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.materialButton_toggle.Density = MaterialSkin.Controls.MaterialButton.MaterialButtonDensity.Default;
-            this.materialButton_toggle.Depth = 0;
-            this.materialButton_toggle.Font = new System.Drawing.Font("Segoe UI", 25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
-            this.materialButton_toggle.HighEmphasis = true;
-            this.materialButton_toggle.Icon = null;
-            this.materialButton_toggle.Location = new System.Drawing.Point(14, 9);
-            this.materialButton_toggle.Margin = new System.Windows.Forms.Padding(4, 6, 4, 6);
-            this.materialButton_toggle.MouseState = MaterialSkin.MouseState.HOVER;
-            this.materialButton_toggle.Name = "materialButton_toggle";
-            this.materialButton_toggle.NoAccentTextColor = System.Drawing.Color.Empty;
-            this.materialButton_toggle.Size = new System.Drawing.Size(289, 54);
-            this.materialButton_toggle.TabIndex = 0;
-            this.materialButton_toggle.TabStop = false;
-            this.materialButton_toggle.Text = "Toggle";
-            this.materialButton_toggle.Type = MaterialSkin.Controls.MaterialButton.MaterialButtonType.Contained;
-            this.materialButton_toggle.UseAccentColor = true;
-            this.materialButton_toggle.UseVisualStyleBackColor = true;
-            this.materialButton_toggle.Click += new System.EventHandler(this.materialButton_toggle_Click);
+            this.materialButton_firewallToggleConnection.AutoSize = false;
+            this.materialButton_firewallToggleConnection.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.materialButton_firewallToggleConnection.Density = MaterialSkin.Controls.MaterialButton.MaterialButtonDensity.Default;
+            this.materialButton_firewallToggleConnection.Depth = 0;
+            this.materialButton_firewallToggleConnection.Font = new System.Drawing.Font("Segoe UI", 25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
+            this.materialButton_firewallToggleConnection.HighEmphasis = true;
+            this.materialButton_firewallToggleConnection.Icon = null;
+            this.materialButton_firewallToggleConnection.Location = new System.Drawing.Point(14, 9);
+            this.materialButton_firewallToggleConnection.Margin = new System.Windows.Forms.Padding(4, 6, 4, 6);
+            this.materialButton_firewallToggleConnection.MouseState = MaterialSkin.MouseState.HOVER;
+            this.materialButton_firewallToggleConnection.Name = "materialButton_firewallToggleConnection";
+            this.materialButton_firewallToggleConnection.NoAccentTextColor = System.Drawing.Color.Empty;
+            this.materialButton_firewallToggleConnection.Size = new System.Drawing.Size(289, 54);
+            this.materialButton_firewallToggleConnection.TabIndex = 0;
+            this.materialButton_firewallToggleConnection.TabStop = false;
+            this.materialButton_firewallToggleConnection.Text = "Toggle";
+            this.materialButton_firewallToggleConnection.Type = MaterialSkin.Controls.MaterialButton.MaterialButtonType.Contained;
+            this.materialButton_firewallToggleConnection.UseAccentColor = true;
+            this.materialButton_firewallToggleConnection.UseVisualStyleBackColor = true;
+            this.materialButton_firewallToggleConnection.Click += new System.EventHandler(this.materialButton_toggle_Click);
             // 
             // materialLabel_avoidButtonFocus
             // 
@@ -238,7 +240,7 @@
             0,
             0,
             0});
-            this.numericUpDown_submitAcc.ValueChanged += new System.EventHandler(this.numericUpDown1_ValueChanged);
+            this.numericUpDown_submitAcc.ValueChanged += new System.EventHandler(this.numericUpDown_submitAcc_ValueChanged);
             // 
             // materialSlider_refreshRate
             // 
@@ -594,6 +596,29 @@
             this.materialTabSelector.TabIndex = 1;
             this.materialTabSelector.TabStop = false;
             // 
+            // materialButton_hostToggleConnection
+            // 
+            this.materialButton_hostToggleConnection.AutoSize = false;
+            this.materialButton_hostToggleConnection.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.materialButton_hostToggleConnection.Density = MaterialSkin.Controls.MaterialButton.MaterialButtonDensity.Default;
+            this.materialButton_hostToggleConnection.Depth = 0;
+            this.materialButton_hostToggleConnection.Font = new System.Drawing.Font("Segoe UI", 25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
+            this.materialButton_hostToggleConnection.HighEmphasis = true;
+            this.materialButton_hostToggleConnection.Icon = null;
+            this.materialButton_hostToggleConnection.Location = new System.Drawing.Point(335, 22);
+            this.materialButton_hostToggleConnection.Margin = new System.Windows.Forms.Padding(4, 6, 4, 6);
+            this.materialButton_hostToggleConnection.MouseState = MaterialSkin.MouseState.HOVER;
+            this.materialButton_hostToggleConnection.Name = "materialButton_hostToggleConnection";
+            this.materialButton_hostToggleConnection.NoAccentTextColor = System.Drawing.Color.Empty;
+            this.materialButton_hostToggleConnection.Size = new System.Drawing.Size(100, 34);
+            this.materialButton_hostToggleConnection.TabIndex = 18;
+            this.materialButton_hostToggleConnection.TabStop = false;
+            this.materialButton_hostToggleConnection.Text = "test";
+            this.materialButton_hostToggleConnection.Type = MaterialSkin.Controls.MaterialButton.MaterialButtonType.Contained;
+            this.materialButton_hostToggleConnection.UseAccentColor = true;
+            this.materialButton_hostToggleConnection.UseVisualStyleBackColor = true;
+            this.materialButton_hostToggleConnection.Click += new System.EventHandler(this.materialButton_hostToggleConnection_Click);
+            // 
             // HomeForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
@@ -627,7 +652,7 @@
         private MaterialSkin.Controls.MaterialTabControl materialTabControl_menu;
         private System.Windows.Forms.TabPage tabPage_main;
         private System.Windows.Forms.TabPage tabPage_settings;
-        private MaterialSkin.Controls.MaterialButton materialButton_toggle;
+        private MaterialSkin.Controls.MaterialButton materialButton_firewallToggleConnection;
         private MaterialSkin.Controls.MaterialLabel materialLabel_MapData;
         private MaterialSkin.Controls.MaterialMultiLineTextBox materialMultiLineTextBox_currentPlayingData;
         private MaterialSkin.Controls.MaterialLabel materialLabel_PlayData;
@@ -659,5 +684,6 @@
         private MaterialSkin.Controls.MaterialLabel materialLabel_focus;
         private MaterialSkin.Controls.MaterialLabel materialLabel_avoidButtonFocus;
         private System.Windows.Forms.NumericUpDown numericUpDown_submitAcc;
+        private MaterialSkin.Controls.MaterialButton materialButton_hostToggleConnection;
     }
 }

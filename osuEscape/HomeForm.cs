@@ -137,7 +137,7 @@ namespace osuEscape
             this.Size = new Size(this.Size.Width, this.Size.Height - 50);
             FormSize_init = this.Size;
             labelSubmissionStatus_Location_init = materialLabel_submissionStatus.Location;
-            button_Toggle_Size_init = materialButton_toggle.Size;
+            button_Toggle_Size_init = materialButton_firewallToggleConnection.Size;
 
             // ui 
             HideData();
@@ -610,9 +610,9 @@ namespace osuEscape
 
         private void ToggleButtonUpdate(bool isAllow)
         {
-            _ = materialButton_toggle.Invoke(new MethodInvoker(delegate
+            _ = materialButton_firewallToggleConnection.Invoke(new MethodInvoker(delegate
             {
-                materialButton_toggle.Text = isAllow ? "Connecting" : "Blocked";
+                materialButton_firewallToggleConnection.Text = isAllow ? "Connecting" : "Blocked";
 
                 materialSkinManager.ColorScheme = isAllow ?
                 new ColorScheme(
@@ -743,11 +743,14 @@ namespace osuEscape
             notifyIcon_osuEscape.ContextMenuStrip = contextMenuStrip_osu;
 
             // status Update
-            contextMenuStrip_osu.Items[0].Text = "Status: " + materialButton_toggle.Text;
+            contextMenuStrip_osu.Items[0].Text = "Status: " + materialButton_firewallToggleConnection.Text;
 
             contextMenuStrip_osu.Items[1].Click += new EventHandler(Item_quit_Click);
 
-            notifyIcon_osuEscape.Icon = (materialButton_toggle.Text == "Connecting" ? Properties.Resources.osuEscapeConnecting : Properties.Resources.osuEscapeBlocking);
+            notifyIcon_osuEscape.Icon = 
+                (materialButton_firewallToggleConnection.Text == "Connecting" ? 
+                Properties.Resources.osuEscapeConnecting : 
+                Properties.Resources.osuEscapeBlocking);
         }
         private void Item_quit_Click(object sender, EventArgs e)
         {
@@ -1060,7 +1063,7 @@ namespace osuEscape
                 this.MinimumSize = FormSize_init;
 
                 materialLabel_submissionStatus.Location = labelSubmissionStatus_Location_init;
-                materialButton_toggle.Size = button_Toggle_Size_init;
+                materialButton_firewallToggleConnection.Size = button_Toggle_Size_init;
                 materialLabel_MapData.Visible = true;
                 materialMultiLineTextBox_mapData.Visible = true;
 
@@ -1080,7 +1083,7 @@ namespace osuEscape
                 this.MaximumSize = this.Size;
 
                 materialLabel_submissionStatus.Location = new Point(14, 140);
-                materialButton_toggle.Size = new Size(300, 120);
+                materialButton_firewallToggleConnection.Size = new Size(300, 120);
                 materialLabel_MapData.Visible = false;
                 materialMultiLineTextBox_mapData.Visible = false;
             }
@@ -1184,7 +1187,7 @@ namespace osuEscape
             base.Dispose(disposing);
         }
 
-        private void numericUpDown1_ValueChanged(object sender, EventArgs e)
+        private void numericUpDown_submitAcc_ValueChanged(object sender, EventArgs e)
         {
             Properties.Settings.Default.submitAcc = Convert.ToInt32(numericUpDown_submitAcc.Value);
         }
