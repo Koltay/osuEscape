@@ -7,7 +7,7 @@
     <UseWindowsForms>true</UseWindowsForms>
     <StartupObject>osuEscape.Program</StartupObject>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
-    <ApplicationIcon>osuEscape-small.ico</ApplicationIcon>
+    <ApplicationIcon>Resources\osuEscapeIcon.ico</ApplicationIcon>
     <Win32Resource />
     <AssemblyName>osuEscape</AssemblyName>
     <RootNamespace>osuEscape</RootNamespace>
@@ -41,13 +41,15 @@
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemGroup>
+    <Content Include="Resources\osuEscapeIcon.ico" />
+  </ItemGroup>
+  <ItemGroup>
     <None Update="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Autoupdater.NET.Official" Version="1.7.0" />
     <PackageReference Include="MaterialSkin.2" Version="2.3.1">
       <TreatAsUsed>true</TreatAsUsed>
     </PackageReference>
