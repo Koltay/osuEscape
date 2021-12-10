@@ -145,7 +145,7 @@ namespace osuEscape
             SettingFormInit();
 
             // hotkey
-            keyboardHook.KeyPressed += new EventHandler<KeyPressedEventArgs>(hook_KeyPressed);
+            keyboardHook.KeyPressed += new EventHandler<KeyPressedEventArgs>(Hook_KeyPressed);
             keyboardHook.RegisterHotKey((ModifierKeys)Properties.Settings.Default.ModifierKeys,
                                         KeysToStringDictionary.FirstOrDefault(x => x.Value == Properties.Settings.Default.GlobalHotKey).Key);
 
@@ -365,12 +365,12 @@ namespace osuEscape
                         {
                             await Task.Run(() =>
                             {
-                                string beatmapFile = $"{Properties.Settings.Default.osuPath}\\Songs\\{baseAddresses.Beatmap.FolderName}\\{baseAddresses.Beatmap.OsuFileName}";                                
-                                
+                                string beatmapFile = $"{Properties.Settings.Default.osuPath}\\Songs\\{baseAddresses.Beatmap.FolderName}\\{baseAddresses.Beatmap.OsuFileName}";
+
                                 foreach (string str in File.ReadLines(beatmapFile).Last().Split(","))
-                                {       
+                                {
                                     if (Int32.TryParse(str, out var value))
-                                    beatmapLastNoteOffset = Math.Max(beatmapLastNoteOffset, value);
+                                        beatmapLastNoteOffset = Math.Max(beatmapLastNoteOffset, value);
                                 }
 
                                 // special case: slider (and reverse slider)
@@ -424,23 +424,23 @@ namespace osuEscape
                                     {
                                         // check the corresponding timing point
                                         if (!beatmapFileLines[i].Contains(","))
-                                            break; 
+                                            break;
 
-                                        beatLength = Convert.ToDecimal(File.ReadAllLines(beatmapFile)[i].Split(",")[1]);          
+                                        beatLength = Convert.ToDecimal(File.ReadAllLines(beatmapFile)[i].Split(",")[1]);
 
                                         // uninherited == 1, red line
                                         if (Convert.ToInt32(File.ReadAllLines(beatmapFile)[i].Split(",")[6]) == 1)
                                         {
                                             BPM = 60000 / Convert.ToDecimal(File.ReadAllLines(beatmapFile)[i].Split(",")[1]);
                                             uninherited = true;
-                                        }                      
+                                        }
                                         else
                                             uninherited = false;
                                     }
                                     if (!uninherited)
                                         sliderVelocity = -100 / beatLength;
 
-                                    sliderLengthOffset = (int) Math.Abs(Math.Round(600 * sliderPixelLength / (BPM * sliderMultiplier * sliderVelocity)));
+                                    sliderLengthOffset = (int)Math.Abs(Math.Round(600 * sliderPixelLength / (BPM * sliderMultiplier * sliderVelocity)));
 
                                     beatmapLastNoteOffset += (sliderLengthOffset * sliderRepeatCount);
                                 }
@@ -750,9 +750,9 @@ namespace osuEscape
 
             contextMenuStrip_osu.Items[1].Click += new EventHandler(Item_quit_Click);
 
-            notifyIcon_osuEscape.Icon = 
-                (materialButton_firewallToggleConnection.Text == "Connecting" ? 
-                Properties.Resources.osuEscapeConnecting : 
+            notifyIcon_osuEscape.Icon =
+                (materialButton_firewallToggleConnection.Text == "Connecting" ?
+                Properties.Resources.osuEscapeConnecting :
                 Properties.Resources.osuEscapeBlocking);
         }
         private void Item_quit_Click(object sender, EventArgs e)
@@ -765,20 +765,13 @@ namespace osuEscape
 
         #region Checkboxes' Checked changed
 
-        private void materialCheckbox_autoDisconnect_CheckedChanged(object sender, EventArgs e)
-        {
-            Properties.Settings.Default.isAutoDisconnect = materialSwitch_autoDisconnect.Checked;
-        }
+        private void materialCheckbox_autoDisconnect_CheckedChanged(object sender, EventArgs e) => Properties.Settings.Default.isAutoDisconnect = materialSwitch_autoDisconnect.Checked;
 
         private void materialCheckbox_submitIfFC_CheckedChanged(object sender, EventArgs e)
-        {
-            Properties.Settings.Default.isSubmitIfFC = materialSwitch_submitIfFC.Checked;
-        }
+        => Properties.Settings.Default.isSubmitIfFC = materialSwitch_submitIfFC.Checked;
 
         private void materialCheckbox_hideData_CheckedChanged(object sender, EventArgs e)
-        {
-            Properties.Settings.Default.isHideData = materialSwitch_hideData.Checked;
-        }
+        => Properties.Settings.Default.isHideData = materialSwitch_hideData.Checked;
 
         private void materialCheckbox_topMost_CheckedChanged(object sender, EventArgs e)
         {
@@ -787,14 +780,10 @@ namespace osuEscape
         }
 
         private void materialCheckbox_toggleWithSound_CheckedChanged(object sender, EventArgs e)
-        {
-            Properties.Settings.Default.isToggleSound = materialSwitch_toggleWithSound.Checked;
-        }
+        => Properties.Settings.Default.isToggleSound = materialSwitch_toggleWithSound.Checked;
 
         private void materialCheckbox_minimizeToSystemTray_CheckedChanged(object sender, EventArgs e)
-        {
-            Properties.Settings.Default.isSystemTray = materialSwitch_minimizeToSystemTray.Checked;
-        }
+        => Properties.Settings.Default.isSystemTray = materialSwitch_minimizeToSystemTray.Checked;
 
         private void materialCheckbox_runAtStartup_CheckedChanged(object sender, EventArgs e)
         {
@@ -810,19 +799,12 @@ namespace osuEscape
         #region Buttons
 
         private void materialButton_checkApi_Click(object sender, EventArgs e)
-        {
-            VerifyAPIKeyAsync();
-        }
+        => VerifyAPIKeyAsync();
 
-        private void materialButton_findOsuLocation_Click(object sender, EventArgs e)
-        {
-            OFD_FindOsuLocation();
-        }
+        private void MaterialButton_findOsuLocation_Click(object sender, EventArgs e)
+        => OFD_FindOsuLocation();
 
-        private void materialButton_changeTheme_Click(object sender, EventArgs e)
-        {
-            UIThemeToggle();
-        }
+        private void MaterialButton_changeTheme_Click(object sender, EventArgs e) => UIThemeToggle();
 
         private void UIThemeToggle()
         {
@@ -846,7 +828,7 @@ namespace osuEscape
                 ToggleFirewall();
             }
         }
-        private void materialButton_changeToggleKey_Click(object sender, EventArgs e)
+        private void MaterialButton_changeToggleKey_Click(object sender, EventArgs e)
         {
             isEditingHotkey = true;
             materialLabel_globalToggleHotkey.Text = "Press Key(s) as Global Toggle Hotkey...";
@@ -986,10 +968,13 @@ namespace osuEscape
 
                List<MaterialButton> buttonList = new()
                {
+                   // main tab page
+
+                   // settings tab page
                    materialButton_Theme,
                    materialButton_findOsuLocation,
                    materialButton_changeToggleKey,
-                   materialButton_checkApi
+                   materialButton_checkApi,
                };
 
                foreach (MaterialSwitch ms in checkBoxList)
@@ -1049,9 +1034,7 @@ namespace osuEscape
         }
 
         private void materialSlider_refreshRate_Click(object sender, EventArgs e)
-        {
-            _readDelay = materialSlider_refreshRate.Value < 50 ? 50 : materialSlider_refreshRate.Value;
-        }
+        => _readDelay = materialSlider_refreshRate.Value < 50 ? 50 : materialSlider_refreshRate.Value;
         private void materialTabControl_menu_Selected(object sender, TabControlEventArgs e)
         {
             if (materialTabControl_menu.SelectedTab == tabPage_main)
@@ -1117,7 +1100,7 @@ namespace osuEscape
             ToggleSystemTray(false);
         }
 
-        private void hook_KeyPressed(object sender, KeyPressedEventArgs e)
+        private void Hook_KeyPressed(object sender, KeyPressedEventArgs e)
         {
             ToggleFirewall();
         }
@@ -1191,8 +1174,6 @@ namespace osuEscape
         }
 
         private void numericUpDown_submitAcc_ValueChanged(object sender, EventArgs e)
-        {
-            Properties.Settings.Default.submitAcc = Convert.ToInt32(numericUpDown_submitAcc.Value);
-        }
+        => Properties.Settings.Default.submitAcc = Convert.ToInt32(numericUpDown_submitAcc.Value);
     }
 }

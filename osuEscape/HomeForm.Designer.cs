@@ -288,7 +288,7 @@
             this.materialButton_changeToggleKey.Type = MaterialSkin.Controls.MaterialButton.MaterialButtonType.Contained;
             this.materialButton_changeToggleKey.UseAccentColor = true;
             this.materialButton_changeToggleKey.UseVisualStyleBackColor = true;
-            this.materialButton_changeToggleKey.Click += new System.EventHandler(this.materialButton_changeToggleKey_Click);
+            this.materialButton_changeToggleKey.Click += new System.EventHandler(this.MaterialButton_changeToggleKey_Click);
             // 
             // materialButton_Theme
             // 
@@ -310,7 +310,7 @@
             this.materialButton_Theme.Type = MaterialSkin.Controls.MaterialButton.MaterialButtonType.Contained;
             this.materialButton_Theme.UseAccentColor = true;
             this.materialButton_Theme.UseVisualStyleBackColor = true;
-            this.materialButton_Theme.Click += new System.EventHandler(this.materialButton_changeTheme_Click);
+            this.materialButton_Theme.Click += new System.EventHandler(this.MaterialButton_changeTheme_Click);
             // 
             // materialTextBox_apiInput
             // 
@@ -361,7 +361,7 @@
             this.materialButton_findOsuLocation.Type = MaterialSkin.Controls.MaterialButton.MaterialButtonType.Contained;
             this.materialButton_findOsuLocation.UseAccentColor = true;
             this.materialButton_findOsuLocation.UseVisualStyleBackColor = true;
-            this.materialButton_findOsuLocation.Click += new System.EventHandler(this.materialButton_findOsuLocation_Click);
+            this.materialButton_findOsuLocation.Click += new System.EventHandler(this.MaterialButton_findOsuLocation_Click);
             // 
             // materialLabel_globalToggleHotkey
             // 
