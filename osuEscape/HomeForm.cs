@@ -12,6 +12,7 @@ using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Reflection;
@@ -212,7 +213,7 @@ namespace osuEscape
             GlobalHotkeyTextBoxUpdate();
         }
 
-        private void OsuEscape_Load(object sender, EventArgs e)
+        private void HomeForm_Load(object sender, EventArgs e)
         {
             // check if osu!Escape is already opened 
             if (Process.GetProcessesByName(this.Name).Length > 1)
@@ -252,6 +253,19 @@ namespace osuEscape
             toolTips.SetToolTip(materialSwitch_submitIfFC, "Enabling this option will automatically submit before jumping into result screen if the set score meets the requirement.");
 
             #endregion
+
+            // check for update
+            WebClient webClient = new();
+            if (!webClient.DownloadString("https://pastebin.com/5hDSctE0").Contains(Assembly.GetExecutingAssembly().GetName().Version.ToString()))
+            {
+                if (MessageBox.Show("This version is outdated! Please download the latest version at GitHub's release page.",
+                    "osu!Escape",
+                    MessageBoxButtons.YesNo,
+                    MessageBoxIcon.Question) == DialogResult.Yes)
+                {
+                    _ = Process.Start(new ProcessStartInfo("https://github.com/Koltay/osuEscape/releases/") { UseShellExecute = true });
+                }
+            }
         }
 
         #endregion
@@ -359,8 +373,6 @@ namespace osuEscape
                                     beatmapLastNoteOffset = Math.Max(beatmapLastNoteOffset, value);
                                 }
 
-                                Debug.WriteLine("Before slider calculation offset: " + beatmapLastNoteOffset);
-
                                 // special case: slider (and reverse slider)
                                 // file format v14 test
                                 // Hit object syntax: x,y,time,type,hitSound,curveType|curvePoints,slides,length,edgeSounds,edgeSets,hitSample
@@ -431,16 +443,7 @@ namespace osuEscape
                                     sliderLengthOffset = (int) Math.Abs(Math.Round(600 * sliderPixelLength / (BPM * sliderMultiplier * sliderVelocity)));
 
                                     beatmapLastNoteOffset += (sliderLengthOffset * sliderRepeatCount);
-#if DEBUG
-                                    Debug.WriteLine("slider velocity:" + sliderVelocity);
-                                    Debug.WriteLine("slider pixel length:" + sliderPixelLength);
-                                    Debug.WriteLine("BPM:" + BPM);
-                                    Debug.WriteLine("slider multiplier: " + sliderMultiplier);
-                                    Debug.WriteLine("repeat count: " + sliderRepeatCount);
-                                    Debug.WriteLine("slider length offset: " + sliderLengthOffset);
-#endif
                                 }
-                                Debug.WriteLine("After slider calculation offset: " + beatmapLastNoteOffset);
                             });
                         }
 
