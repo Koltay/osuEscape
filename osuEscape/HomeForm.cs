@@ -596,7 +596,7 @@ namespace osuEscape
 
                 ToggleSound(Properties.Settings.Default.isToggleSound);
 
-                SettingFormUpdate();
+                FormRefreshInvoke();
             }
         }
 
@@ -958,54 +958,17 @@ namespace osuEscape
                 materialSwitch_autoDisconnect.Checked = false;
             }
 
-            SettingFormUpdate();
+            FormRefreshInvoke();
         }
 
-        private void SettingFormUpdate()
+        private void FormRefreshInvoke()
         {
             Invoke((MethodInvoker)delegate
-           {
-               // Invalidate to update new color
-               List<MaterialSwitch> checkBoxList = new()
-               {
-                   materialSwitch_runAtStartup,
-                   materialSwitch_minimizeToSystemTray,
-                   materialSwitch_toggleWithSound,
-                   materialSwitch_topMost,
-                   materialSwitch_hideData,
-                   materialSwitch_submitIfFC,
-                   materialSwitch_autoDisconnect
-               };
+            {
+                // Refresh all buttons, slider, tabPages
 
-               List<MaterialButton> buttonList = new()
-               {
-                   // main tab page
-
-                   // settings tab page
-                   materialButton_Theme,
-                   materialButton_findOsuLocation,
-                   materialButton_changeToggleKey,
-                   materialButton_checkApi,
-               };
-
-               foreach (MaterialSwitch ms in checkBoxList)
-               {
-                   ms.Invalidate();
-                   ms.Update();
-               }
-
-               foreach (MaterialButton mb in buttonList)
-               {
-                   mb.Invalidate();
-                   mb.Update();
-               }
-
-               materialTabSelector.Invalidate();
-               materialTabSelector.Update();
-
-               materialSlider_refreshRate.Invalidate();
-               materialSlider_refreshRate.Update();
-           });
+                this.Refresh();
+            });
         }
         #endregion
 
