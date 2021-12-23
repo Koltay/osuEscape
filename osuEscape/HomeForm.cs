@@ -224,7 +224,7 @@ namespace osuEscape
             // open the app at the previous position (location on window) 
             this.Location = Properties.Settings.Default.appPosition;
 
-            // get osu! directory from running process)
+            // get osu! directory from running process
             Properties.Settings.Default.osuLocation = Process.GetProcessesByName("osu!").Length == 0
                                                     ? Properties.Settings.Default.osuLocation
                                                     : Process.GetProcessesByName("osu!").FirstOrDefault().MainModule.FileName;
@@ -233,12 +233,10 @@ namespace osuEscape
             if (Properties.Settings.Default.osuLocation == string.Empty)
             {
                 // if the app is first opened and there is no existing osu! process
-                OFD_FindOsuLocation();
+                OpenFileDialog_FindOsuLocation();
             }
             else
             {
-                UpdateOsuLocationText();
-
                 FirewallRuleSetUp(Properties.Settings.Default.osuLocation);
             }
 
@@ -254,7 +252,7 @@ namespace osuEscape
 
             #endregion
 
-            // check for update
+            #region Check for Update
             WebClient webClient = new();
             if (!webClient.DownloadString("https://pastebin.com/5hDSctE0").Contains(Assembly.GetExecutingAssembly().GetName().Version.ToString()))
             {
@@ -266,6 +264,7 @@ namespace osuEscape
                     _ = Process.Start(new ProcessStartInfo("https://github.com/Koltay/osuEscape/releases/") { UseShellExecute = true });
                 }
             }
+            #endregion
         }
 
         #endregion
@@ -363,98 +362,105 @@ namespace osuEscape
                         // only read the audio offset if it is not the previous beatmap
                         if (beatmapLastNoteOffset == -9999)
                         {
-                            await Task.Run(() =>
+                            try
                             {
-                                string beatmapFile = $"{Properties.Settings.Default.osuPath}\\Songs\\{baseAddresses.Beatmap.FolderName}\\{baseAddresses.Beatmap.OsuFileName}";
-
-                                foreach (string str in File.ReadLines(beatmapFile).Last().Split(","))
+                                await Task.Run(() =>
                                 {
-                                    if (Int32.TryParse(str, out var value))
-                                        beatmapLastNoteOffset = Math.Max(beatmapLastNoteOffset, value);
-                                }
+                                    string beatmapFile = $"{Properties.Settings.Default.osuPath}\\Songs\\{baseAddresses.Beatmap.FolderName}\\{baseAddresses.Beatmap.OsuFileName}";
 
-                                // special case: slider (and reverse slider)
-                                // file format v14 test
-                                // Hit object syntax: x,y,time,type,hitSound,curveType|curvePoints,slides,length,edgeSounds,edgeSets,hitSample
-                                // 2 and 6 mean slider in type
-
-                                if (File.ReadLines(beatmapFile).Last().Split(",")[3] == "2" ||
-                                    File.ReadLines(beatmapFile).Last().Split(",")[3] == "6")
-                                {
-                                    // [7] is the slider pixel length of slider (syntax above)
-                                    decimal sliderPixelLength = Convert.ToDecimal(File.ReadLines(beatmapFile).Last().Split(",")[7]);
-
-                                    // reverse slider 
-                                    int sliderRepeatCount = Convert.ToInt32(File.ReadLines(beatmapFile).Last().Split(",")[6]);
-
-                                    decimal sliderMultiplier = 0;
-                                    decimal beatLength = 0;
-                                    decimal BPM = 0;
-                                    decimal sliderVelocity = 1;
-                                    int difficultySessionIndex = 0;
-                                    int timingPointSessionIndex = 0;
-                                    int sliderLengthOffset = 0;
-                                    string[] beatmapFileLines = File.ReadAllLines(beatmapFile);
-                                    bool uninherited = true;
-
-                                    // sessions
-                                    for (int i = 0; i < beatmapFileLines.Length; i++)
+                                    foreach (string str in File.ReadLines(beatmapFile).Last().Split(","))
                                     {
-                                        if (beatmapFileLines[i] == "[Difficulty]")
-                                        {
-                                            difficultySessionIndex = i;
-                                        }
-                                        else if (beatmapFileLines[i] == "[TimingPoints]")
-                                        {
-                                            timingPointSessionIndex = i;
-                                        }
+                                        if (Int32.TryParse(str, out var value))
+                                            beatmapLastNoteOffset = Math.Max(beatmapLastNoteOffset, value);
                                     }
 
-                                    for (int i = difficultySessionIndex + 1; i < beatmapFileLines.Length; i++)
+                                    // special case: slider (and reverse slider)
+                                    // file format v14 test
+                                    // Hit object syntax: x,y,time,type,hitSound,curveType|curvePoints,slides,length,edgeSounds,edgeSets,hitSample
+                                    // 2 and 6 mean slider in type
+
+                                    if (File.ReadLines(beatmapFile).Last().Split(",")[3] == "2" ||
+                                        File.ReadLines(beatmapFile).Last().Split(",")[3] == "6")
                                     {
-                                        if (!beatmapFileLines[i].Contains(":"))
-                                            break;
+                                        // [7] is the slider pixel length of slider (syntax above)
+                                        decimal sliderPixelLength = Convert.ToDecimal(File.ReadLines(beatmapFile).Last().Split(",")[7]);
 
-                                        if (File.ReadAllLines(beatmapFile)[i].Contains("SliderMultiplier:"))
-                                            sliderMultiplier = Convert.ToDecimal(File.ReadAllLines(beatmapFile)[i][17..]);
-                                    }
+                                        // reverse slider 
+                                        int sliderRepeatCount = Convert.ToInt32(File.ReadLines(beatmapFile).Last().Split(",")[6]);
 
-                                    // timing point syntax: time,beatLength,meter,sampleSet,sampleIndex,volume,uninherited,effects
-                                    for (int i = timingPointSessionIndex + 1; i < beatmapFileLines.Length; i++)
-                                    {
-                                        // check the corresponding timing point
-                                        if (!beatmapFileLines[i].Contains(","))
-                                            break;
+                                        decimal sliderMultiplier = 0;
+                                        decimal beatLength = 0;
+                                        decimal BPM = 0;
+                                        decimal sliderVelocity = 1;
+                                        int difficultySessionIndex = 0;
+                                        int timingPointSessionIndex = 0;
+                                        int sliderLengthOffset = 0;
+                                        string[] beatmapFileLines = File.ReadAllLines(beatmapFile);
+                                        bool uninherited = true;
 
-                                        beatLength = Convert.ToDecimal(File.ReadAllLines(beatmapFile)[i].Split(",")[1]);
-
-                                        // uninherited == 1, red line
-                                        if (Convert.ToInt32(File.ReadAllLines(beatmapFile)[i].Split(",")[6]) == 1)
+                                        // sessions
+                                        for (int i = 0; i < beatmapFileLines.Length; i++)
                                         {
-                                            BPM = 60000 / Convert.ToDecimal(File.ReadAllLines(beatmapFile)[i].Split(",")[1]);
-                                            uninherited = true;
+                                            if (beatmapFileLines[i] == "[Difficulty]")
+                                            {
+                                                difficultySessionIndex = i;
+                                            }
+                                            else if (beatmapFileLines[i] == "[TimingPoints]")
+                                            {
+                                                timingPointSessionIndex = i;
+                                            }
                                         }
-                                        else
-                                            uninherited = false;
+
+                                        for (int i = difficultySessionIndex + 1; i < beatmapFileLines.Length; i++)
+                                        {
+                                            if (!beatmapFileLines[i].Contains(":"))
+                                                break;
+
+                                            if (File.ReadAllLines(beatmapFile)[i].Contains("SliderMultiplier:"))
+                                                sliderMultiplier = Convert.ToDecimal(File.ReadAllLines(beatmapFile)[i][17..]);
+                                        }
+
+                                        // timing point syntax: time,beatLength,meter,sampleSet,sampleIndex,volume,uninherited,effects
+                                        for (int i = timingPointSessionIndex + 1; i < beatmapFileLines.Length; i++)
+                                        {
+                                            // check the corresponding timing point
+                                            if (!beatmapFileLines[i].Contains(","))
+                                                break;
+
+                                            beatLength = Convert.ToDecimal(File.ReadAllLines(beatmapFile)[i].Split(",")[1]);
+
+                                            // uninherited == 1, red line
+                                            if (Convert.ToInt32(File.ReadAllLines(beatmapFile)[i].Split(",")[6]) == 1)
+                                            {
+                                                BPM = 60000 / Convert.ToDecimal(File.ReadAllLines(beatmapFile)[i].Split(",")[1]);
+                                                uninherited = true;
+                                            }
+                                            else
+                                                uninherited = false;
+                                        }
+                                        if (!uninherited)
+                                            sliderVelocity = -100 / beatLength;
+
+                                        sliderLengthOffset = (int)Math.Abs(Math.Round(600 * sliderPixelLength / (BPM * sliderMultiplier * sliderVelocity)));
+
+                                        beatmapLastNoteOffset += (sliderLengthOffset * sliderRepeatCount);
                                     }
-                                    if (!uninherited)
-                                        sliderVelocity = -100 / beatLength;
-
-                                    sliderLengthOffset = (int)Math.Abs(Math.Round(600 * sliderPixelLength / (BPM * sliderMultiplier * sliderVelocity)));
-
-                                    beatmapLastNoteOffset += (sliderLengthOffset * sliderRepeatCount);
-                                }
-                            });
+                                });
+                            }
+                            catch (Exception ex)
+                            {
+                                Debug.WriteLine(ex);
+                            }
                         }
 
-                        // 1. Auto Connection has to be done on playing status for instant connection,
-                        //  connection checking on resultsscreen could be avoided, which takes ~30s
-                        // 2. Using beatmap's last note offset to determine if the map ended
-                        // 3. Determine if it is an "FC"
-                        // "FC": 0 misscount / dropped some sliderends / sliderbreak at start
-                        // 4. Submit if it is above or equal to the required acc, not a replay
-                        // 5. If there is already blocked connection, disable the block rule
-                        // Verify Md5 to avoid false auto connection on same beatmap set
+                        // 1.   Auto Connection has to be done on playing status for instant connection,
+                        //      connection checking on resultsscreen could be avoided, which takes ~30s
+                        // 2.   Using beatmap's last note offset to determine if the map ended
+                        // 3.   Determine if it is an "FC"
+                        //      "FC": 0 misscount / dropped some sliderends / sliderbreak at start
+                        // 4.   Submit if it is above or equal to the required acc, not a replay
+                        // 5.   If there is already blocked connection, disable the block rule
+                        //      Verify Md5 to avoid false auto connection on same beatmap set
                         if (Properties.Settings.Default.isSubmitIfFC &&
                             baseAddresses.GeneralData.AudioTime >= beatmapLastNoteOffset &&
                             beatmapLastNoteOffset >= 0 &&
@@ -634,35 +640,54 @@ namespace osuEscape
             }));
         }
 
-        private void FirewallRuleSetUp(string filename)
-        {
-            if (filename.Contains("osu!.exe"))
+        private async void FirewallRuleSetUp(string filename)
+        {   
+            await Task.Run(async () =>
             {
-                Properties.Settings.Default.osuLocation = filename;
+                if (filename.Contains("osu!.exe"))
+                {
+                
 
-                UpdateOsuLocationText();
+                    Properties.Settings.Default.osuLocation = filename;
 
-                Process cmd = new();
-                cmd.StartInfo.FileName = "netsh";
-                cmd.StartInfo.Verb = "runas";
-                cmd.StartInfo.UseShellExecute = true;
-                cmd.StartInfo.CreateNoWindow = true;
-                cmd.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
+                    // UpdateOsuLocationText
+                    // osuPath: osuLocation without osu.exe at the end
+                    string osuPath = String.Join("\\", Properties.Settings.Default.osuLocation.Split('\\').Reverse().Skip(1).Reverse()) + "\\";
+                    Properties.Settings.Default.osuPath = osuPath;
 
-                // delete the rules if the users used this application before
-                cmd.StartInfo.Arguments =
-                    "advfirewall firewall delete rule name=\"osu block\"";
-                cmd.Start();
+                    materialLabel_osuPath.Invoke(new MethodInvoker(delegate
+                    {
+                        materialLabel_osuPath.Text = "osu! Path: " + osuPath;
+                    }));
 
-                // add blocking rule into advanced firewall 
-                cmd.StartInfo.Arguments =
-                    "advfirewall firewall add rule name=\"osu block\" dir=out action=block program=" + filename;
-                cmd.Start();
+                    // create cmd
+                    Process cmd = new();
+                    cmd.StartInfo.FileName = "netsh";
+                    cmd.StartInfo.Verb = "runas";
+                    cmd.StartInfo.UseShellExecute = true;
+                    cmd.StartInfo.CreateNoWindow = true;
+                    cmd.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
 
-                // block rule depends on previous user's connection (default: allow)
-                Properties.Settings.Default.isAllowConnection = !Properties.Settings.Default.isAllowConnection;
-                ToggleFirewall();
-            }
+                    // delete the rules if the users used this application before
+                    cmd.StartInfo.Arguments =
+                        "advfirewall firewall delete rule name=\"osu block\"";
+                    cmd.Start();
+
+                    await Task.Delay(10);
+
+                    // add blocking rule into advanced firewall 
+                    cmd.StartInfo.Arguments =
+                        "advfirewall firewall add rule name=\"osu block\" dir=out action=block program=" + filename;
+                    cmd.Start();
+
+                    await Task.Delay(10);
+
+                    // block rule depends on previous user's connection (default: allow)
+                    Properties.Settings.Default.isAllowConnection = !Properties.Settings.Default.isAllowConnection;
+
+                    ToggleFirewall();
+                }
+            });
         }
 
         #endregion
@@ -672,7 +697,7 @@ namespace osuEscape
         #region Find osu! location
 
 
-        private void OFD_FindOsuLocation()
+        private void OpenFileDialog_FindOsuLocation()
         {
             OpenFileDialog ofd = new()
             {
@@ -684,30 +709,16 @@ namespace osuEscape
                 if (!ofd.FileName.Contains("osu!.exe"))
                 {
                     // run again until user finds osu.exe or user cancelled the action
-                    OFD_FindOsuLocation();
+                    OpenFileDialog_FindOsuLocation();
                 }
                 else
                 {
                     Properties.Settings.Default.osuLocation = ofd.FileName;
+
+                    FirewallRuleSetUp(Properties.Settings.Default.osuLocation);
                 }
             }
         }
-
-        private void UpdateOsuLocationText()
-        {
-            // osuPath: osuLocation without osu.exe at the end
-            string osuPath = String.Join("\\", Properties.Settings.Default.osuLocation.Split('\\').Reverse().Skip(1).Reverse()) + "\\";
-
-            Properties.Settings.Default.osuPath = osuPath;
-
-            materialLabel_osuPath.Text = "osu! Path: " + osuPath;
-        }
-
-        private static string GetOsuProcessPath()
-        {
-            return Process.GetProcessesByName("osu!").Length == 0 ? "" : Process.GetProcessesByName("osu!").FirstOrDefault().MainModule.FileName;
-        }
-
 
         #endregion
 
@@ -802,7 +813,7 @@ namespace osuEscape
         => VerifyAPIKeyAsync();
 
         private void MaterialButton_findOsuLocation_Click(object sender, EventArgs e)
-        => OFD_FindOsuLocation();
+        => OpenFileDialog_FindOsuLocation();
 
         private void MaterialButton_changeTheme_Click(object sender, EventArgs e) => UIThemeToggle();
 
