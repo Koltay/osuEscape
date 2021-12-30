@@ -403,7 +403,7 @@
             this.materialButton_checkApi.Size = new System.Drawing.Size(56, 34);
             this.materialButton_checkApi.TabIndex = 18;
             this.materialButton_checkApi.TabStop = false;
-            this.materialButton_checkApi.Text = "Check";
+            this.materialButton_checkApi.Text = "Verify";
             this.materialButton_checkApi.Type = MaterialSkin.Controls.MaterialButton.MaterialButtonType.Contained;
             this.materialButton_checkApi.UseAccentColor = true;
             this.materialButton_checkApi.UseVisualStyleBackColor = true;
