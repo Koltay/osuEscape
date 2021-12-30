@@ -1,18 +1,26 @@
 # osu! Escape
+
+ **osu! Escape is an application which mainly provides osu! score submission blocking via applying a blocking rule in your PC's advanced firewall with automated option included in the Features session.**
+
 ![image](https://user-images.githubusercontent.com/73950784/144431649-48b10f29-f2ee-4e28-a373-d7db5e070328.png)
+
+> osu! Escape without data 
 
 ![image](https://user-images.githubusercontent.com/73950784/144431804-574c08c8-868f-4393-9362-6173a533fcb7.png)
 
+> osu! Escape with data
+
 ![image](https://user-images.githubusercontent.com/73950784/144431910-b4650e39-5aea-45f3-93aa-c5c953d83e4c.png)
+
+> osu! Escape settings tab page
  
- This project provides osu! score submission blocking, which is conducted by applying the blocking rule in your PC's advanced firewall
- 
+
  **IMPORTANT: This application is only usable if your PC has the firewall enabled!**
  
  ## Inspiration from top osu! players
  
  - [1E308 (Nameless player)'s score submission video (Timestamp to score submission)](https://www.youtube.com/watch?v=D7x7OXpUmss&t=647s&ab_channel=RoriSanbyaku) 
- - [DigitalHypno's disable score submission video](https://www.youtube.com/watch?v=lusAZ1fiph8&ab_channel=DigitalHypno)
+ - [DigitalHypno's disable score submission video (host file edit method)](https://www.youtube.com/watch?v=lusAZ1fiph8&ab_channel=DigitalHypno)
  
 ## The purpose of playing offline
  
@@ -20,11 +28,11 @@
  
  It is proven by the osu! community that players could perform better without focusing on score leaderboards (global, country, and friends rankings) 
  
- While playing "offline" using osu!Escape, players would be able to upload scores with better performance.
+ While playing "offline" using osu! Escape, players would be able to upload scores with better performance.
  
  ## Features
  
- This application is currently available on osu! standard except osu! lazer 
+ These features are currently only available on osu! standard but not osu! lazer 
  
  - **Global Toggle Key:** 
  > Toggle the connection using the F6 Key (Changeable, supports multiple modifier keys)
@@ -70,6 +78,7 @@ There should be "osu block" rule enabled while blocking the connection
  
  Testing: 
  - Hellotomlol225
+ - issacCLAKE124
  - Muji
  - Surac
  - Takanashi Ako
@@ -79,5 +88,5 @@ There should be "osu block" rule enabled while blocking the connection
  - Shion Maker
  
  ## Licenses
- The following projects are used in osu!Escape:
+ The following projects are used in osu! Escape:
  - [ProcessMemoryDataFinder](https://github.com/Piotrekol/ProcessMemoryDataFinder), [GPL-3.0](https://github.com/Piotrekol/ProcessMemoryDataFinder/blob/master/LICENSE)
