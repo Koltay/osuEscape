@@ -52,7 +52,7 @@
 
 ## Video Showcase (Click here!)
 
-[![Watch the video showcase here!](http://i3.ytimg.com/vi/tazI9qgI5NE/hqdefault.jpg)](https://www.youtube.com/watch?v=tazI9qgI5NE&ab_channel=Koltay)
+[![Watch the video showcase here!](http://i3.ytimg.com/vi/N0ui0FeIaPE/hqdefault.jpg)](https://www.youtube.com/watch?v=N0ui0FeIaPE&ab_channel=Koltay)
 
 ## Ways to check if the firewall rule is working
 
