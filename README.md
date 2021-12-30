@@ -1,6 +1,9 @@
 # osu! Escape
 
- **osu! Escape is an application which mainly provides osu! score submission blocking via applying a blocking rule in your PC's advanced firewall with automated option included in the Features session.**
+ **osu! Escape is an application which mainly provides osu! score submission blocking via 
+ applying a blocking rule in your PC's advanced firewall with automated options.**
+ 
+  **IMPORTANT: This application is only usable if your PC has the firewall enabled!**
 
 ![image](https://user-images.githubusercontent.com/73950784/144431649-48b10f29-f2ee-4e28-a373-d7db5e070328.png)
 
@@ -14,8 +17,6 @@
 
 > osu! Escape settings tab page
  
-
- **IMPORTANT: This application is only usable if your PC has the firewall enabled!**
  
  ## Inspiration from top osu! players
  
@@ -34,31 +35,36 @@
  
  These features are currently only available on osu! standard but not osu! lazer 
  
- - **Global Toggle Key:** 
- > Toggle the connection using the F6 Key (Changeable, supports multiple modifier keys)
+ - **Global Hotkey for Toggling osu! Connection:** 
+ > Toggle the connection using the F6 Key (Default), it also supports multiple modifier keys, e.g. Ctrl, Shift, Alt)
  
  - **Score Details/ Map Details display** 
- > Displays the current osu! score data in-game without toggling the scoreboard
+ > Displays the current osu! score data without toggling the in-game scoreboard 
  
  - **Auto Submission:** 
  > After players hit the last note of the beatmap, *"full combo"* score meeting the requirement would be submitted 
+
+ *Dropping slider ends still count as a "full combo" score
   
  > The score would be submitted to the server while players are on the results screen
  
  - **Auto Blocking:** 
+ 
  > Automatically disconnect players from the server after uploading the recent score (API needed)
  
  > Auto blocking also avoid uploading other scores by the players
+
+ > Scores that are not submitted will keep trying to submit, it is recommended to restart osu! after submitting the score you want in order to cancel the unneeded scores**
  
- *Dropping slider ends still count as a "full combo" score
+ > osu! client with lots of score submission attempts would cause latency, it is recommended to restart osu! per hour of osu! session**
  
  - **Refresh rate slider:** 
  
  > This slider determines the frequency on updating osu! score's statistics
  
- > As for users who use automatic connection/ disconnection, it is recommended to set the refresh rate as 100 (50 is the fastest)
+ > As for users who use automatic connection/ disconnection, it is recommended to set the refresh rate to 100 or below
  
- > As for users who have issues on osu! latency, it is recommended to set the refresh rate to more than 250
+ > As for users who have issues on osu! latency, it is recommended to set the refresh rate to more than 250 or above
 
 ## API Usage
  
