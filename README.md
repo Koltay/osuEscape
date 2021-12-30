@@ -22,7 +22,7 @@
  - [1E308 (Nameless player)'s score submission video (Timestamp to score submission)](https://www.youtube.com/watch?v=D7x7OXpUmss&t=647s&ab_channel=RoriSanbyaku) 
  - [DigitalHypno's disable score submission video (host file edit method)](https://www.youtube.com/watch?v=lusAZ1fiph8&ab_channel=DigitalHypno)
  
-## The purpose of playing offline
+## The Purpose of "Offline Playing"
  
  - [Spazza17's Fix Negative Mindset in osu! — Start Doing THIS](https://www.youtube.com/watch?v=cEyVSiY9ohU&ab_channel=Spazza17)
  
@@ -38,7 +38,7 @@
  > Toggle the connection using the F6 Key (Changeable, supports multiple modifier keys)
  
  - **Score Details/ Map Details display** 
- > [ProcessMemoryDataFinder](https://github.com/Piotrekol/ProcessMemoryDataFinder) by Piotrekol
+ > Displays the current osu! score data in-game without toggling the scoreboard
  
  - **Auto Submission:** 
  > After players hit the last note of the beatmap, *"full combo"* score meeting the requirement would be submitted 
@@ -50,9 +50,9 @@
  
  > Auto blocking also avoid uploading other scores by the players
  
- *Dropping slider ends still count as a "full combo"
+ *Dropping slider ends still count as a "full combo" score
 
-## API Usage and users' common concern
+## API Usage
  
  This application uses [osu! API v1](https://github.com/ppy/osu-api/wiki) to get users' recent uploaded score and automatically disconnect after uploading.
  
@@ -62,13 +62,13 @@
 
 [![Watch the video showcase here!](http://i3.ytimg.com/vi/N0ui0FeIaPE/hqdefault.jpg)](https://www.youtube.com/watch?v=N0ui0FeIaPE&ab_channel=Koltay)
 
-## Ways to check if the firewall rule is working
+## Details on Advanced Firewall Rule
 
 Win + R and type "wf.msc" in "Run" box
 
 ![image](https://user-images.githubusercontent.com/73950784/145205485-2d47cb8d-14a2-44d9-b534-e79efaf6cc9b.png)
 
-There should be "osu block" rule enabled while blocking the connection
+There should be "osu block" rule enabled which blocks the connection to osu! unless it is disabled (while uploading scores)
 
 ![firewall rule](https://user-images.githubusercontent.com/73950784/145205745-baa4cc17-292f-4b01-a313-8fa8abc6add0.png)
 
