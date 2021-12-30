@@ -51,6 +51,14 @@
  > Auto blocking also avoid uploading other scores by the players
  
  *Dropping slider ends still count as a "full combo" score
+ 
+ - **Refresh rate slider:** 
+ 
+ > This slider determines the frequency on updating osu! score's statistics
+ 
+ > As for users who use automatic connection/ disconnection, it is recommended to set the refresh rate as 100 (50 is the fastest)
+ 
+ > As for users who have issues on osu! latency, it is recommended to set the refresh rate to more than 250
 
 ## API Usage
  
@@ -64,7 +72,7 @@
 
 ## Details on Advanced Firewall Rule
 
-Win + R and type "wf.msc" in "Run" box
+Win + R and type "wf.msc" in "Run" box to open Windows Defender Firewall with Advanced Security
 
 ![image](https://user-images.githubusercontent.com/73950784/145205485-2d47cb8d-14a2-44d9-b534-e79efaf6cc9b.png)
 
