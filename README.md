@@ -50,9 +50,9 @@
  
  As for the users who are concerned about the API usage, please feel free to not use it :D
 
-## Video Showcase
+## Video Showcase (Click here!)
 
-There will be a video showcase after the new UI is completed!
+[![Watch the video showcase here!](http://i3.ytimg.com/vi/tazI9qgI5NE/hqdefault.jpg)](https://www.youtube.com/watch?v=tazI9qgI5NE&ab_channel=Koltay)
 
 ## Ways to check if the firewall rule is working
 
