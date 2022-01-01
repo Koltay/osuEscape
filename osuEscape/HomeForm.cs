@@ -457,12 +457,12 @@ namespace osuEscape
                             }
                         }
 
-                        // 1.   Auto Connection has to be done on playing status for instant connection,
-                        //      connection checking on resultsscreen could be avoided, which takes ~30s
-                        // 2.   Using beatmap's last note offset to determine if the map ended
+                        // 1.   *** Auto Connection has to be done on playing status for instant connection,
+                        //      otherwise, connection checking on results screen would take about 30 seconds or more
+                        // 2.   Using beatmap's last HitObject's offset to determine if the map ended
                         // 3.   Determine if it is an "FC"
                         //      "FC": 0 misscount / dropped some sliderends / sliderbreak at start
-                        // 4.   Submit if it is above or equal to the required acc, not a replay
+                        // 4.   Submit if it is above or equal to the required accuracy, and it has to be not a replay
                         // 5.   If there is already blocked connection, disable the block rule
                         //      Verify Md5 to avoid false auto connection on same beatmap set
                         if (Properties.Settings.Default.isSubmitIfFC &&
@@ -472,8 +472,8 @@ namespace osuEscape
                             baseAddresses.Player.HitMiss == 0 &&
                             baseAddresses.Player.Accuracy >= Properties.Settings.Default.submitAcc &&
                             !Properties.Settings.Default.isAllowConnection &&
-                            !baseAddresses.Player.IsReplay &&
-                            previousSubmittedScoreMd5 != baseAddresses.Beatmap.Md5)
+                            previousSubmittedScoreMd5 != baseAddresses.Beatmap.Md5 &&
+                            isSubmittableBeatmapStatus())
                         {
                             ToggleFirewall();
                             isSetScore = true;
@@ -491,10 +491,8 @@ namespace osuEscape
                     if (isSetScore &&
                         Properties.Settings.Default.isAutoDisconnect &&
                         Properties.Settings.Default.isAllowConnection &&
-                        !baseAddresses.Player.IsReplay &&
-                        baseAddresses.Beatmap.Status != ((short)BeatmapStatus.Pending) &&
-                        baseAddresses.Beatmap.Status != ((short)BeatmapStatus.NotSubmitted) &&
-                        baseAddresses.GeneralData.OsuStatus != OsuMemoryStatus.Playing)
+                        baseAddresses.GeneralData.OsuStatus != OsuMemoryStatus.Playing &&
+                        isSubmittableBeatmapStatus())
                     {
                         previousSubmittedScoreMd5 = baseAddresses.Beatmap.Md5;
 
@@ -509,14 +507,15 @@ namespace osuEscape
                         // GET Method of user's recent score (osu! api v1)
                         // get the recent 3 scores, even though there is multiple submissions at one connection
                         // the recent score could still be recognized
-                        List<int> recentUploadScoreList = await GetUserRecentScoreAsync(baseAddresses.Player.Username, 3);
+                        Dictionary<int,int> recentUploadScoreDict = await GetUserRecentScoreAsync(baseAddresses.Player.Username, 3);
 
                         bool isRecentSetScoreUploaded = false;
 
-                        foreach (int responseScore in recentUploadScoreList)
+                        foreach (var responseScore in recentUploadScoreDict)
                         {
                             // the score player recently submitted
-                            if (responseScore == baseAddresses.Player.Score)
+                            if (responseScore.Key == baseAddresses.Beatmap.Id &&
+                                responseScore.Value == baseAddresses.Player.Score)
                             {
                                 isRecentSetScoreUploaded = true;
 
@@ -534,6 +533,13 @@ namespace osuEscape
                             string text = isRecentSetScoreUploaded ? "Uploaded recent score." : "";
                             materialLabel_SubmissionStatus_TextChanged(text);
                         });
+                    }
+
+                    bool isSubmittableBeatmapStatus()
+                    {
+                        return !baseAddresses.Player.IsReplay &&
+                                baseAddresses.Beatmap.Status != ((short)BeatmapStatus.Pending) &&
+                                baseAddresses.Beatmap.Status != ((short)BeatmapStatus.NotSubmitted);
                     }
 
 
@@ -893,7 +899,7 @@ namespace osuEscape
 
         #region GET Method from osu! api   
 
-        private static async Task<List<int>> GetUserRecentScoreAsync(string userName, int recentScoreLimits)
+        private static async Task<Dictionary<int,int>> GetUserRecentScoreAsync(string userName, int recentScoreLimits)
         {
             var url = $"https://osu.ppy.sh/api/get_user_recent?k={Properties.Settings.Default.userApiKey}&u={userName}&limit={recentScoreLimits}";
 
@@ -904,7 +910,8 @@ namespace osuEscape
             request.Headers.Authorization = new AuthenticationHeaderValue("Bearer");
             request.Content = new StringContent("{...}", Encoding.UTF8, "application/json");
 
-            List<int> result = new();
+            // beatmap_id, score
+            Dictionary<int,int> resultDict = new();
 
             var response = await client.SendAsync(request, CancellationToken.None);
 
@@ -914,13 +921,13 @@ namespace osuEscape
 
                 JArray arr = (JArray)JsonConvert.DeserializeObject(JsonString);
 
-                if (arr.Count == 0)
-                    result.Add(0);
-                else
+                if (arr.Count != 0)
                 {
                     for (int i = 0; i < System.Math.Min(arr.Count, recentScoreLimits); i++)
                     {
-                        result.Add((int)arr[i]["score"]);
+                        int beatmap_id = Convert.ToInt32(arr[i]["beatmap_id"]);
+                        int score = Convert.ToInt32(arr[i]["score"]);
+                        resultDict[beatmap_id] = score;
                     }
                 }
             }
@@ -929,7 +936,7 @@ namespace osuEscape
                 IncorrectAPITextOutput();
             }
 
-            return result;
+            return resultDict;
         }
 
         private async void VerifyAPIKeyAsync()
@@ -1153,6 +1160,5 @@ namespace osuEscape
 
         private void numericUpDown_submitAcc_ValueChanged(object sender, EventArgs e)
         => Properties.Settings.Default.submitAcc = Convert.ToInt32(numericUpDown_submitAcc.Value);
-              
     }
 }
