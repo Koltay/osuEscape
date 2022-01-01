@@ -8,6 +8,7 @@ using OsuMemoryDataProvider.OsuMemoryModels;
 using OsuMemoryDataProvider.OsuMemoryModels.Direct;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Drawing;
 using System.IO;
@@ -16,6 +17,7 @@ using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Reflection;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -377,10 +379,12 @@ namespace osuEscape
                                     // special case: slider (and reverse slider)
                                     // file format v14 test
                                     // Hit object syntax: x,y,time,type,hitSound,curveType|curvePoints,slides,length,edgeSounds,edgeSets,hitSample
-                                    // 2 and 6 mean slider in type
+                                    // old: 0,2 and 6 mean slider in type
+                                    // new: use | to determine if it is a hitobject with type "slider"
 
-                                    if (File.ReadLines(beatmapFile).Last().Split(",")[3] == "2" ||
-                                        File.ReadLines(beatmapFile).Last().Split(",")[3] == "6")
+                                    //if (File.ReadLines(beatmapFile).Last().Split(",")[3] == "2" || File.ReadLines(beatmapFile).Last().Split(",")[3] == "6")
+
+                                    if (File.ReadLines(beatmapFile).Last().Contains("|"))
                                     {
                                         // [7] is the slider pixel length of slider (syntax above)
                                         decimal sliderPixelLength = Convert.ToDecimal(File.ReadLines(beatmapFile).Last().Split(",")[7]);
@@ -1149,5 +1153,6 @@ namespace osuEscape
 
         private void numericUpDown_submitAcc_ValueChanged(object sender, EventArgs e)
         => Properties.Settings.Default.submitAcc = Convert.ToInt32(numericUpDown_submitAcc.Value);
+              
     }
 }
