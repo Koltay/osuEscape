@@ -3,7 +3,9 @@
  **osu! Escape is an application which mainly provides osu! score submission blocking via 
  applying a blocking rule in your PC's advanced firewall with automated options.**
  
-  **IMPORTANT: This application is only usable if your PC has the firewall enabled!**
+  **IMPORTANT: This application is only usable with firewall enabled!**
+  
+  **IMPORTANT: Please open this application with administrative privilege to avoid User Account Control issue!**
 
 ![image](https://user-images.githubusercontent.com/73950784/144431649-48b10f29-f2ee-4e28-a373-d7db5e070328.png)
 
@@ -33,7 +35,7 @@
  
  ## Features
  
- These features are currently only available on osu! standard but not osu! lazer 
+ Score uploading features are currently only available on osu! stable but not osu! lazer.
  
  - **Global Hotkey for Toggling osu! Connection:** 
  > Toggle the connection using the F6 Key (Default), it also supports multiple modifier keys, e.g. Ctrl, Shift, Alt)
