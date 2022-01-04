@@ -121,7 +121,9 @@ namespace osuEscape
         private bool isItemQuit = false;
 
         private bool isSetScore = false;
-        private string previousSubmittedScoreMd5 = string.Empty;
+        private string previousSubmittedBeatmapMd5 = string.Empty;
+
+        bool isOffsetFound = false;
         public HomeForm(string osuWindowTitleHint)
         {
             _osuWindowTitleHint = osuWindowTitleHint;
@@ -362,100 +364,105 @@ namespace osuEscape
                         }
 
                         // only read the audio offset if it is not the previous beatmap
-                        if (beatmapLastNoteOffset == -9999)
+                        if (!isOffsetFound)
                         {
                             try
                             {
-                                await Task.Run(() =>
+                                await Task.Run(async () =>
                                 {
                                     string beatmapFile = $"{Properties.Settings.Default.osuPath}\\Songs\\{baseAddresses.Beatmap.FolderName}\\{baseAddresses.Beatmap.OsuFileName}";
 
-                                    foreach (string str in File.ReadLines(beatmapFile).Last().Split(","))
+                                    await Task.Run(() =>
                                     {
-                                        if (Int32.TryParse(str, out var value))
-                                            beatmapLastNoteOffset = Math.Max(beatmapLastNoteOffset, value);
-                                    }
-
-                                    // special case: slider (and reverse slider)
-                                    // file format v14 test
-                                    // Hit object syntax: x,y,time,type,hitSound,curveType|curvePoints,slides,length,edgeSounds,edgeSets,hitSample
-                                    // old: 0,2 and 6 mean slider in type
-                                    // new: use | to determine if it is a hitobject with type "slider"
-
-                                    //if (File.ReadLines(beatmapFile).Last().Split(",")[3] == "2" || File.ReadLines(beatmapFile).Last().Split(",")[3] == "6")
-
-                                    if (File.ReadLines(beatmapFile).Last().Contains("|"))
-                                    {
-                                        // [7] is the slider pixel length of slider (syntax above)
-                                        decimal sliderPixelLength = Convert.ToDecimal(File.ReadLines(beatmapFile).Last().Split(",")[7]);
-
-                                        // reverse slider 
-                                        int sliderRepeatCount = Convert.ToInt32(File.ReadLines(beatmapFile).Last().Split(",")[6]);
-
-                                        decimal sliderMultiplier = 0;
-                                        decimal beatLength = 0;
-                                        decimal BPM = 0;
-                                        decimal sliderVelocity = 1;
-                                        int difficultySessionIndex = 0;
-                                        int timingPointSessionIndex = 0;
-                                        int sliderLengthOffset = 0;
-                                        string[] beatmapFileLines = File.ReadAllLines(beatmapFile);
-                                        bool uninherited = true;
-
-                                        // sessions
-                                        for (int i = 0; i < beatmapFileLines.Length; i++)
+                                        foreach (string str in File.ReadLines(beatmapFile).Last().Split(","))
                                         {
-                                            if (beatmapFileLines[i] == "[Difficulty]")
-                                            {
-                                                difficultySessionIndex = i;
-                                            }
-                                            else if (beatmapFileLines[i] == "[TimingPoints]")
-                                            {
-                                                timingPointSessionIndex = i;
-                                            }
+                                            if (Int32.TryParse(str, out var value))
+                                                beatmapLastNoteOffset = Math.Max(beatmapLastNoteOffset, value);
                                         }
+                                        // special case: slider (and reverse slider)
+                                        // file format v14 test
+                                        // Hit object syntax: x,y,time,type,hitSound,curveType|curvePoints,slides,length,edgeSounds,edgeSets,hitSample
+                                        // old: 0,2 and 6 mean slider in type
+                                        // new: use | to determine if it is a hitobject with type "slider"
 
-                                        for (int i = difficultySessionIndex + 1; i < beatmapFileLines.Length; i++)
+                                        //if (File.ReadLines(beatmapFile).Last().Split(",")[3] == "2" || File.ReadLines(beatmapFile).Last().Split(",")[3] == "6")
+
+                                        if (File.ReadLines(beatmapFile).Last().Contains("|"))
                                         {
-                                            if (!beatmapFileLines[i].Contains(":"))
-                                                break;
+                                            // [7] is the slider pixel length of slider (syntax above)
+                                            decimal sliderPixelLength = Convert.ToDecimal(File.ReadLines(beatmapFile).Last().Split(",")[7]);
 
-                                            if (File.ReadAllLines(beatmapFile)[i].Contains("SliderMultiplier:"))
-                                                sliderMultiplier = Convert.ToDecimal(File.ReadAllLines(beatmapFile)[i][17..]);
-                                        }
+                                            // reverse slider 
+                                            int sliderRepeatCount = Convert.ToInt32(File.ReadLines(beatmapFile).Last().Split(",")[6]);
 
-                                        // timing point syntax: time,beatLength,meter,sampleSet,sampleIndex,volume,uninherited,effects
-                                        for (int i = timingPointSessionIndex + 1; i < beatmapFileLines.Length; i++)
-                                        {
-                                            // check the corresponding timing point
-                                            if (!beatmapFileLines[i].Contains(","))
-                                                break;
+                                            decimal sliderMultiplier = 0;
+                                            decimal beatLength = 0;
+                                            decimal BPM = 0;
+                                            decimal sliderVelocity = 1;
+                                            int difficultySessionIndex = 0;
+                                            int timingPointSessionIndex = 0;
+                                            int sliderLengthOffset = 0;
+                                            string[] beatmapFileLines = File.ReadAllLines(beatmapFile);
+                                            bool uninherited = true;
 
-                                            beatLength = Convert.ToDecimal(File.ReadAllLines(beatmapFile)[i].Split(",")[1]);
-
-                                            // uninherited == 1, red line
-                                            if (Convert.ToInt32(File.ReadAllLines(beatmapFile)[i].Split(",")[6]) == 1)
+                                            // sessions
+                                            for (int i = 0; i < beatmapFileLines.Length; i++)
                                             {
-                                                BPM = 60000 / Convert.ToDecimal(File.ReadAllLines(beatmapFile)[i].Split(",")[1]);
-                                                uninherited = true;
+                                                if (beatmapFileLines[i] == "[Difficulty]")
+                                                {
+                                                    difficultySessionIndex = i;
+                                                }
+                                                else if (beatmapFileLines[i] == "[TimingPoints]")
+                                                {
+                                                    timingPointSessionIndex = i;
+                                                }
                                             }
-                                            else
-                                                uninherited = false;
+
+                                            for (int i = difficultySessionIndex + 1; i < beatmapFileLines.Length; i++)
+                                            {
+                                                if (!beatmapFileLines[i].Contains(":"))
+                                                    break;
+
+                                                if (File.ReadAllLines(beatmapFile)[i].Contains("SliderMultiplier:"))
+                                                    sliderMultiplier = Convert.ToDecimal(File.ReadAllLines(beatmapFile)[i][17..]);
+                                            }
+
+                                            // timing point syntax: time,beatLength,meter,sampleSet,sampleIndex,volume,uninherited,effects
+                                            for (int i = timingPointSessionIndex + 1; i < beatmapFileLines.Length; i++)
+                                            {
+                                                // check the corresponding timing point
+                                                if (!beatmapFileLines[i].Contains(","))
+                                                    break;
+
+                                                beatLength = Convert.ToDecimal(File.ReadAllLines(beatmapFile)[i].Split(",")[1]);
+
+                                                // uninherited == 1, red line
+                                                if (Convert.ToInt32(File.ReadAllLines(beatmapFile)[i].Split(",")[6]) == 1)
+                                                {
+                                                    BPM = 60000 / Convert.ToDecimal(File.ReadAllLines(beatmapFile)[i].Split(",")[1]);
+                                                    uninherited = true;
+                                                }
+                                                else
+                                                    uninherited = false;
+                                            }
+                                            if (!uninherited)
+                                                sliderVelocity = -100 / beatLength;
+
+                                            sliderLengthOffset = (int)Math.Abs(Math.Round(600 * sliderPixelLength / (BPM * sliderMultiplier * sliderVelocity)));
+
+                                            beatmapLastNoteOffset += (sliderLengthOffset * sliderRepeatCount);
                                         }
-                                        if (!uninherited)
-                                            sliderVelocity = -100 / beatLength;
-
-                                        sliderLengthOffset = (int)Math.Abs(Math.Round(600 * sliderPixelLength / (BPM * sliderMultiplier * sliderVelocity)));
-
-                                        beatmapLastNoteOffset += (sliderLengthOffset * sliderRepeatCount);
-                                    }
+                                    });                                 
                                 });
+
+                                isOffsetFound = true;
                             }
                             catch (Exception ex)
                             {
                                 Debug.WriteLine(ex);
                             }
                         }
+                       
 
                         // 1.   *** Auto Connection has to be done on playing status for instant connection,
                         //      otherwise, connection checking on results screen would take about 30 seconds or more
@@ -467,12 +474,12 @@ namespace osuEscape
                         //      Verify Md5 to avoid false auto connection on same beatmap set
                         if (Properties.Settings.Default.isSubmitIfFC &&
                             baseAddresses.GeneralData.AudioTime >= beatmapLastNoteOffset &&
-                            beatmapLastNoteOffset >= 0 &&
+                            isOffsetFound &&
                             baseAddresses.Player.Combo == baseAddresses.Player.MaxCombo &&
                             baseAddresses.Player.HitMiss == 0 &&
                             baseAddresses.Player.Accuracy >= Properties.Settings.Default.submitAcc &&
                             !Properties.Settings.Default.isAllowConnection &&
-                            previousSubmittedScoreMd5 != baseAddresses.Beatmap.Md5 &&
+                            previousSubmittedBeatmapMd5 != baseAddresses.Beatmap.Md5 &&
                             isSubmittableBeatmapStatus())
                         {
                             ToggleFirewall();
@@ -482,7 +489,11 @@ namespace osuEscape
                     else
                     {
                         baseAddresses.LeaderBoard.Players.Clear();
+                        isOffsetFound = false;
                     }
+
+                    // for random connection fix
+                    Debug.WriteLine(beatmapLastNoteOffset);
 
                     // score submission
                     // upload if only it is not a replay
@@ -494,7 +505,7 @@ namespace osuEscape
                         baseAddresses.GeneralData.OsuStatus != OsuMemoryStatus.Playing &&
                         isSubmittableBeatmapStatus())
                     {
-                        previousSubmittedScoreMd5 = baseAddresses.Beatmap.Md5;
+                        previousSubmittedBeatmapMd5 = baseAddresses.Beatmap.Md5;
 
                         materialLabel_submissionStatus.BeginInvoke((MethodInvoker)delegate
                         {
