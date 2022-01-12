@@ -18,6 +18,7 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Reflection;
 using System.Runtime.InteropServices;
+using System.Security.Principal;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -142,16 +143,11 @@ namespace osuEscape
             this.Size = new Size(this.Size.Width, this.Size.Height - 50);
             FormSize_init = this.Size;
             labelSubmissionStatus_Location_init = materialLabel_submissionStatus.Location;
-            button_Toggle_Size_init = materialButton_firewallToggleConnection.Size;
+            //button_Toggle_Size_init = materialButton_firewallToggleConnection.Size;
 
             // ui 
             HideData();
             SettingFormInit();
-
-            // hotkey
-            keyboardHook.KeyPressed += new EventHandler<KeyPressedEventArgs>(Hook_KeyPressed);
-            keyboardHook.RegisterHotKey((ModifierKeys)Properties.Settings.Default.ModifierKeys,
-                                        KeysToStringDictionary.FirstOrDefault(x => x.Value == Properties.Settings.Default.GlobalHotKey).Key);
 
             // avoid opening osu!Escape twice
             if (Process.GetProcessesByName("osuEscape").Length > 1)
@@ -222,6 +218,19 @@ namespace osuEscape
             // check if osu!Escape is already opened 
             if (Process.GetProcessesByName(this.Name).Length > 1)
                 this.Close();
+
+            // check administrator privileges
+            if (!IsAdministrator())
+            {
+                MessageBox.Show("Please open osu!Escape with administrator privileges for toggling firewall permission.");
+                this.Close();
+            }
+
+            // startup issue check
+            // hotkey
+            keyboardHook.KeyPressed += new EventHandler<KeyPressedEventArgs>(Hook_KeyPressed);
+            keyboardHook.RegisterHotKey((ModifierKeys)Properties.Settings.Default.ModifierKeys,
+                                        KeysToStringDictionary.FirstOrDefault(x => x.Value == Properties.Settings.Default.GlobalHotKey).Key);
 
             osuDataReaderAsync();
 
@@ -569,6 +578,7 @@ namespace osuEscape
                     {
                         _ = Invoke((MethodInvoker)(() =>
                         {
+                            /*
                             materialMultiLineTextBox_mapData.Text =
                                   $"Map: {baseAddresses.Beatmap.MapString}{Environment.NewLine}" +
                                   $"AR: {baseAddresses.Beatmap.Ar} CS: {baseAddresses.Beatmap.Cs} HP: {baseAddresses.Beatmap.Hp} OD: {baseAddresses.Beatmap.Od}{Environment.NewLine}" +
@@ -585,6 +595,7 @@ namespace osuEscape
                                 $"Accuracy: {baseAddresses.Player.Accuracy:0.00}{Environment.NewLine}" +
                                 $"300: {baseAddresses.Player.Hit300} 100: {baseAddresses.Player.Hit100} 50: {baseAddresses.Player.Hit50} Miss: {baseAddresses.Player.HitMiss}{Environment.NewLine}"
                                 ;
+                            */
                         }));
                     }
                     catch (ObjectDisposedException)
@@ -640,6 +651,7 @@ namespace osuEscape
 
         private void ToggleButtonUpdate(bool isAllow)
         {
+            /*
             _ = materialButton_firewallToggleConnection.Invoke(new MethodInvoker(delegate
             {
                 materialButton_firewallToggleConnection.Text = isAllow ? "Connecting" : "Blocked";
@@ -659,6 +671,7 @@ namespace osuEscape
                         Accent.Red400,
                         TextShade.WHITE);
             }));
+            */
         }
 
         private async void FirewallRuleSetUp(string filename)
@@ -778,12 +791,12 @@ namespace osuEscape
             notifyIcon_osuEscape.ContextMenuStrip = contextMenuStrip_osu;
 
             // status Update
-            contextMenuStrip_osu.Items[0].Text = "Status: " + materialButton_firewallToggleConnection.Text;
+            contextMenuStrip_osu.Items[0].Text = "Status: " + (Properties.Settings.Default.isAllowConnection ? "Connecting" : "Blocked");
 
             contextMenuStrip_osu.Items[1].Click += new EventHandler(Item_quit_Click);
 
             notifyIcon_osuEscape.Icon =
-                (materialButton_firewallToggleConnection.Text == "Connecting" ?
+                (Properties.Settings.Default.isAllowConnection ?
                 Properties.Resources.osuEscapeConnecting :
                 Properties.Resources.osuEscapeBlocking);
         }
@@ -1045,14 +1058,16 @@ namespace osuEscape
                 this.MinimumSize = FormSize_init;
 
                 materialLabel_submissionStatus.Location = labelSubmissionStatus_Location_init;
+                /*
                 materialButton_firewallToggleConnection.Size = button_Toggle_Size_init;
                 materialLabel_MapData.Visible = true;
                 materialMultiLineTextBox_mapData.Visible = true;
+                */
 
                 APIRequiredCheckBoxesEnabled();
             }
             // label avoid button focus
-            materialLabel_avoidButtonFocus.Focus();
+            // materialLabel_avoidButtonFocus.Focus();
         }
 
         private void HideData()
@@ -1065,9 +1080,11 @@ namespace osuEscape
                 this.MaximumSize = this.Size;
 
                 materialLabel_submissionStatus.Location = new Point(14, 140);
+                /*
                 materialButton_firewallToggleConnection.Size = new Size(300, 120);
                 materialLabel_MapData.Visible = false;
                 materialMultiLineTextBox_mapData.Visible = false;
+                */
             }
             else
             {
@@ -1151,6 +1168,15 @@ namespace osuEscape
             Properties.Settings.Default.Save();
         }
 
+        public static bool IsAdministrator()
+        {
+            using (WindowsIdentity identity = WindowsIdentity.GetCurrent())
+            {
+                WindowsPrincipal principal = new WindowsPrincipal(identity);
+                return principal.IsInRole(WindowsBuiltInRole.Administrator);
+            }
+        }
+
         protected override void Dispose(bool disposing)
         {
             if (disposing)
@@ -1171,5 +1197,10 @@ namespace osuEscape
 
         private void numericUpDown_submitAcc_ValueChanged(object sender, EventArgs e)
         => Properties.Settings.Default.submitAcc = Convert.ToInt32(numericUpDown_submitAcc.Value);
+
+        private void materialSwitch_osuConnection_CheckedChanged(object sender, EventArgs e)
+        {
+            ToggleFirewall();
+        }
     }
 }
