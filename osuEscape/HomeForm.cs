@@ -144,16 +144,15 @@ namespace osuEscape
             FormSize_init = this.Size;
             labelSubmissionStatus_Location_init = materialLabel_submissionStatus.Location;
 
-            // ui 
-            MainTabResize();
-            SettingFormInit();
-
             // avoid opening osu!Escape twice
             if (Process.GetProcessesByName("osuEscape").Length > 1)
             {
                 notifyIcon_osuEscape.Visible = false;
                 this.Close();
             }
+
+            // ui 
+            MainTabResize();            
         }
 
         #region Initialize and OnLoad
@@ -206,8 +205,9 @@ namespace osuEscape
             materialTextBox_apiInput.Text = Properties.Settings.Default.userApiKey;
             numericUpDown_submitAcc.Value = Properties.Settings.Default.submitAcc;
             materialSkinManager.Theme = (MaterialSkinManager.Themes)Properties.Settings.Default.Theme;
-            materialButton_Theme.Text = (Properties.Settings.Default.Theme == 0 ? "Dark Theme" : "Light Theme");
-            materialSwitch_theme.Checked = Properties.Settings.Default.Theme == 0; // 0: Dark Theme
+
+            materialSwitch_theme.Checked = Properties.Settings.Default.Theme == 1; // 1: enum value for Dark Theme
+            materialSwitch_osuConnection.Checked = !Properties.Settings.Default.isAllowConnection;
 
             GlobalHotkeyTextBoxUpdate();
         }
@@ -276,6 +276,9 @@ namespace osuEscape
                 }
             }
             #endregion
+
+            // setting form
+            SettingFormInit();
         }
 
         #endregion
@@ -590,9 +593,6 @@ namespace osuEscape
             }
             else
             {
-                // toggle the connection status
-                Properties.Settings.Default.isAllowConnection = !Properties.Settings.Default.isAllowConnection;
-
                 AllowConnection(Properties.Settings.Default.isAllowConnection);
 
                 ToggleSound(Properties.Settings.Default.isToggleSound);
@@ -613,14 +613,15 @@ namespace osuEscape
             cmd.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
             cmd.Start();
 
-            ColorSchemeToggleOnConnection(isAllow);
+            ColorSchemeUpdate(isAllow);
 
             ContextMenuStripUpdate();
         }
 
-        private void ColorSchemeToggleOnConnection(bool isAllow)
+        private void ColorSchemeUpdate(bool isAllow)
         {
-            materialSkinManager.ColorScheme = !Properties.Settings.Default.isAllowConnection ?
+            // Allow: Green; Blocked: Red
+            materialSkinManager.ColorScheme = Properties.Settings.Default.isAllowConnection ?
             new ColorScheme(
                     Primary.Grey800,
                     Primary.Grey900,
@@ -677,9 +678,6 @@ namespace osuEscape
                     cmd.Start();
 
                     await Task.Delay(10);
-
-                    // block rule depends on previous user's connection (default: allow)
-                    Properties.Settings.Default.isAllowConnection = !Properties.Settings.Default.isAllowConnection;
 
                     ToggleFirewall();
                 }
@@ -818,8 +816,8 @@ namespace osuEscape
             // user setting
             Properties.Settings.Default.Theme = materialSkinManager.Theme == MaterialSkinManager.Themes.DARK ? 1 : 0;
 
-            // ui button text
-            materialButton_Theme.Text = materialSkinManager.Theme == MaterialSkinManager.Themes.DARK ? "Light Theme" : "Dark Theme";
+            // ui switch update
+            materialSwitch_theme.Checked = materialSkinManager.Theme == MaterialSkinManager.Themes.DARK;
         }
         private void materialButton_toggle_Click(object sender, EventArgs e)
         {
@@ -957,12 +955,12 @@ namespace osuEscape
 
         private void FormRefreshInvoke()
         {
-            Invoke((MethodInvoker)delegate
+            this.Invoke(new MethodInvoker(delegate ()
             {
-                // Refresh all buttons, slider, tabPages
+                //Access your controls
 
                 this.Refresh();
-            });
+            }));
         }
         #endregion
 
@@ -1007,7 +1005,7 @@ namespace osuEscape
         {
             if (materialTabControl_menu.SelectedTab == tabPage_main)
             {
-                //HideData();
+                MainTabResize();
             }
             else
             {
@@ -1126,7 +1124,17 @@ namespace osuEscape
 
         private void materialSwitch_osuConnection_CheckedChanged(object sender, EventArgs e)
         {
-            ToggleFirewall();
+            // Checked: Blocked
+            Properties.Settings.Default.isAllowConnection = !materialSwitch_osuConnection.Checked;
+
+            if (Properties.Settings.Default.osuLocation == "")
+            {
+                ShowMessageBox("ERROR: Invalid osu! location.");
+            }
+            else
+            {
+                ToggleFirewall();
+            }
         }
 
         private void MainTabResize()
@@ -1136,7 +1144,8 @@ namespace osuEscape
 
         private void materialSwitch_theme_CheckedChanged(object sender, EventArgs e)
         {
-            Properties.Settings.Default.Theme = materialSwitch_theme.Checked ? 0 : 1;
+            Properties.Settings.Default.Theme = materialSwitch_theme.Checked ? 1 : 0;
+            materialSkinManager.Theme = (MaterialSkinManager.Themes)Properties.Settings.Default.Theme;
         }
     }
 }
