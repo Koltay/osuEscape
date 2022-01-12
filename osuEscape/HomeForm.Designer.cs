@@ -40,7 +40,6 @@
             this.materialLabel_apiNeeded = new MaterialSkin.Controls.MaterialLabel();
             this.materialSwitch_autoDisconnect = new MaterialSkin.Controls.MaterialSwitch();
             this.materialSwitch_submitIfFC = new MaterialSkin.Controls.MaterialSwitch();
-            this.materialSwitch_hideData = new MaterialSkin.Controls.MaterialSwitch();
             this.materialSwitch_topMost = new MaterialSkin.Controls.MaterialSwitch();
             this.materialSwitch_toggleWithSound = new MaterialSkin.Controls.MaterialSwitch();
             this.materialSwitch_minimizeToSystemTray = new MaterialSkin.Controls.MaterialSwitch();
@@ -53,6 +52,9 @@
             this.notifyIcon_osuEscape = new System.Windows.Forms.NotifyIcon(this.components);
             this.materialTabSelector = new MaterialSkin.Controls.MaterialTabSelector();
             this.toolTips = new System.Windows.Forms.ToolTip(this.components);
+            this.materialLabel2 = new MaterialSkin.Controls.MaterialLabel();
+            this.materialLabel3 = new MaterialSkin.Controls.MaterialLabel();
+            this.materialSwitch_theme = new MaterialSkin.Controls.MaterialSwitch();
             this.materialTabControl_menu.SuspendLayout();
             this.tabPage_main.SuspendLayout();
             this.tabPage_settings.SuspendLayout();
@@ -79,6 +81,8 @@
             // tabPage_main
             // 
             this.tabPage_main.BackColor = System.Drawing.Color.White;
+            this.tabPage_main.Controls.Add(this.materialLabel2);
+            this.tabPage_main.Controls.Add(this.materialLabel3);
             this.tabPage_main.Controls.Add(this.materialSwitch_osuConnection);
             this.tabPage_main.Controls.Add(this.materialLabel_submissionStatus);
             this.tabPage_main.ImageKey = "Home_32.png";
@@ -104,13 +108,14 @@
             this.materialSwitch_osuConnection.Text = "osu! Connection";
             this.materialSwitch_osuConnection.UseVisualStyleBackColor = true;
             this.materialSwitch_osuConnection.CheckedChanged += new System.EventHandler(this.materialSwitch_osuConnection_CheckedChanged);
+            this.materialButton_Theme.Click += new System.EventHandler(this.materialSwitch_osuConnection_Click);
             // 
             // materialLabel_submissionStatus
             // 
             this.materialLabel_submissionStatus.AutoSize = true;
             this.materialLabel_submissionStatus.Depth = 0;
             this.materialLabel_submissionStatus.Font = new System.Drawing.Font("Roboto", 14F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
-            this.materialLabel_submissionStatus.Location = new System.Drawing.Point(20, 72);
+            this.materialLabel_submissionStatus.Location = new System.Drawing.Point(20, 139);
             this.materialLabel_submissionStatus.MouseState = MaterialSkin.MouseState.HOVER;
             this.materialLabel_submissionStatus.Name = "materialLabel_submissionStatus";
             this.materialLabel_submissionStatus.Size = new System.Drawing.Size(143, 19);
@@ -120,6 +125,7 @@
             // tabPage_settings
             // 
             this.tabPage_settings.BackColor = System.Drawing.Color.White;
+            this.tabPage_settings.Controls.Add(this.materialSwitch_theme);
             this.tabPage_settings.Controls.Add(this.numericUpDown_submitAcc);
             this.tabPage_settings.Controls.Add(this.materialSlider_refreshRate);
             this.tabPage_settings.Controls.Add(this.materialLabel1);
@@ -133,7 +139,6 @@
             this.tabPage_settings.Controls.Add(this.materialLabel_apiNeeded);
             this.tabPage_settings.Controls.Add(this.materialSwitch_autoDisconnect);
             this.tabPage_settings.Controls.Add(this.materialSwitch_submitIfFC);
-            this.tabPage_settings.Controls.Add(this.materialSwitch_hideData);
             this.tabPage_settings.Controls.Add(this.materialSwitch_topMost);
             this.tabPage_settings.Controls.Add(this.materialSwitch_toggleWithSound);
             this.tabPage_settings.Controls.Add(this.materialSwitch_minimizeToSystemTray);
@@ -150,7 +155,7 @@
             // numericUpDown_submitAcc
             // 
             this.numericUpDown_submitAcc.AutoSize = true;
-            this.numericUpDown_submitAcc.Location = new System.Drawing.Point(201, 195);
+            this.numericUpDown_submitAcc.Location = new System.Drawing.Point(201, 154);
             this.numericUpDown_submitAcc.Name = "numericUpDown_submitAcc";
             this.numericUpDown_submitAcc.Size = new System.Drawing.Size(50, 23);
             this.numericUpDown_submitAcc.TabIndex = 29;
@@ -231,7 +236,6 @@
             this.materialButton_Theme.Type = MaterialSkin.Controls.MaterialButton.MaterialButtonType.Contained;
             this.materialButton_Theme.UseAccentColor = true;
             this.materialButton_Theme.UseVisualStyleBackColor = true;
-            this.materialButton_Theme.Click += new System.EventHandler(this.MaterialButton_changeTheme_Click);
             // 
             // materialTextBox_apiInput
             // 
@@ -242,7 +246,7 @@
             this.materialTextBox_apiInput.Font = new System.Drawing.Font("Microsoft Sans Serif", 16F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
             this.materialTextBox_apiInput.HideSelection = true;
             this.materialTextBox_apiInput.LeadingIcon = null;
-            this.materialTextBox_apiInput.Location = new System.Drawing.Point(13, 256);
+            this.materialTextBox_apiInput.Location = new System.Drawing.Point(13, 217);
             this.materialTextBox_apiInput.MaxLength = 255;
             this.materialTextBox_apiInput.MouseState = MaterialSkin.MouseState.OUT;
             this.materialTextBox_apiInput.Name = "materialTextBox_apiInput";
@@ -316,7 +320,7 @@
             this.materialButton_checkApi.Depth = 0;
             this.materialButton_checkApi.HighEmphasis = true;
             this.materialButton_checkApi.Icon = null;
-            this.materialButton_checkApi.Location = new System.Drawing.Point(428, 257);
+            this.materialButton_checkApi.Location = new System.Drawing.Point(428, 218);
             this.materialButton_checkApi.Margin = new System.Windows.Forms.Padding(4, 6, 4, 6);
             this.materialButton_checkApi.MouseState = MaterialSkin.MouseState.HOVER;
             this.materialButton_checkApi.Name = "materialButton_checkApi";
@@ -335,7 +339,7 @@
             this.materialLabel_apiNeeded.AutoSize = true;
             this.materialLabel_apiNeeded.Depth = 0;
             this.materialLabel_apiNeeded.Font = new System.Drawing.Font("Roboto", 14F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
-            this.materialLabel_apiNeeded.Location = new System.Drawing.Point(13, 233);
+            this.materialLabel_apiNeeded.Location = new System.Drawing.Point(13, 194);
             this.materialLabel_apiNeeded.MouseState = MaterialSkin.MouseState.HOVER;
             this.materialLabel_apiNeeded.Name = "materialLabel_apiNeeded";
             this.materialLabel_apiNeeded.Size = new System.Drawing.Size(143, 19);
@@ -347,7 +351,7 @@
             this.materialSwitch_autoDisconnect.AutoSize = true;
             this.materialSwitch_autoDisconnect.Depth = 0;
             this.materialSwitch_autoDisconnect.Enabled = false;
-            this.materialSwitch_autoDisconnect.Location = new System.Drawing.Point(3, 301);
+            this.materialSwitch_autoDisconnect.Location = new System.Drawing.Point(3, 262);
             this.materialSwitch_autoDisconnect.Margin = new System.Windows.Forms.Padding(0);
             this.materialSwitch_autoDisconnect.MouseLocation = new System.Drawing.Point(-1, -1);
             this.materialSwitch_autoDisconnect.MouseState = MaterialSkin.MouseState.HOVER;
@@ -364,7 +368,7 @@
             // 
             this.materialSwitch_submitIfFC.AutoSize = true;
             this.materialSwitch_submitIfFC.Depth = 0;
-            this.materialSwitch_submitIfFC.Location = new System.Drawing.Point(3, 187);
+            this.materialSwitch_submitIfFC.Location = new System.Drawing.Point(3, 148);
             this.materialSwitch_submitIfFC.Margin = new System.Windows.Forms.Padding(0);
             this.materialSwitch_submitIfFC.MouseLocation = new System.Drawing.Point(-1, -1);
             this.materialSwitch_submitIfFC.MouseState = MaterialSkin.MouseState.HOVER;
@@ -376,23 +380,6 @@
             this.materialSwitch_submitIfFC.Text = "Submit if FC with ≥               Accuracy";
             this.materialSwitch_submitIfFC.UseVisualStyleBackColor = true;
             this.materialSwitch_submitIfFC.CheckedChanged += new System.EventHandler(this.materialCheckbox_submitIfFC_CheckedChanged);
-            // 
-            // materialSwitch_hideData
-            // 
-            this.materialSwitch_hideData.AutoSize = true;
-            this.materialSwitch_hideData.Depth = 0;
-            this.materialSwitch_hideData.Location = new System.Drawing.Point(3, 150);
-            this.materialSwitch_hideData.Margin = new System.Windows.Forms.Padding(0);
-            this.materialSwitch_hideData.MouseLocation = new System.Drawing.Point(-1, -1);
-            this.materialSwitch_hideData.MouseState = MaterialSkin.MouseState.HOVER;
-            this.materialSwitch_hideData.Name = "materialSwitch_hideData";
-            this.materialSwitch_hideData.Ripple = true;
-            this.materialSwitch_hideData.Size = new System.Drawing.Size(128, 37);
-            this.materialSwitch_hideData.TabIndex = 14;
-            this.materialSwitch_hideData.TabStop = false;
-            this.materialSwitch_hideData.Text = "Hide Data";
-            this.materialSwitch_hideData.UseVisualStyleBackColor = true;
-            this.materialSwitch_hideData.CheckedChanged += new System.EventHandler(this.materialCheckbox_hideData_CheckedChanged);
             // 
             // materialSwitch_topMost
             // 
@@ -525,6 +512,47 @@
             this.materialTabSelector.TabIndex = 1;
             this.materialTabSelector.TabStop = false;
             // 
+            // materialLabel2
+            // 
+            this.materialLabel2.AutoSize = true;
+            this.materialLabel2.Depth = 0;
+            this.materialLabel2.Font = new System.Drawing.Font("Roboto", 14F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
+            this.materialLabel2.Location = new System.Drawing.Point(20, 74);
+            this.materialLabel2.MouseState = MaterialSkin.MouseState.HOVER;
+            this.materialLabel2.Name = "materialLabel2";
+            this.materialLabel2.Size = new System.Drawing.Size(161, 19);
+            this.materialLabel2.TabIndex = 23;
+            this.materialLabel2.Text = "Global Toggle Hotkey: ";
+            // 
+            // materialLabel3
+            // 
+            this.materialLabel3.AutoSize = true;
+            this.materialLabel3.Depth = 0;
+            this.materialLabel3.Font = new System.Drawing.Font("Roboto", 14F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
+            this.materialLabel3.Location = new System.Drawing.Point(20, 110);
+            this.materialLabel3.MouseState = MaterialSkin.MouseState.HOVER;
+            this.materialLabel3.Name = "materialLabel3";
+            this.materialLabel3.Size = new System.Drawing.Size(72, 19);
+            this.materialLabel3.TabIndex = 22;
+            this.materialLabel3.Text = "osu! Path:";
+            // 
+            // materialSwitch_theme
+            // 
+            this.materialSwitch_theme.AutoSize = true;
+            this.materialSwitch_theme.Depth = 0;
+            this.materialSwitch_theme.Location = new System.Drawing.Point(3, 300);
+            this.materialSwitch_theme.Margin = new System.Windows.Forms.Padding(0);
+            this.materialSwitch_theme.MouseLocation = new System.Drawing.Point(-1, -1);
+            this.materialSwitch_theme.MouseState = MaterialSkin.MouseState.HOVER;
+            this.materialSwitch_theme.Name = "materialSwitch_theme";
+            this.materialSwitch_theme.Ripple = true;
+            this.materialSwitch_theme.Size = new System.Drawing.Size(144, 37);
+            this.materialSwitch_theme.TabIndex = 30;
+            this.materialSwitch_theme.TabStop = false;
+            this.materialSwitch_theme.Text = "Dark Theme";
+            this.materialSwitch_theme.UseVisualStyleBackColor = true;
+            this.materialSwitch_theme.CheckedChanged += new System.EventHandler(this.materialSwitch_theme_CheckedChanged);
+            // 
             // HomeForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
@@ -562,7 +590,6 @@
         private MaterialSkin.Controls.MaterialSwitch materialSwitch_minimizeToSystemTray;
         private MaterialSkin.Controls.MaterialSwitch materialSwitch_toggleWithSound;
         private MaterialSkin.Controls.MaterialSwitch materialSwitch_topMost;
-        private MaterialSkin.Controls.MaterialSwitch materialSwitch_hideData;
         private MaterialSkin.Controls.MaterialSwitch materialSwitch_submitIfFC;
         private MaterialSkin.Controls.MaterialSwitch materialSwitch_autoDisconnect;
         private MaterialSkin.Controls.MaterialLabel materialLabel_apiNeeded;
@@ -586,5 +613,8 @@
         private System.Windows.Forms.NumericUpDown numericUpDown_submitAcc;
         private System.Windows.Forms.TabPage tabPage_uploadedScores;
         private MaterialSkin.Controls.MaterialSwitch materialSwitch_osuConnection;
+        private MaterialSkin.Controls.MaterialLabel materialLabel2;
+        private MaterialSkin.Controls.MaterialLabel materialLabel3;
+        private MaterialSkin.Controls.MaterialSwitch materialSwitch_theme;
     }
 }

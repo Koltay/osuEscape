@@ -143,10 +143,9 @@ namespace osuEscape
             this.Size = new Size(this.Size.Width, this.Size.Height - 50);
             FormSize_init = this.Size;
             labelSubmissionStatus_Location_init = materialLabel_submissionStatus.Location;
-            //button_Toggle_Size_init = materialButton_firewallToggleConnection.Size;
 
             // ui 
-            HideData();
+            MainTabResize();
             SettingFormInit();
 
             // avoid opening osu!Escape twice
@@ -202,13 +201,13 @@ namespace osuEscape
             materialSwitch_minimizeToSystemTray.Checked = Properties.Settings.Default.isSystemTray;
             materialSwitch_topMost.Checked = Properties.Settings.Default.isTopMost;
             materialSwitch_submitIfFC.Checked = Properties.Settings.Default.isSubmitIfFC;
-            materialSwitch_hideData.Checked = Properties.Settings.Default.isHideData;
             materialSwitch_autoDisconnect.Checked = Properties.Settings.Default.isAutoDisconnect;
             materialSwitch_autoDisconnect.Enabled = Properties.Settings.Default.isAPIKeyVerified;
             materialTextBox_apiInput.Text = Properties.Settings.Default.userApiKey;
             numericUpDown_submitAcc.Value = Properties.Settings.Default.submitAcc;
             materialSkinManager.Theme = (MaterialSkinManager.Themes)Properties.Settings.Default.Theme;
             materialButton_Theme.Text = (Properties.Settings.Default.Theme == 0 ? "Dark Theme" : "Light Theme");
+            materialSwitch_theme.Checked = Properties.Settings.Default.Theme == 0; // 0: Dark Theme
 
             GlobalHotkeyTextBoxUpdate();
         }
@@ -256,7 +255,6 @@ namespace osuEscape
             #region Tooltip setup
 
             toolTips.SetToolTip(materialSwitch_autoDisconnect, "Enabling this option will automatically disconnect after the recent score is submitted.");
-            toolTips.SetToolTip(materialSwitch_hideData, "Enabling this option will hide osu! data from Main. It is recommended to enable this option");
             toolTips.SetToolTip(materialSwitch_toggleWithSound, "Enabling this option will toggle firewall with system notification sound.");
             toolTips.SetToolTip(materialSwitch_topMost, "Enabling this option will overlap all the other application even if it is not focused.");
             toolTips.SetToolTip(materialSwitch_runAtStartup, "Enabling this option will allow osu!Escape to run automatically when the system is booted.");
@@ -574,35 +572,6 @@ namespace osuEscape
                     stopwatch.Stop();
                     readTimeMs = stopwatch.ElapsedTicks / (double)TimeSpan.TicksPerMillisecond;
 
-                    try
-                    {
-                        _ = Invoke((MethodInvoker)(() =>
-                        {
-                            /*
-                            materialMultiLineTextBox_mapData.Text =
-                                  $"Map: {baseAddresses.Beatmap.MapString}{Environment.NewLine}" +
-                                  $"AR: {baseAddresses.Beatmap.Ar} CS: {baseAddresses.Beatmap.Cs} HP: {baseAddresses.Beatmap.Hp} OD: {baseAddresses.Beatmap.Od}{Environment.NewLine}" +
-                                  $"Gamemode: {(Gamemode)baseAddresses.GeneralData.GameMode}{Environment.NewLine}" +
-                                  $"Map Status: {(BeatmapStatus)baseAddresses.Beatmap.Status}{Environment.NewLine}" +
-                                  $"Mods: {(Mods)baseAddresses.GeneralData.Mods}"
-                                  ;
-
-                            materialMultiLineTextBox_currentPlayingData.Text =
-                                $"Player: {baseAddresses.Player.Username}{Environment.NewLine}" +
-                                $"Score: {baseAddresses.Player.Score}{Environment.NewLine}" +
-                                $"Player Recent Combo: {baseAddresses.Player.Combo}{Environment.NewLine}" +
-                                $"Player Best Combo: {baseAddresses.Player.MaxCombo}{Environment.NewLine}" +
-                                $"Accuracy: {baseAddresses.Player.Accuracy:0.00}{Environment.NewLine}" +
-                                $"300: {baseAddresses.Player.Hit300} 100: {baseAddresses.Player.Hit100} 50: {baseAddresses.Player.Hit50} Miss: {baseAddresses.Player.HitMiss}{Environment.NewLine}"
-                                ;
-                            */
-                        }));
-                    }
-                    catch (ObjectDisposedException)
-                    {
-
-                    }
-
                     _sreader.ReadTimes.Clear();
                     await Task.Delay(_readDelay);
                 }
@@ -644,34 +613,27 @@ namespace osuEscape
             cmd.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
             cmd.Start();
 
-            ToggleButtonUpdate(isAllow);
+            ColorSchemeToggleOnConnection(isAllow);
 
             ContextMenuStripUpdate();
         }
 
-        private void ToggleButtonUpdate(bool isAllow)
+        private void ColorSchemeToggleOnConnection(bool isAllow)
         {
-            /*
-            _ = materialButton_firewallToggleConnection.Invoke(new MethodInvoker(delegate
-            {
-                materialButton_firewallToggleConnection.Text = isAllow ? "Connecting" : "Blocked";
-
-                materialSkinManager.ColorScheme = isAllow ?
-                new ColorScheme(
-                        Primary.Grey800,
-                        Primary.Grey900,
-                        Primary.Grey500,
-                        Accent.Green700,
-                        TextShade.WHITE)
-                :
-                new ColorScheme(
-                        Primary.Grey800,
-                        Primary.Grey900,
-                        Primary.Grey500,
-                        Accent.Red400,
-                        TextShade.WHITE);
-            }));
-            */
+            materialSkinManager.ColorScheme = !Properties.Settings.Default.isAllowConnection ?
+            new ColorScheme(
+                    Primary.Grey800,
+                    Primary.Grey900,
+                    Primary.Grey500,
+                    Accent.Green700,
+                    TextShade.WHITE)
+            :
+            new ColorScheme(
+                    Primary.Grey800,
+                    Primary.Grey900,
+                    Primary.Grey500,
+                    Accent.Red400,
+                    TextShade.WHITE);
         }
 
         private async void FirewallRuleSetUp(string filename)
@@ -796,7 +758,7 @@ namespace osuEscape
             contextMenuStrip_osu.Items[1].Click += new EventHandler(Item_quit_Click);
 
             notifyIcon_osuEscape.Icon =
-                (Properties.Settings.Default.isAllowConnection ?
+                (!Properties.Settings.Default.isAllowConnection ?
                 Properties.Resources.osuEscapeConnecting :
                 Properties.Resources.osuEscapeBlocking);
         }
@@ -814,9 +776,6 @@ namespace osuEscape
 
         private void materialCheckbox_submitIfFC_CheckedChanged(object sender, EventArgs e)
         => Properties.Settings.Default.isSubmitIfFC = materialSwitch_submitIfFC.Checked;
-
-        private void materialCheckbox_hideData_CheckedChanged(object sender, EventArgs e)
-        => Properties.Settings.Default.isHideData = materialSwitch_hideData.Checked;
 
         private void materialCheckbox_topMost_CheckedChanged(object sender, EventArgs e)
         {
@@ -849,9 +808,9 @@ namespace osuEscape
         private void MaterialButton_findOsuLocation_Click(object sender, EventArgs e)
         => OpenFileDialog_FindOsuLocation();
 
-        private void MaterialButton_changeTheme_Click(object sender, EventArgs e) => UIThemeToggle();
+        private void materialSwitch_osuConnection_Click(object sender, EventArgs e) => UI_ThemeToggle();
 
-        private void UIThemeToggle()
+        private void UI_ThemeToggle()
         {
             // light mode toggles to dark mode
             materialSkinManager.Theme = materialSkinManager.Theme == MaterialSkinManager.Themes.DARK ? MaterialSkinManager.Themes.LIGHT : MaterialSkinManager.Themes.DARK;
@@ -1048,7 +1007,7 @@ namespace osuEscape
         {
             if (materialTabControl_menu.SelectedTab == tabPage_main)
             {
-                HideData();
+                //HideData();
             }
             else
             {
@@ -1057,40 +1016,7 @@ namespace osuEscape
                 this.Size = FormSize_init;
                 this.MinimumSize = FormSize_init;
 
-                materialLabel_submissionStatus.Location = labelSubmissionStatus_Location_init;
-                /*
-                materialButton_firewallToggleConnection.Size = button_Toggle_Size_init;
-                materialLabel_MapData.Visible = true;
-                materialMultiLineTextBox_mapData.Visible = true;
-                */
-
                 APIRequiredCheckBoxesEnabled();
-            }
-            // label avoid button focus
-            // materialLabel_avoidButtonFocus.Focus();
-        }
-
-        private void HideData()
-        {
-            if (Properties.Settings.Default.isHideData)
-            {
-                // hide data, smaller ui
-                this.MinimumSize = new Size(391, 275);
-                this.Size = this.MinimumSize;
-                this.MaximumSize = this.Size;
-
-                materialLabel_submissionStatus.Location = new Point(14, 140);
-                /*
-                materialButton_firewallToggleConnection.Size = new Size(300, 120);
-                materialLabel_MapData.Visible = false;
-                materialMultiLineTextBox_mapData.Visible = false;
-                */
-            }
-            else
-            {
-                this.MinimumSize = new Size(this.Size.Width - 160, this.Size.Height);
-                this.Size = this.MinimumSize;
-                this.MaximumSize = this.Size;
             }
         }
 
@@ -1201,6 +1127,16 @@ namespace osuEscape
         private void materialSwitch_osuConnection_CheckedChanged(object sender, EventArgs e)
         {
             ToggleFirewall();
+        }
+
+        private void MainTabResize()
+        {
+
+        }
+
+        private void materialSwitch_theme_CheckedChanged(object sender, EventArgs e)
+        {
+            Properties.Settings.Default.Theme = materialSwitch_theme.Checked ? 0 : 1;
         }
     }
 }
