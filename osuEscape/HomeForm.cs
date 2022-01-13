@@ -818,7 +818,7 @@ namespace osuEscape
                 ToggleFirewall();
             }
         }
-        private void MaterialButton_changeToggleKey_Click(object sender, EventArgs e)
+        private void MaterialButton_changeToggleHotKey_Click(object sender, EventArgs e)
         {
             isEditingHotkey = true;
             materialLabel_globalToggleHotkey.Text = "Press Key(s) as Global Toggle Hotkey...";
@@ -1003,6 +1003,8 @@ namespace osuEscape
                 this.Size = FormSize_init;
                 this.MinimumSize = FormSize_init;
 
+                materialLabel_focus.Focus();
+
                 APIRequiredCheckBoxesEnabled();
             }
         }
@@ -1125,7 +1127,11 @@ namespace osuEscape
 
         private void MainTabResize()
         {
-
+            // set the ui size for main tab
+            int unneededHeight = 130;
+            this.MaximumSize = new Size (FormSize_init.Width, FormSize_init.Height - unneededHeight);
+            this.Size = new Size(FormSize_init.Width, FormSize_init.Height - unneededHeight);
+            this.MinimumSize = new Size(FormSize_init.Width, FormSize_init.Height - unneededHeight);
         }
 
         private void materialSwitch_theme_CheckedChanged(object sender, EventArgs e)
