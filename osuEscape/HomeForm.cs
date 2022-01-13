@@ -151,6 +151,12 @@ namespace osuEscape
                 this.Close();
             }
 
+            // startup issue check
+            // hotkey
+            keyboardHook.KeyPressed += new EventHandler<KeyPressedEventArgs>(KeyboardHook_OnKeyPressed);
+            keyboardHook.RegisterHotKey((ModifierKeys)Properties.Settings.Default.ModifierKeys,
+                                        KeysToStringDictionary.FirstOrDefault(x => x.Value == Properties.Settings.Default.GlobalHotKey).Key);
+
             // ui 
             MainTabResize();            
         }
@@ -209,7 +215,7 @@ namespace osuEscape
             materialSwitch_theme.Checked = Properties.Settings.Default.Theme == 1; // 1: enum value for Dark Theme
             materialSwitch_osuConnection.Checked = !Properties.Settings.Default.isAllowConnection;
 
-            GlobalHotkeyTextBoxUpdate();
+            TextBox_GlobalHotkey_Update();
         }
 
         private void HomeForm_Load(object sender, EventArgs e)
@@ -224,12 +230,7 @@ namespace osuEscape
                 MessageBox.Show("Please open osu!Escape with administrator privileges for toggling firewall permission.");
                 this.Close();
             }
-
-            // startup issue check
-            // hotkey
-            keyboardHook.KeyPressed += new EventHandler<KeyPressedEventArgs>(Hook_KeyPressed);
-            keyboardHook.RegisterHotKey((ModifierKeys)Properties.Settings.Default.ModifierKeys,
-                                        KeysToStringDictionary.FirstOrDefault(x => x.Value == Properties.Settings.Default.GlobalHotKey).Key);
+           
 
             osuDataReaderAsync();
 
@@ -595,9 +596,9 @@ namespace osuEscape
             {
                 AllowConnection(Properties.Settings.Default.isAllowConnection);
 
-                ToggleSound(Properties.Settings.Default.isToggleSound);
+                ToggleSound(Properties.Settings.Default.isToggleSound);                
 
-                FormRefreshInvoke();
+                Invoke_FormRefresh();
             }
         }
 
@@ -756,7 +757,7 @@ namespace osuEscape
             contextMenuStrip_osu.Items[1].Click += new EventHandler(Item_quit_Click);
 
             notifyIcon_osuEscape.Icon =
-                (!Properties.Settings.Default.isAllowConnection ?
+                (Properties.Settings.Default.isAllowConnection ?
                 Properties.Resources.osuEscapeConnecting :
                 Properties.Resources.osuEscapeBlocking);
         }
@@ -806,19 +807,6 @@ namespace osuEscape
         private void MaterialButton_findOsuLocation_Click(object sender, EventArgs e)
         => OpenFileDialog_FindOsuLocation();
 
-        private void materialSwitch_osuConnection_Click(object sender, EventArgs e) => UI_ThemeToggle();
-
-        private void UI_ThemeToggle()
-        {
-            // light mode toggles to dark mode
-            materialSkinManager.Theme = materialSkinManager.Theme == MaterialSkinManager.Themes.DARK ? MaterialSkinManager.Themes.LIGHT : MaterialSkinManager.Themes.DARK;
-
-            // user setting
-            Properties.Settings.Default.Theme = materialSkinManager.Theme == MaterialSkinManager.Themes.DARK ? 1 : 0;
-
-            // ui switch update
-            materialSwitch_theme.Checked = materialSkinManager.Theme == MaterialSkinManager.Themes.DARK;
-        }
         private void materialButton_toggle_Click(object sender, EventArgs e)
         {
             if (Properties.Settings.Default.osuLocation == "")
@@ -848,7 +836,7 @@ namespace osuEscape
                 // cancel changes
                 if (e.KeyCode == Keys.Escape)
                 {
-                    GlobalHotkeyTextBoxUpdate();
+                    TextBox_GlobalHotkey_Update();
                     isEditingHotkey = false;
                 }
                 else if (KeysToStringDictionary.ContainsKey(e.KeyCode))
@@ -863,7 +851,7 @@ namespace osuEscape
                     Properties.Settings.Default.GlobalHotKey = KeysToStringDictionary[e.KeyCode];
 
                     // ui
-                    GlobalHotkeyTextBoxUpdate();
+                    TextBox_GlobalHotkey_Update();
 
                     keyboardHook.RegisterHotKey((ModifierKeys)Properties.Settings.Default.ModifierKeys,
                                         KeysToStringDictionary.FirstOrDefault(x => x.Value == Properties.Settings.Default.GlobalHotKey).Key);
@@ -950,14 +938,15 @@ namespace osuEscape
                 materialSwitch_autoDisconnect.Checked = false;
             }
 
-            FormRefreshInvoke();
+            Invoke_FormRefresh();
         }
 
-        private void FormRefreshInvoke()
+        private void Invoke_FormRefresh()
         {
             this.Invoke(new MethodInvoker(delegate ()
             {
                 //Access your controls
+                materialSwitch_osuConnection.Checked = !Properties.Settings.Default.isAllowConnection;
 
                 this.Refresh();
             }));
@@ -1037,12 +1026,17 @@ namespace osuEscape
             ToggleSystemTray(false);
         }
 
-        private void Hook_KeyPressed(object sender, KeyPressedEventArgs e)
+        private void KeyboardHook_OnKeyPressed(object sender, KeyPressedEventArgs e)
         {
+            // Checked: Blocked
+            Properties.Settings.Default.isAllowConnection = !Properties.Settings.Default.isAllowConnection;
+            materialSwitch_osuConnection.Checked = !Properties.Settings.Default.isAllowConnection;
             ToggleFirewall();
+
+            Invoke_FormRefresh();
         }
 
-        private void GlobalHotkeyTextBoxUpdate()
+        private void TextBox_GlobalHotkey_Update()
         {
             int modifierKeys = Properties.Settings.Default.ModifierKeys;
             bool isCtrl = false;
@@ -1073,7 +1067,7 @@ namespace osuEscape
             materialLabel_globalToggleHotkey.Text += Properties.Settings.Default.GlobalHotKey;
         }
 
-        private void HomeForm_FormClosing(object sender, FormClosingEventArgs e)
+        private void FormClosing_HomeForm(object sender, FormClosingEventArgs e)
         {
             if (materialSwitch_minimizeToSystemTray.Checked && !isItemQuit)
             {
@@ -1126,15 +1120,7 @@ namespace osuEscape
         {
             // Checked: Blocked
             Properties.Settings.Default.isAllowConnection = !materialSwitch_osuConnection.Checked;
-
-            if (Properties.Settings.Default.osuLocation == "")
-            {
-                ShowMessageBox("ERROR: Invalid osu! location.");
-            }
-            else
-            {
-                ToggleFirewall();
-            }
+            ToggleFirewall();
         }
 
         private void MainTabResize()

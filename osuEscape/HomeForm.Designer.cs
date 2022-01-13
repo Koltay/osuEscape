@@ -516,7 +516,7 @@
             this.MaximizeBox = false;
             this.Name = "HomeForm";
             this.Text = "osu! Escape";
-            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.HomeForm_FormClosing);
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.FormClosing_HomeForm);
             this.Load += new System.EventHandler(this.HomeForm_Load);
             this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.HomeForm_KeyDown);
             this.materialTabControl_menu.ResumeLayout(false);
