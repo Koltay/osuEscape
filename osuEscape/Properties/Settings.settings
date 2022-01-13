@@ -56,5 +56,8 @@
     <Setting Name="isAllowConnection" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">True</Value>
     </Setting>
+    <Setting Name="GHKText" Type="System.String" Scope="User">
+      <Value Profile="(Default)">Global Toggle Hotkey:</Value>
+    </Setting>
   </Settings>
 </SettingsFile>

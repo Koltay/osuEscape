@@ -713,6 +713,7 @@ namespace osuEscape
                     FirewallRuleSetUp(Properties.Settings.Default.osuLocation);
                 }
             }
+            materialButton_findOsuLocation.UseAccentColor = false;
         }
 
         #endregion
@@ -805,7 +806,10 @@ namespace osuEscape
         => VerifyAPIKeyAsync();
 
         private void MaterialButton_findOsuLocation_Click(object sender, EventArgs e)
-        => OpenFileDialog_FindOsuLocation();
+        {
+            materialButton_findOsuLocation.UseAccentColor = true;
+            OpenFileDialog_FindOsuLocation();
+        } 
 
         private void materialButton_toggle_Click(object sender, EventArgs e)
         {
@@ -820,8 +824,18 @@ namespace osuEscape
         }
         private void MaterialButton_changeToggleHotKey_Click(object sender, EventArgs e)
         {
-            isEditingHotkey = true;
-            materialLabel_globalToggleHotkey.Text = "Press Key(s) as Global Toggle Hotkey...";
+            isEditingHotkey = !isEditingHotkey;
+            if (isEditingHotkey)
+            {
+                materialButton_changeToggleHotkey.UseAccentColor = true;
+                Properties.Settings.Default.GHKText = materialLabel_globalToggleHotkey.Text;
+                materialLabel_globalToggleHotkey.Text = "Press Key(s) as Global Toggle Hotkey...";
+            } 
+            else
+            {
+                materialButton_changeToggleHotkey.UseAccentColor = false;
+                materialLabel_globalToggleHotkey.Text = Properties.Settings.Default.GHKText;
+            }                
         }
 
 
@@ -859,6 +873,8 @@ namespace osuEscape
                     System.Media.SystemSounds.Asterisk.Play();
 
                     isEditingHotkey = false;
+
+                    materialButton_changeToggleHotkey.UseAccentColor = false;
                 }
             }
         }

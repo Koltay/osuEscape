@@ -238,5 +238,17 @@ namespace osuEscape.Properties {
                 this["isAllowConnection"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("Global Toggle Hotkey:")]
+        public string GHKText {
+            get {
+                return ((string)(this["GHKText"]));
+            }
+            set {
+                this["GHKText"] = value;
+            }
+        }
     }
 }
