@@ -549,7 +549,7 @@ namespace osuEscape
 
                                 this.Invoke(new MethodInvoker(delegate ()
                                 {
-                                    ListViewItem item = new ListViewItem(baseAddresses.Beatmap.MapString);
+                                    ListViewItem item = new(baseAddresses.Beatmap.MapString);
                                     item.SubItems.Add(baseAddresses.Player.Score.ToString());
                                     item.SubItems.Add(baseAddresses.Player.Accuracy.ToString("0.00"));
                                     // rank icon TBD
@@ -625,12 +625,12 @@ namespace osuEscape
             cmd.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
             cmd.Start();
 
-            ColorSchemeUpdate(isAllow);
+            ColorSchemeUpdate();
 
             ContextMenuStripUpdate();
         }
 
-        private void ColorSchemeUpdate(bool isAllow)
+        private void ColorSchemeUpdate()
         {
             // Allow: Green; Blocked: Red
             materialSkinManager.ColorScheme = Properties.Settings.Default.isAllowConnection ?
@@ -1117,11 +1117,9 @@ namespace osuEscape
 
         public static bool IsAdministrator()
         {
-            using (WindowsIdentity identity = WindowsIdentity.GetCurrent())
-            {
-                WindowsPrincipal principal = new WindowsPrincipal(identity);
-                return principal.IsInRole(WindowsBuiltInRole.Administrator);
-            }
+            using WindowsIdentity identity = WindowsIdentity.GetCurrent();
+            WindowsPrincipal principal = new(identity);
+            return principal.IsInRole(WindowsBuiltInRole.Administrator);
         }
 
         protected override void Dispose(bool disposing)
