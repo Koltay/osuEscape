@@ -8,7 +8,6 @@ using OsuMemoryDataProvider.OsuMemoryModels;
 using OsuMemoryDataProvider.OsuMemoryModels.Direct;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Diagnostics;
 using System.Drawing;
 using System.IO;
@@ -17,7 +16,6 @@ using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Reflection;
-using System.Runtime.InteropServices;
 using System.Security.Principal;
 using System.Text;
 using System.Threading;
@@ -158,7 +156,7 @@ namespace osuEscape
                                         KeysToStringDictionary.FirstOrDefault(x => x.Value == Properties.Settings.Default.GlobalHotKey).Key);
 
             // ui 
-            MainTabResize();            
+            MainTabResize();
         }
 
         #region Initialize and OnLoad
@@ -230,7 +228,7 @@ namespace osuEscape
                 MessageBox.Show("Please open osu!Escape with administrator privileges for toggling firewall permission.");
                 this.Close();
             }
-           
+
 
             osuDataReaderAsync();
 
@@ -463,7 +461,7 @@ namespace osuEscape
 
                                             beatmapLastNoteOffset += (sliderLengthOffset * sliderRepeatCount);
                                         }
-                                    });                                 
+                                    });
                                 });
 
                                 isOffsetFound = true;
@@ -473,7 +471,7 @@ namespace osuEscape
                                 Debug.WriteLine(ex);
                             }
                         }
-                       
+
 
                         // 1.   *** Auto Connection has to be done on playing status for instant connection,
                         //      otherwise, connection checking on results screen would take about 30 seconds or more
@@ -493,6 +491,7 @@ namespace osuEscape
                             previousSubmittedBeatmapMd5 != baseAddresses.Beatmap.Md5 &&
                             isSubmittableBeatmapStatus())
                         {
+                            Properties.Settings.Default.isAllowConnection = true;
                             ToggleFirewall();
                             isSetScore = true;
                         }
@@ -529,7 +528,7 @@ namespace osuEscape
                         // GET Method of user's recent score (osu! api v1)
                         // get the recent 3 scores, even though there is multiple submissions at one connection
                         // the recent score could still be recognized
-                        Dictionary<int,int> recentUploadScoreDict = await GetUserRecentScoreAsync(baseAddresses.Player.Username, 3);
+                        Dictionary<int, int> recentUploadScoreDict = await GetUserRecentScoreAsync(baseAddresses.Player.Username, 3);
 
                         bool isRecentSetScoreUploaded = false;
 
@@ -541,10 +540,22 @@ namespace osuEscape
                             {
                                 isRecentSetScoreUploaded = true;
 
-                                Properties.Settings.Default.isAllowConnection = true;
+                                Properties.Settings.Default.isAllowConnection = false;
                                 ToggleFirewall();
 
                                 isSetScore = false;
+
+                                // uploaded scores tab page update
+
+                                this.Invoke(new MethodInvoker(delegate ()
+                                {
+                                    ListViewItem item = new ListViewItem(baseAddresses.Beatmap.MapString);
+                                    item.SubItems.Add(baseAddresses.Player.Score.ToString());
+                                    item.SubItems.Add(baseAddresses.Player.Accuracy.ToString("0.00"));
+                                    // rank icon TBD
+                                    // pp TBD
+                                    materialListView_uploadedScores.Items.Add(item);
+                                }));
 
                                 break;
                             }
@@ -596,7 +607,7 @@ namespace osuEscape
             {
                 AllowConnection(Properties.Settings.Default.isAllowConnection);
 
-                ToggleSound(Properties.Settings.Default.isToggleSound);                
+                ToggleSound(Properties.Settings.Default.isToggleSound);
 
                 Invoke_FormRefresh();
             }
@@ -639,12 +650,12 @@ namespace osuEscape
         }
 
         private async void FirewallRuleSetUp(string filename)
-        {   
+        {
             await Task.Run(async () =>
             {
                 if (filename.Contains("osu!.exe"))
                 {
-                
+
 
                     Properties.Settings.Default.osuLocation = filename;
 
@@ -809,7 +820,7 @@ namespace osuEscape
         {
             materialButton_findOsuLocation.UseAccentColor = true;
             OpenFileDialog_FindOsuLocation();
-        } 
+        }
 
         private void materialButton_toggle_Click(object sender, EventArgs e)
         {
@@ -830,12 +841,12 @@ namespace osuEscape
                 materialButton_changeToggleHotkey.UseAccentColor = true;
                 Properties.Settings.Default.GHKText = materialLabel_globalToggleHotkey.Text;
                 materialLabel_globalToggleHotkey.Text = "Press Key(s) as Global Toggle Hotkey...";
-            } 
+            }
             else
             {
                 materialButton_changeToggleHotkey.UseAccentColor = false;
                 materialLabel_globalToggleHotkey.Text = Properties.Settings.Default.GHKText;
-            }                
+            }
         }
 
 
@@ -884,7 +895,7 @@ namespace osuEscape
 
         #region GET Method from osu! api   
 
-        private static async Task<Dictionary<int,int>> GetUserRecentScoreAsync(string userName, int recentScoreLimits)
+        private static async Task<Dictionary<int, int>> GetUserRecentScoreAsync(string userName, int recentScoreLimits)
         {
             var url = $"https://osu.ppy.sh/api/get_user_recent?k={Properties.Settings.Default.userApiKey}&u={userName}&limit={recentScoreLimits}";
 
@@ -896,7 +907,7 @@ namespace osuEscape
             request.Content = new StringContent("{...}", Encoding.UTF8, "application/json");
 
             // beatmap_id, score
-            Dictionary<int,int> resultDict = new();
+            Dictionary<int, int> resultDict = new();
 
             var response = await client.SendAsync(request, CancellationToken.None);
 
@@ -1046,7 +1057,7 @@ namespace osuEscape
 
         private void KeyboardHook_OnKeyPressed(object sender, KeyPressedEventArgs e)
         {
-            // Checked: Blocked
+            // Toggle Connection status on properties settings and update switch status 
             Properties.Settings.Default.isAllowConnection = !Properties.Settings.Default.isAllowConnection;
             materialSwitch_osuConnection.Checked = !Properties.Settings.Default.isAllowConnection;
             ToggleFirewall();
@@ -1136,7 +1147,7 @@ namespace osuEscape
 
         private void materialSwitch_osuConnection_CheckedChanged(object sender, EventArgs e)
         {
-            // Checked: Blocked
+            // Manual Control by user
             Properties.Settings.Default.isAllowConnection = !materialSwitch_osuConnection.Checked;
             ToggleFirewall();
         }
@@ -1144,10 +1155,11 @@ namespace osuEscape
         private void MainTabResize()
         {
             // set the ui size for main tab
+            int unneededWidth = 45;
             int unneededHeight = 130;
-            this.MaximumSize = new Size (FormSize_init.Width, FormSize_init.Height - unneededHeight);
-            this.Size = new Size(FormSize_init.Width, FormSize_init.Height - unneededHeight);
-            this.MinimumSize = new Size(FormSize_init.Width, FormSize_init.Height - unneededHeight);
+            this.MaximumSize = new Size(FormSize_init.Width - unneededWidth, FormSize_init.Height - unneededHeight);
+            this.Size = new Size(FormSize_init.Width - unneededWidth, FormSize_init.Height - unneededHeight);
+            this.MinimumSize = new Size(FormSize_init.Width - unneededWidth, FormSize_init.Height - unneededHeight);
         }
 
         private void materialSwitch_theme_CheckedChanged(object sender, EventArgs e)

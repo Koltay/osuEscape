@@ -21,6 +21,7 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
+            System.Windows.Forms.ListViewGroup listViewGroup1 = new System.Windows.Forms.ListViewGroup("ListViewGroup_Beatmap", System.Windows.Forms.HorizontalAlignment.Center);
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(HomeForm));
             this.materialTabControl_menu = new MaterialSkin.Controls.MaterialTabControl();
             this.tabPage_main = new System.Windows.Forms.TabPage();
@@ -46,6 +47,10 @@
             this.materialSwitch_runAtStartup = new MaterialSkin.Controls.MaterialSwitch();
             this.materialLabel_focus = new MaterialSkin.Controls.MaterialLabel();
             this.tabPage_uploadedScores = new System.Windows.Forms.TabPage();
+            this.materialListView_uploadedScores = new MaterialSkin.Controls.MaterialListView();
+            this.Beatmap = new System.Windows.Forms.ColumnHeader();
+            this.Score = new System.Windows.Forms.ColumnHeader();
+            this.Accuracy = new System.Windows.Forms.ColumnHeader();
             this.contextMenuStrip_osu = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.statusToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.quitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -56,6 +61,7 @@
             this.tabPage_main.SuspendLayout();
             this.tabPage_settings.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown_submitAcc)).BeginInit();
+            this.tabPage_uploadedScores.SuspendLayout();
             this.contextMenuStrip_osu.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -100,7 +106,7 @@
             this.materialButton_findOsuLocation.Depth = 0;
             this.materialButton_findOsuLocation.HighEmphasis = true;
             this.materialButton_findOsuLocation.Icon = null;
-            this.materialButton_findOsuLocation.Location = new System.Drawing.Point(333, 73);
+            this.materialButton_findOsuLocation.Location = new System.Drawing.Point(293, 73);
             this.materialButton_findOsuLocation.Margin = new System.Windows.Forms.Padding(4, 6, 4, 6);
             this.materialButton_findOsuLocation.MouseState = MaterialSkin.MouseState.HOVER;
             this.materialButton_findOsuLocation.Name = "materialButton_findOsuLocation";
@@ -178,7 +184,7 @@
             this.materialButton_changeToggleHotkey.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.materialButton_changeToggleHotkey.HighEmphasis = true;
             this.materialButton_changeToggleHotkey.Icon = null;
-            this.materialButton_changeToggleHotkey.Location = new System.Drawing.Point(333, 11);
+            this.materialButton_changeToggleHotkey.Location = new System.Drawing.Point(293, 11);
             this.materialButton_changeToggleHotkey.Margin = new System.Windows.Forms.Padding(4, 6, 4, 6);
             this.materialButton_changeToggleHotkey.MouseState = MaterialSkin.MouseState.HOVER;
             this.materialButton_changeToggleHotkey.Name = "materialButton_changeToggleHotkey";
@@ -238,7 +244,7 @@
             // numericUpDown_submitAcc
             // 
             this.numericUpDown_submitAcc.AutoSize = true;
-            this.numericUpDown_submitAcc.Location = new System.Drawing.Point(207, 194);
+            this.numericUpDown_submitAcc.Location = new System.Drawing.Point(269, 192);
             this.numericUpDown_submitAcc.Name = "numericUpDown_submitAcc";
             this.numericUpDown_submitAcc.Size = new System.Drawing.Size(50, 23);
             this.numericUpDown_submitAcc.TabIndex = 29;
@@ -374,10 +380,10 @@
             this.materialSwitch_submitIfFC.MouseState = MaterialSkin.MouseState.HOVER;
             this.materialSwitch_submitIfFC.Name = "materialSwitch_submitIfFC";
             this.materialSwitch_submitIfFC.Ripple = true;
-            this.materialSwitch_submitIfFC.Size = new System.Drawing.Size(372, 37);
+            this.materialSwitch_submitIfFC.Size = new System.Drawing.Size(434, 37);
             this.materialSwitch_submitIfFC.TabIndex = 15;
             this.materialSwitch_submitIfFC.TabStop = false;
-            this.materialSwitch_submitIfFC.Text = "Connect if FC with ≥               Accuracy (Auto)";
+            this.materialSwitch_submitIfFC.Text = "Connect if Full Combo with ≥               Accuracy (Auto)";
             this.materialSwitch_submitIfFC.UseVisualStyleBackColor = true;
             this.materialSwitch_submitIfFC.CheckedChanged += new System.EventHandler(this.materialCheckbox_submitIfFC_CheckedChanged);
             // 
@@ -463,6 +469,7 @@
             // 
             // tabPage_uploadedScores
             // 
+            this.tabPage_uploadedScores.Controls.Add(this.materialListView_uploadedScores);
             this.tabPage_uploadedScores.Location = new System.Drawing.Point(4, 27);
             this.tabPage_uploadedScores.Name = "tabPage_uploadedScores";
             this.tabPage_uploadedScores.Padding = new System.Windows.Forms.Padding(3);
@@ -470,6 +477,57 @@
             this.tabPage_uploadedScores.TabIndex = 2;
             this.tabPage_uploadedScores.Text = "Uploaded Scores";
             this.tabPage_uploadedScores.UseVisualStyleBackColor = true;
+            // 
+            // materialListView_uploadedScores
+            // 
+            this.materialListView_uploadedScores.AutoSizeTable = false;
+            this.materialListView_uploadedScores.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(255)))), ((int)(((byte)(255)))));
+            this.materialListView_uploadedScores.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.materialListView_uploadedScores.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
+            this.Beatmap,
+            this.Score,
+            this.Accuracy});
+            this.materialListView_uploadedScores.Depth = 0;
+            this.materialListView_uploadedScores.FullRowSelect = true;
+            listViewGroup1.CollapsedState = System.Windows.Forms.ListViewGroupCollapsedState.Expanded;
+            listViewGroup1.FooterAlignment = System.Windows.Forms.HorizontalAlignment.Center;
+            listViewGroup1.Header = "ListViewGroup_Beatmap";
+            listViewGroup1.HeaderAlignment = System.Windows.Forms.HorizontalAlignment.Center;
+            listViewGroup1.Name = "Beatmap";
+            this.materialListView_uploadedScores.Groups.AddRange(new System.Windows.Forms.ListViewGroup[] {
+            listViewGroup1});
+            this.materialListView_uploadedScores.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.Nonclickable;
+            this.materialListView_uploadedScores.HideSelection = false;
+            this.materialListView_uploadedScores.LabelWrap = false;
+            this.materialListView_uploadedScores.Location = new System.Drawing.Point(0, 0);
+            this.materialListView_uploadedScores.MaximumSize = new System.Drawing.Size(540, 335);
+            this.materialListView_uploadedScores.MinimumSize = new System.Drawing.Size(540, 335);
+            this.materialListView_uploadedScores.MouseLocation = new System.Drawing.Point(-1, -1);
+            this.materialListView_uploadedScores.MouseState = MaterialSkin.MouseState.OUT;
+            this.materialListView_uploadedScores.MultiSelect = false;
+            this.materialListView_uploadedScores.Name = "materialListView_uploadedScores";
+            this.materialListView_uploadedScores.OwnerDraw = true;
+            this.materialListView_uploadedScores.Scrollable = false;
+            this.materialListView_uploadedScores.ShowGroups = false;
+            this.materialListView_uploadedScores.Size = new System.Drawing.Size(540, 335);
+            this.materialListView_uploadedScores.TabIndex = 3;
+            this.materialListView_uploadedScores.UseCompatibleStateImageBehavior = false;
+            this.materialListView_uploadedScores.View = System.Windows.Forms.View.Details;
+            // 
+            // Beatmap
+            // 
+            this.Beatmap.Text = "Beatmap";
+            this.Beatmap.Width = 340;
+            // 
+            // Score
+            // 
+            this.Score.Text = "Score";
+            this.Score.Width = 120;
+            // 
+            // Accuracy
+            // 
+            this.Accuracy.Text = "Accuracy";
+            this.Accuracy.Width = 100;
             // 
             // contextMenuStrip_osu
             // 
@@ -535,6 +593,7 @@
             this.tabPage_settings.ResumeLayout(false);
             this.tabPage_settings.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown_submitAcc)).EndInit();
+            this.tabPage_uploadedScores.ResumeLayout(false);
             this.contextMenuStrip_osu.ResumeLayout(false);
             this.ResumeLayout(false);
 
@@ -572,5 +631,9 @@
         private MaterialSkin.Controls.MaterialSwitch materialSwitch_theme;
         private MaterialSkin.Controls.MaterialButton materialButton_findOsuLocation;
         private MaterialSkin.Controls.MaterialButton materialButton_changeToggleHotkey;
+        private MaterialSkin.Controls.MaterialListView materialListView_uploadedScores;
+        private System.Windows.Forms.ColumnHeader Beatmap;
+        private System.Windows.Forms.ColumnHeader Score;
+        private System.Windows.Forms.ColumnHeader Accuracy;
     }
 }
