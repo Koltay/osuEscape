@@ -207,8 +207,10 @@ namespace osuEscape
             materialSwitch_autoDisconnect.Checked = Properties.Settings.Default.isAutoDisconnect;
             materialSwitch_autoDisconnect.Enabled = Properties.Settings.Default.isAPIKeyVerified;
             materialTextBox_apiInput.Text = Properties.Settings.Default.userApiKey;
-            numericUpDown_submitAcc.Value = Properties.Settings.Default.submitAcc;
-            materialSkinManager.Theme = (MaterialSkinManager.Themes)Properties.Settings.Default.Theme;
+            materialSlider_Accuracy.Value = Properties.Settings.Default.submitAcc;
+            materialCheckbox_isFullCombo.Checked = Properties.Settings.Default.isFullCombo;
+            materialSlider_refreshRate.Value = Properties.Settings.Default.refreshRate;
+            materialSkinManager.Theme = (MaterialSkinManager.Themes)Properties.Settings.Default.Theme;         
 
             materialSwitch_theme.Checked = Properties.Settings.Default.Theme == 1; // 1: enum value for Dark Theme
             materialSwitch_osuConnection.Checked = !Properties.Settings.Default.isAllowConnection;
@@ -389,14 +391,23 @@ namespace osuEscape
                                                 beatmapLastNoteOffset = Math.Max(beatmapLastNoteOffset, value);
                                         }
                                         // special case: slider (and reverse slider)
-                                        // file format v14 test
                                         // Hit object syntax: x,y,time,type,hitSound,curveType|curvePoints,slides,length,edgeSounds,edgeSets,hitSample
                                         // old: 0,2 and 6 mean slider in type
                                         // new: use | to determine if it is a hitobject with type "slider"
 
-                                        //if (File.ReadLines(beatmapFile).Last().Split(",")[3] == "2" || File.ReadLines(beatmapFile).Last().Split(",")[3] == "6")
+                                        char beatmapMode = '0';
+                                        string[] beatmapFileLines = File.ReadAllLines(beatmapFile);
 
-                                        if (File.ReadLines(beatmapFile).Last().Contains("|"))
+                                        for (int i = 0; i < beatmapFileLines.Length; i++)
+                                        { 
+                                            if (beatmapFileLines[i].Contains("Mode: "))
+                                            {
+                                                beatmapMode = beatmapFileLines[i].Last();
+                                                Debug.WriteLine("Beatmap Mode: " + beatmapMode);
+                                            }
+                                        }                                 
+
+                                        if (File.ReadLines(beatmapFile).Last().Contains("|") && beatmapMode == '0')
                                         {
                                             // [7] is the slider pixel length of slider (syntax above)
                                             decimal sliderPixelLength = Convert.ToDecimal(File.ReadLines(beatmapFile).Last().Split(",")[7]);
@@ -411,10 +422,9 @@ namespace osuEscape
                                             int difficultySessionIndex = 0;
                                             int timingPointSessionIndex = 0;
                                             int sliderLengthOffset = 0;
-                                            string[] beatmapFileLines = File.ReadAllLines(beatmapFile);
                                             bool uninherited = true;
-
-                                            // sessions
+                                            
+                                            // locate the sessions
                                             for (int i = 0; i < beatmapFileLines.Length; i++)
                                             {
                                                 if (beatmapFileLines[i] == "[Difficulty]")
@@ -501,9 +511,6 @@ namespace osuEscape
                         baseAddresses.LeaderBoard.Players.Clear();
                         isOffsetFound = false;
                     }
-
-                    // for random connection fix
-                    Debug.WriteLine(beatmapLastNoteOffset);
 
                     // score submission
                     // upload if only it is not a replay
@@ -682,16 +689,19 @@ namespace osuEscape
                         "advfirewall firewall delete rule name=\"osu block\"";
                     cmd.Start();
 
-                    await Task.Delay(10);
+                    await Task.Delay(500);
 
                     // add blocking rule into advanced firewall 
                     cmd.StartInfo.Arguments =
                         "advfirewall firewall add rule name=\"osu block\" dir=out action=block program=" + filename;
                     cmd.Start();
 
-                    await Task.Delay(10);
+                    await Task.Delay(500);
 
-                    ToggleFirewall();
+                    Debug.WriteLine("Connection should be " + Properties.Settings.Default.isAllowConnection);
+
+                    await Task.Run(() => { ToggleFirewall(); });
+
                 }
             });
         }
@@ -1014,9 +1024,6 @@ namespace osuEscape
         {
             materialLabel_submissionStatus.Text = "Submission Status: " + str;
         }
-
-        private void materialSlider_refreshRate_Click(object sender, EventArgs e)
-        => _readDelay = materialSlider_refreshRate.Value < 50 ? 50 : materialSlider_refreshRate.Value;
         private void materialTabControl_menu_Selected(object sender, TabControlEventArgs e)
         {
             if (materialTabControl_menu.SelectedTab == tabPage_main)
@@ -1140,9 +1147,6 @@ namespace osuEscape
             base.Dispose(disposing);
         }
 
-        private void numericUpDown_submitAcc_ValueChanged(object sender, EventArgs e)
-        => Properties.Settings.Default.submitAcc = Convert.ToInt32(numericUpDown_submitAcc.Value);
-
         private void materialSwitch_osuConnection_CheckedChanged(object sender, EventArgs e)
         {
             // Manual Control by user
@@ -1164,6 +1168,21 @@ namespace osuEscape
         {
             Properties.Settings.Default.Theme = materialSwitch_theme.Checked ? 1 : 0;
             materialSkinManager.Theme = (MaterialSkinManager.Themes)Properties.Settings.Default.Theme;
+        }
+
+        private void materialCheckbox_isFullCombo_CheckedChanged(object sender, EventArgs e)
+        {
+            Properties.Settings.Default.isFullCombo = materialCheckbox_isFullCombo.Checked;
+        }
+        private void materialSlider_refreshRate_onValueChanged(object sender, int newValue)
+        {
+            _readDelay = materialSlider_refreshRate.Value < 50 ? 50 : materialSlider_refreshRate.Value;
+            Properties.Settings.Default.refreshRate = materialSlider_refreshRate.Value;
+        }
+
+        private void materialSlider_Accuracy_onValueChanged(object sender, int newValue)
+        {
+            Properties.Settings.Default.submitAcc = materialSlider_Accuracy.Value;
         }
     }
 }

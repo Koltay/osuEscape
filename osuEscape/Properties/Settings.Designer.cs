@@ -250,5 +250,17 @@ namespace osuEscape.Properties {
                 this["GHKText"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool isFullCombo {
+            get {
+                return ((bool)(this["isFullCombo"]));
+            }
+            set {
+                this["isFullCombo"] = value;
+            }
+        }
     }
 }

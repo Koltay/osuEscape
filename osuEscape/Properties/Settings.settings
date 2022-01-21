@@ -59,5 +59,8 @@
     <Setting Name="GHKText" Type="System.String" Scope="User">
       <Value Profile="(Default)">Global Toggle Hotkey:</Value>
     </Setting>
+    <Setting Name="isFullCombo" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
   </Settings>
 </SettingsFile>
