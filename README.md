@@ -7,17 +7,17 @@
   
   **IMPORTANT: Please open this application with administrative privilege to avoid User Account Control issue!**
 
-![image](https://user-images.githubusercontent.com/73950784/144431649-48b10f29-f2ee-4e28-a373-d7db5e070328.png)
+![image](https://user-images.githubusercontent.com/73950784/149756068-e750bbf8-2455-4d0c-b3f3-57b94d075e2d.png)
 
-> osu! Escape without data 
+> osu! Escape main tab page
 
-![image](https://user-images.githubusercontent.com/73950784/144431804-574c08c8-868f-4393-9362-6173a533fcb7.png)
+![image](https://user-images.githubusercontent.com/73950784/149756035-25662238-675a-4099-aefe-c3133b4b9c06.png)
 
-> osu! Escape with data
+> osu! Escape setting tab page
 
-![image](https://user-images.githubusercontent.com/73950784/144431910-b4650e39-5aea-45f3-93aa-c5c953d83e4c.png)
+![image](https://user-images.githubusercontent.com/73950784/149756659-55559a14-4c01-4728-8f5e-1911e3f68b2b.png)
 
-> osu! Escape settings tab page
+> osu! Escape uploaded scores tab page
  
  
  ## Inspiration from top osu! players
@@ -31,20 +31,25 @@
  
  It is proven by the osu! community that players could perform better without focusing on score leaderboards (global, country, and friends rankings) 
  
- While playing "offline" using osu! Escape, players would be able to upload scores with better performance.
+ While playing "offline" using osu! Escape, players would be able to upload scores with better performance
+ 
+ Players who care about playcount could use this for submitting scores only when they feel like to
  
  ## Features
  
  Score uploading features are currently only available on osu! stable but not osu! lazer.
  
- - **Global Hotkey for Toggling osu! Connection:** 
- > Toggle the connection using the F6 Key (Default), it also supports multiple modifier keys, e.g. Ctrl, Shift, Alt)
+ There are mainly two parts for this project: Manual connection and Auto connection.
  
- - **Score Details/ Map Details display** 
- > Displays the current osu! score data without toggling the in-game scoreboard 
+ ### Manual Connection:
+ 
+ - **Global Hotkey for Toggling osu! Connection:** 
+ > Toggle the connection using the F6 Key (Default), it also supports binding with multiple modifier keys (e.g. Ctrl, Shift, Alt)
+
+ ### Auto Connection:
  
  - **Auto Submission:** 
- > After players hit the last note of the beatmap, *"full combo"* score meeting the requirement would be submitted 
+ > After players hit the last note of the beatmap, *"full combo"* score meeting the user requirement (accuracy) would be submitted 
 
  *Dropping slider ends still count as a "full combo" score
   
