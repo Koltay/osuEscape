@@ -661,7 +661,6 @@
         private MaterialSkin.Controls.MaterialTextBox2 materialTextBox_apiInput;
         private System.Windows.Forms.ToolTip toolTips;
         private MaterialSkin.Controls.MaterialSlider materialSlider_refreshRate;
-        private MaterialSkin.Controls.MaterialLabel materialLabel1;
         private MaterialSkin.Controls.MaterialLabel materialLabel_focus;
         private System.Windows.Forms.TabPage tabPage_uploadedScores;
         private MaterialSkin.Controls.MaterialSwitch materialSwitch_osuConnection;

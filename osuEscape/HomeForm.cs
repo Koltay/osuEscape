@@ -108,7 +108,6 @@ namespace osuEscape
         // resize ui variables
         private Size FormSize_init;
         private Point labelSubmissionStatus_Location_init;
-        private Size button_Toggle_Size_init;
 
         // material skin ui
         readonly MaterialSkinManager materialSkinManager;
@@ -208,7 +207,7 @@ namespace osuEscape
             materialSwitch_autoDisconnect.Enabled = Properties.Settings.Default.isAPIKeyVerified;
             materialTextBox_apiInput.Text = Properties.Settings.Default.userApiKey;
             materialSlider_Accuracy.Value = Properties.Settings.Default.submitAcc;
-            materialCheckbox_isFullCombo.Checked = Properties.Settings.Default.isFullCombo;
+            materialCheckbox_isFullCombo.Checked = Properties.Settings.Default.isCheckingFullCombo;
             materialSlider_refreshRate.Value = Properties.Settings.Default.refreshRate;
             materialSkinManager.Theme = (MaterialSkinManager.Themes)Properties.Settings.Default.Theme;         
 
@@ -486,7 +485,7 @@ namespace osuEscape
                         // 1.   *** Auto Connection has to be done on playing status for instant connection,
                         //      otherwise, connection checking on results screen would take about 30 seconds or more
                         // 2.   Using beatmap's last HitObject's offset to determine if the map ended
-                        // 3.   Determine if it is an "FC"
+                        // 3.   Determine if it is an "FC" (depends on user)
                         //      "FC": 0 misscount / dropped some sliderends / sliderbreak at start
                         // 4.   Submit if it is above or equal to the required accuracy, and it has to be not a replay
                         // 5.   If there is already blocked connection, disable the block rule
@@ -494,8 +493,8 @@ namespace osuEscape
                         if (Properties.Settings.Default.isSubmitIfFC &&
                             baseAddresses.GeneralData.AudioTime >= beatmapLastNoteOffset &&
                             isOffsetFound &&
-                            baseAddresses.Player.Combo == baseAddresses.Player.MaxCombo &&
                             baseAddresses.Player.HitMiss == 0 &&
+                            (!Properties.Settings.Default.isCheckingFullCombo || baseAddresses.Player.Combo == baseAddresses.Player.MaxCombo) &&
                             baseAddresses.Player.Accuracy >= Properties.Settings.Default.submitAcc &&
                             !Properties.Settings.Default.isAllowConnection &&
                             previousSubmittedBeatmapMd5 != baseAddresses.Beatmap.Md5 &&
@@ -831,18 +830,6 @@ namespace osuEscape
             materialButton_findOsuLocation.UseAccentColor = true;
             OpenFileDialog_FindOsuLocation();
         }
-
-        private void materialButton_toggle_Click(object sender, EventArgs e)
-        {
-            if (Properties.Settings.Default.osuLocation == "")
-            {
-                ShowMessageBox("ERROR: Invalid osu! location.");
-            }
-            else
-            {
-                ToggleFirewall();
-            }
-        }
         private void MaterialButton_changeToggleHotKey_Click(object sender, EventArgs e)
         {
             isEditingHotkey = !isEditingHotkey;
@@ -1127,25 +1114,8 @@ namespace osuEscape
             using WindowsIdentity identity = WindowsIdentity.GetCurrent();
             WindowsPrincipal principal = new(identity);
             return principal.IsInRole(WindowsBuiltInRole.Administrator);
-        }
-
-        protected override void Dispose(bool disposing)
-        {
-            if (disposing)
-            {
-                if (components != null)
-                {
-                    components.Dispose();
-                }
-
-                // Dispose stuff here
-                cts.Cancel();
-
-                keyboardHook.Dispose();
-            }
-
-            base.Dispose(disposing);
-        }
+        }     
+        
 
         private void materialSwitch_osuConnection_CheckedChanged(object sender, EventArgs e)
         {
@@ -1172,7 +1142,7 @@ namespace osuEscape
 
         private void materialCheckbox_isFullCombo_CheckedChanged(object sender, EventArgs e)
         {
-            Properties.Settings.Default.isFullCombo = materialCheckbox_isFullCombo.Checked;
+            Properties.Settings.Default.isCheckingFullCombo = materialCheckbox_isFullCombo.Checked;
         }
         private void materialSlider_refreshRate_onValueChanged(object sender, int newValue)
         {

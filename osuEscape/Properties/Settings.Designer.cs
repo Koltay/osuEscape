@@ -254,12 +254,12 @@ namespace osuEscape.Properties {
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("True")]
-        public bool isFullCombo {
+        public bool isCheckingFullCombo {
             get {
-                return ((bool)(this["isFullCombo"]));
+                return ((bool)(this["isCheckingFullCombo"]));
             }
             set {
-                this["isFullCombo"] = value;
+                this["isCheckingFullCombo"] = value;
             }
         }
     }
