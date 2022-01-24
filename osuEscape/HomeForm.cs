@@ -122,6 +122,8 @@ namespace osuEscape
         private string previousSubmittedBeatmapMd5 = string.Empty;
 
         bool isOffsetFound = false;
+
+
         public HomeForm(string osuWindowTitleHint)
         {
             _osuWindowTitleHint = osuWindowTitleHint;
@@ -534,7 +536,7 @@ namespace osuEscape
                         // GET Method of user's recent score (osu! api v1)
                         // get the recent 3 scores, even though there is multiple submissions at one connection
                         // the recent score could still be recognized
-                        Dictionary<int, int> recentUploadScoreDict = await GetUserRecentScoreAsync(baseAddresses.Player.Username, 3);
+                        Dictionary<int, int> recentUploadScoreDict = await GetUserRecentScoreAsync(baseAddresses.Player.Username, baseAddresses.Player.Mode, 3);
 
                         bool isRecentSetScoreUploaded = false;
 
@@ -892,9 +894,9 @@ namespace osuEscape
 
         #region GET Method from osu! api   
 
-        private static async Task<Dictionary<int, int>> GetUserRecentScoreAsync(string userName, int recentScoreLimits)
+        private static async Task<Dictionary<int, int>> GetUserRecentScoreAsync(string userName, int mode, int recentScoreLimits)
         {
-            var url = $"https://osu.ppy.sh/api/get_user_recent?k={Properties.Settings.Default.userApiKey}&u={userName}&limit={recentScoreLimits}";
+            var url = $"https://osu.ppy.sh/api/get_user_recent?k={Properties.Settings.Default.userApiKey}&u={userName}&m={mode}&limit={recentScoreLimits}";
 
 
             var request = new HttpRequestMessage(HttpMethod.Get, url);
