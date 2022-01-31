@@ -197,7 +197,7 @@ namespace osuEscape
         #endregion
 
 
-        private void SettingFormInit()
+        private void SettingForm_Init()
         {
             // UI Update with saved user settings
             materialSwitch_runAtStartup.Checked = Properties.Settings.Default.isStartup;
@@ -215,6 +215,7 @@ namespace osuEscape
 
             materialSwitch_theme.Checked = Properties.Settings.Default.Theme == 1; // 1: enum value for Dark Theme
             materialSwitch_osuConnection.Checked = !Properties.Settings.Default.isAllowConnection;
+            ToggleFirewall();
 
             TextBox_GlobalHotkey_Update();
         }
@@ -280,7 +281,7 @@ namespace osuEscape
             #endregion
 
             // setting form
-            SettingFormInit();
+            SettingForm_Init();
         }
 
         #endregion
@@ -699,10 +700,7 @@ namespace osuEscape
 
                     await Task.Delay(500);
 
-                    Debug.WriteLine("Connection should be " + Properties.Settings.Default.isAllowConnection);
-
-                    await Task.Run(() => { ToggleFirewall(); });
-
+                    Debug.WriteLine("Connection status: " + Properties.Settings.Default.isAllowConnection);
                 }
             });
         }
@@ -1057,8 +1055,6 @@ namespace osuEscape
             Properties.Settings.Default.isAllowConnection = !Properties.Settings.Default.isAllowConnection;
             materialSwitch_osuConnection.Checked = !Properties.Settings.Default.isAllowConnection;
             ToggleFirewall();
-
-            Invoke_FormRefresh();
         }
 
         private void TextBox_GlobalHotkey_Update()
@@ -1121,7 +1117,6 @@ namespace osuEscape
 
         private void materialSwitch_osuConnection_CheckedChanged(object sender, EventArgs e)
         {
-            // Manual Control by user
             Properties.Settings.Default.isAllowConnection = !materialSwitch_osuConnection.Checked;
             ToggleFirewall();
         }
@@ -1149,6 +1144,7 @@ namespace osuEscape
         private void materialSlider_refreshRate_onValueChanged(object sender, int newValue)
         {
             _readDelay = materialSlider_refreshRate.Value < 50 ? 50 : materialSlider_refreshRate.Value;
+
             Properties.Settings.Default.refreshRate = materialSlider_refreshRate.Value;
         }
 
