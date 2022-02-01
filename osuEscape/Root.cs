@@ -26,7 +26,7 @@ using System.Windows.Forms;
 namespace osuEscape
 {
 
-    public partial class HomeForm : MaterialForm
+    public partial class Root : MaterialForm
     {
         // osu! data reader
         private readonly string _osuWindowTitleHint;
@@ -99,14 +99,14 @@ namespace osuEscape
             [Keys.OemPeriod] = ".",
             [Keys.OemQuestion] = "/"
         };
-        private bool isEditingHotkey = false;
+        /*private bool isEditingHotkey = false;*/
 
         // score upload
         private static readonly HttpClient client = new();
-        private static int beatmapLastNoteOffset = -9999;
+        private static int beatmapLastNoteOffset = Int32.MinValue;
 
         // resize ui variables
-        private Size FormSize_init;
+        /*private Size FormSize_init;*/
         private Point labelSubmissionStatus_Location_init;
 
         // material skin ui
@@ -124,7 +124,7 @@ namespace osuEscape
         bool isOffsetFound = false;
 
 
-        public HomeForm(string osuWindowTitleHint)
+        public Root(string osuWindowTitleHint)
         {
             _osuWindowTitleHint = osuWindowTitleHint;
 
@@ -139,8 +139,9 @@ namespace osuEscape
 
             // for ui resizing
             // design editor pixels height offset (50px)
+            /*this.Size = new Size(this.Size.Width, this.Size.Height - 50);
+            FormSize_init = this.Size;*/
             this.Size = new Size(this.Size.Width, this.Size.Height - 50);
-            FormSize_init = this.Size;
             labelSubmissionStatus_Location_init = materialLabel_submissionStatus.Location;
 
             // avoid opening osu!Escape twice
@@ -214,7 +215,7 @@ namespace osuEscape
             materialSkinManager.Theme = (MaterialSkinManager.Themes)Properties.Settings.Default.Theme;         
 
             materialSwitch_theme.Checked = Properties.Settings.Default.Theme == 1; // 1: enum value for Dark Theme
-            materialSwitch_osuConnection.Checked = !Properties.Settings.Default.isAllowConnection;
+            /*materialSwitch_osuConnection.Checked = !Properties.Settings.Default.isAllowConnection;*/
             ToggleFirewall();
 
             TextBox_GlobalHotkey_Update();
@@ -233,16 +234,15 @@ namespace osuEscape
                 this.Close();
             }
 
-
             osuDataReaderAsync();
 
             // open the app at the previous position (location on window) 
             this.Location = Properties.Settings.Default.appPosition;
 
             // get osu! directory from running process
-            Properties.Settings.Default.osuLocation = Process.GetProcessesByName("osu!").Length == 0
+            /*Properties.Settings.Default.osuLocation = Process.GetProcessesByName("osu!").Length == 0
                                                     ? Properties.Settings.Default.osuLocation
-                                                    : Process.GetProcessesByName("osu!").FirstOrDefault().MainModule.FileName;
+                                                    : Process.GetProcessesByName("osu!").FirstOrDefault().MainModule.FileName;*/
 
             // let user manually find the osu directory if it's still finding
             if (Properties.Settings.Default.osuLocation == string.Empty)
@@ -830,7 +830,7 @@ namespace osuEscape
             materialButton_findOsuLocation.UseAccentColor = true;
             OpenFileDialog_FindOsuLocation();
         }
-        private void MaterialButton_changeToggleHotKey_Click(object sender, EventArgs e)
+        /*private void MaterialButton_changeToggleHotKey_Click(object sender, EventArgs e)
         {
             isEditingHotkey = !isEditingHotkey;
             if (isEditingHotkey)
@@ -844,7 +844,7 @@ namespace osuEscape
                 materialButton_changeToggleHotkey.UseAccentColor = false;
                 materialLabel_globalToggleHotkey.Text = Properties.Settings.Default.GHKText;
             }
-        }
+        }*/
 
 
         #endregion
@@ -853,7 +853,7 @@ namespace osuEscape
 
         private void HomeForm_KeyDown(object sender, KeyEventArgs e)
         {
-            if (isEditingHotkey)
+            if (MainForm.isEditingHotkey)
             {
                 // cancel changes
                 if (e.KeyCode == Keys.Escape)
@@ -1011,6 +1011,7 @@ namespace osuEscape
         {
             materialLabel_submissionStatus.Text = "Submission Status: " + str;
         }
+        //
         private void materialTabControl_menu_Selected(object sender, TabControlEventArgs e)
         {
             if (materialTabControl_menu.SelectedTab == tabPage_main)
@@ -1020,9 +1021,9 @@ namespace osuEscape
             else
             {
                 // reset ui size with fixed min/max
-                this.MaximumSize = FormSize_init;
+                /*this.MaximumSize = FormSize_init;
                 this.Size = FormSize_init;
-                this.MinimumSize = FormSize_init;
+                this.MinimumSize = FormSize_init;*/
 
                 materialLabel_focus.Focus();
 
@@ -1030,18 +1031,18 @@ namespace osuEscape
             }
         }
 
-        private static void ShowMessageBox(string message)
+        /*private static void ShowMessageBox(string message)
         {
             ToggleSound(Properties.Settings.Default.isToggleSound);
 
             MessageBox.Show(message);
-        }
+        }*/
 
-        private static void ToggleSound(bool enabled)
+        /*private static void ToggleSound(bool enabled)
         {
             if (enabled)
                 System.Media.SystemSounds.Asterisk.Play();
-        }
+        }*/
 
         private void notifyIcon_osuEscape_MouseDoubleClick(object sender, MouseEventArgs e)
         {
@@ -1080,12 +1081,18 @@ namespace osuEscape
             {
                 isAlt = true;
             }
-
-            materialLabel_globalToggleHotkey.Text = "Global Toggle Hotkey: ";
+            new MainForm().updateMaterialLabel_globalToggleHotkey(
+                "Global Toggle Hotkey: " + 
+                (isCtrl ? "Ctrl + " : "") +
+                (isShift ? "Shift + " : "") +
+                (isAlt ? "Alt + " : "") +
+                Properties.Settings.Default.GlobalHotKey
+            );
+            /*materialLabel_globalToggleHotkey.Text = "Global Toggle Hotkey: ";
             materialLabel_globalToggleHotkey.Text += isCtrl ? "Ctrl + " : "";
             materialLabel_globalToggleHotkey.Text += isShift ? "Shift + " : "";
             materialLabel_globalToggleHotkey.Text += isAlt ? "Alt + " : "";
-            materialLabel_globalToggleHotkey.Text += Properties.Settings.Default.GlobalHotKey;
+            materialLabel_globalToggleHotkey.Text += Properties.Settings.Default.GlobalHotKey;*/
         }
 
         private void FormClosing_HomeForm(object sender, FormClosingEventArgs e)
@@ -1126,9 +1133,9 @@ namespace osuEscape
             // set the ui size for main tab
             int unneededWidth = 45;
             int unneededHeight = 130;
-            this.MaximumSize = new Size(FormSize_init.Width - unneededWidth, FormSize_init.Height - unneededHeight);
-            this.Size = new Size(FormSize_init.Width - unneededWidth, FormSize_init.Height - unneededHeight);
-            this.MinimumSize = new Size(FormSize_init.Width - unneededWidth, FormSize_init.Height - unneededHeight);
+            this.MaximumSize = new Size(this.Size.Width - unneededWidth, this.Size.Height - unneededHeight);
+            this.Size = new Size(this.Size.Width - unneededWidth, this.Size.Height - unneededHeight);
+            this.MinimumSize = new Size(this.Size.Width - unneededWidth, this.Size.Height - unneededHeight);
         }
 
         private void materialSwitch_theme_CheckedChanged(object sender, EventArgs e)

@@ -11,7 +11,7 @@ namespace osuEscape
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new HomeForm(args.FirstOrDefault()));
+            Application.Run(new Root(args.FirstOrDefault()));
         }
     }
 }

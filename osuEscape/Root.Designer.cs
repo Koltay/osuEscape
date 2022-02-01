@@ -1,6 +1,6 @@
 ﻿namespace osuEscape
 {
-    partial class HomeForm
+    partial class Root
     {
         /// <summary>
         /// Required designer variable.
@@ -22,7 +22,7 @@
         {
             this.components = new System.ComponentModel.Container();
             System.Windows.Forms.ListViewGroup listViewGroup1 = new System.Windows.Forms.ListViewGroup("ListViewGroup_Beatmap", System.Windows.Forms.HorizontalAlignment.Center);
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(HomeForm));
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Root));
             this.materialTabControl_menu = new MaterialSkin.Controls.MaterialTabControl();
             this.tabPage_main = new System.Windows.Forms.TabPage();
             this.materialSlider_refreshRate = new MaterialSkin.Controls.MaterialSlider();
