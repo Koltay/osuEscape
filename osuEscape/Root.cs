@@ -220,9 +220,26 @@ namespace osuEscape
 
             TextBox_GlobalHotkey_Update();
         }
+        private Form ConvertFormToTabPage(Form f)
+        {
+            Form form = f;
+            form.TopLevel = false;
+            form.Visible = true;
+            form.FormBorderStyle = FormBorderStyle.None;
+            form.Dock = DockStyle.Fill;
+            return form;
+        }
 
         private void HomeForm_Load(object sender, EventArgs e)
         {
+
+            materialTabControl_menu.TabPages[0].Controls.Clear();
+            materialTabControl_menu.TabPages[1].Controls.Clear();
+            materialTabControl_menu.TabPages[2].Controls.Clear();
+            materialTabControl_menu.TabPages[0].Controls.Add(ConvertFormToTabPage(new MainForm()));
+            materialTabControl_menu.TabPages[1].Controls.Add(ConvertFormToTabPage(new SettingsForm()));
+            materialTabControl_menu.TabPages[2].Controls.Add(ConvertFormToTabPage(new UploadedScoresForm()));
+
             // check if osu!Escape is already opened 
             if (Process.GetProcessesByName(this.Name).Length > 1)
                 this.Close();
@@ -610,13 +627,13 @@ namespace osuEscape
         {
             if (Properties.Settings.Default.osuLocation == "")
             {
-                ShowMessageBox("ERROR: Invalid Location!");
+                MainFunction.ShowMessageBox("ERROR: Invalid Location!");
             }
             else
             {
                 AllowConnection(Properties.Settings.Default.isAllowConnection);
 
-                ToggleSound(Properties.Settings.Default.isToggleSound);
+                Audio.ToggleSound(Properties.Settings.Default.isToggleSound);
 
                 Invoke_FormRefresh();
             }
@@ -754,7 +771,7 @@ namespace osuEscape
             }
             catch (Exception ex)
             {
-                ShowMessageBox(ex.Message);
+                MainFunction.ShowMessageBox(ex.Message);
             }
         }
         #endregion
@@ -830,7 +847,7 @@ namespace osuEscape
             materialButton_findOsuLocation.UseAccentColor = true;
             OpenFileDialog_FindOsuLocation();
         }
-        /*private void MaterialButton_changeToggleHotKey_Click(object sender, EventArgs e)
+        private void MaterialButton_changeToggleHotKey_Click(object sender, EventArgs e)
         {
             isEditingHotkey = !isEditingHotkey;
             if (isEditingHotkey)
@@ -844,13 +861,13 @@ namespace osuEscape
                 materialButton_changeToggleHotkey.UseAccentColor = false;
                 materialLabel_globalToggleHotkey.Text = Properties.Settings.Default.GHKText;
             }
-        }*/
+        }
 
 
         #endregion
 
         #region Global HotKey
-
+        private bool isEditingHotkey = false;
         private void HomeForm_KeyDown(object sender, KeyEventArgs e)
         {
             if (MainForm.isEditingHotkey)
@@ -981,7 +998,7 @@ namespace osuEscape
 
         private static void IncorrectAPITextOutput()
         {
-            ShowMessageBox(
+            MainFunction.ShowMessageBox(
                     $"Internal server Error/ Incorrect API! {Environment.NewLine} " +
                     $"Please check if your API key is correct.")
                     ;

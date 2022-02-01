@@ -172,8 +172,8 @@
             // 
             // MainForm
             // 
-            /*this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;*/
+            this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
+            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(524, 316);
             this.Controls.Add(this.materialSlider_refreshRate);
             this.Controls.Add(this.materialLabel3);
