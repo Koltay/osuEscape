@@ -91,6 +91,7 @@
             this.materialButton_findOsuLocation.Type = MaterialSkin.Controls.MaterialButton.MaterialButtonType.Contained;
             this.materialButton_findOsuLocation.UseAccentColor = false;
             this.materialButton_findOsuLocation.UseVisualStyleBackColor = true;
+            this.materialButton_findOsuLocation.Click += new System.EventHandler(this.materialButton_findOsuLocation_Click);
             // 
             // materialLabel_globalToggleHotkey
             // 

@@ -24,6 +24,7 @@ namespace osuEscape
         private void MainForm_Load(object sender, EventArgs e)
         {
             materialSwitch_osuConnection.Checked = !Properties.Settings.Default.isAllowConnection;
+            materialSlider_refreshRate.Value = Properties.Settings.Default.refreshRate;
 
             // get osu! directory from running process
             Properties.Settings.Default.osuLocation = Process.GetProcessesByName("osu!").Length == 0
@@ -41,6 +42,33 @@ namespace osuEscape
                 Firewall.RuleSetUp(Properties.Settings.Default.osuLocation);
             }
         }
+        public void updateMaterialLabel_globalToggleHotkey(string text)
+        {
+            /*SafeUpdate(() => materialLabel_globalToggleHotkey.Text = text);*/
+            this.materialLabel_globalToggleHotkey.Text = text;
+        }
+        /*private void SafeUpdate(Action action)
+        {
+            if (this.InvokeRequired)
+            {
+                this.BeginInvoke(action);
+            }
+            else
+            {
+                action();
+            }
+        }*/
+        public void materialSwitch_osuConnection_CheckedChanged(object sender, EventArgs e)
+        {
+            Properties.Settings.Default.isAllowConnection = !materialSwitch_osuConnection.Checked;
+            Firewall.ToggleFirewall();
+        }
+
+        public void materialButton_findOsuLocation_Click(object sender, EventArgs e)
+        {
+            materialButton_findOsuLocation.UseAccentColor = true;
+            OpenFileDialog_FindOsuLocation();
+        }
         public void MaterialButton_changeToggleHotKey_Click(object sender, EventArgs e)
         {
             isEditingHotkey = !isEditingHotkey;
@@ -56,29 +84,8 @@ namespace osuEscape
                 materialLabel_globalToggleHotkey.Text = Properties.Settings.Default.GHKText;
             }
         }
-        public void materialSwitch_osuConnection_CheckedChanged(object sender, EventArgs e)
-        {
-            Properties.Settings.Default.isAllowConnection = !materialSwitch_osuConnection.Checked;
-            ToggleFirewall();
-        }
 
-        private void ToggleFirewall()
-        {
-            if (Properties.Settings.Default.osuLocation == "")
-            {
-                MainFunction.ShowMessageBox("ERROR: Invalid Location!");
-            }
-            else
-            {
-                Firewall.AllowConnection(Properties.Settings.Default.isAllowConnection);
-
-                Audio.ToggleSound(Properties.Settings.Default.isToggleSound);
-
-                MainFunction.Invoke_FormRefresh();
-            }
-        }
-
-        private void OpenFileDialog_FindOsuLocation()
+        public void OpenFileDialog_FindOsuLocation()
         {
             OpenFileDialog ofd = new()
             {
@@ -97,11 +104,6 @@ namespace osuEscape
                 OpenFileDialog_FindOsuLocation();
             }
             materialButton_findOsuLocation.UseAccentColor = false;
-        }
-
-        public void updateMaterialLabel_globalToggleHotkey(string text)
-        {
-            materialLabel_globalToggleHotkey.Text = text;
         }
     }
 }

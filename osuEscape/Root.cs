@@ -211,12 +211,12 @@ namespace osuEscape
             materialTextBox_apiInput.Text = Properties.Settings.Default.userApiKey;
             materialSlider_Accuracy.Value = Properties.Settings.Default.submitAcc;
             materialCheckbox_isFullCombo.Checked = Properties.Settings.Default.isCheckingFullCombo;
-            materialSlider_refreshRate.Value = Properties.Settings.Default.refreshRate;
+            /*materialSlider_refreshRate.Value = Properties.Settings.Default.refreshRate;*/
             materialSkinManager.Theme = (MaterialSkinManager.Themes)Properties.Settings.Default.Theme;         
 
             materialSwitch_theme.Checked = Properties.Settings.Default.Theme == 1; // 1: enum value for Dark Theme
             /*materialSwitch_osuConnection.Checked = !Properties.Settings.Default.isAllowConnection;*/
-            ToggleFirewall();
+            Firewall.ToggleFirewall();
 
             TextBox_GlobalHotkey_Update();
         }
@@ -269,7 +269,7 @@ namespace osuEscape
             }
             else
             {
-                FirewallRuleSetUp(Properties.Settings.Default.osuLocation);
+                Firewall.RuleSetUp(Properties.Settings.Default.osuLocation);
             }
 
             #region Tooltip setup
@@ -521,7 +521,7 @@ namespace osuEscape
                             isSubmittableBeatmapStatus())
                         {
                             Properties.Settings.Default.isAllowConnection = true;
-                            ToggleFirewall();
+                            Firewall.ToggleFirewall();
                             isSetScore = true;
                         }
                     }
@@ -567,7 +567,7 @@ namespace osuEscape
                                 isRecentSetScoreUploaded = true;
 
                                 Properties.Settings.Default.isAllowConnection = false;
-                                ToggleFirewall();
+                                Firewall.ToggleFirewall();
 
                                 isSetScore = false;
 
@@ -623,7 +623,7 @@ namespace osuEscape
 
         #region ToggleConnection 
 
-        private void ToggleFirewall()
+        /*private void ToggleFirewall()
         {
             if (Properties.Settings.Default.osuLocation == "")
             {
@@ -637,9 +637,9 @@ namespace osuEscape
 
                 Invoke_FormRefresh();
             }
-        }
+        }*/
 
-        private void AllowConnection(bool isAllow)
+        /*private void AllowConnection(bool isAllow)
         {
             Process cmd = new();
             cmd.StartInfo.FileName = "netsh";
@@ -654,7 +654,7 @@ namespace osuEscape
             ColorSchemeUpdate();
 
             ContextMenuStripUpdate();
-        }
+        }*/
 
         private void ColorSchemeUpdate()
         {
@@ -675,7 +675,7 @@ namespace osuEscape
                     TextShade.WHITE);
         }
 
-        private async void FirewallRuleSetUp(string filename)
+        /*private async void FirewallRuleSetUp(string filename)
         {
             await Task.Run(async () =>
             {
@@ -720,7 +720,7 @@ namespace osuEscape
                     Debug.WriteLine("Connection status: " + Properties.Settings.Default.isAllowConnection);
                 }
             });
-        }
+        }*/
 
         #endregion
 
@@ -729,7 +729,7 @@ namespace osuEscape
         #region Find osu! location
 
 
-        private void OpenFileDialog_FindOsuLocation()
+        /*private void OpenFileDialog_FindOsuLocation()
         {
             OpenFileDialog ofd = new()
             {
@@ -751,7 +751,7 @@ namespace osuEscape
                 }
             }
             materialButton_findOsuLocation.UseAccentColor = false;
-        }
+        }*/
 
         #endregion
 
@@ -842,12 +842,12 @@ namespace osuEscape
         private void materialButton_checkApi_Click(object sender, EventArgs e)
         => VerifyAPIKeyAsync();
 
-        private void MaterialButton_findOsuLocation_Click(object sender, EventArgs e)
+        /*private void MaterialButton_findOsuLocation_Click(object sender, EventArgs e)
         {
             materialButton_findOsuLocation.UseAccentColor = true;
             OpenFileDialog_FindOsuLocation();
-        }
-        private void MaterialButton_changeToggleHotKey_Click(object sender, EventArgs e)
+        }*/
+        /*private void MaterialButton_changeToggleHotKey_Click(object sender, EventArgs e)
         {
             isEditingHotkey = !isEditingHotkey;
             if (isEditingHotkey)
@@ -861,7 +861,7 @@ namespace osuEscape
                 materialButton_changeToggleHotkey.UseAccentColor = false;
                 materialLabel_globalToggleHotkey.Text = Properties.Settings.Default.GHKText;
             }
-        }
+        }*/
 
 
         #endregion
@@ -1072,7 +1072,7 @@ namespace osuEscape
             // Toggle Connection status on properties settings and update switch status 
             Properties.Settings.Default.isAllowConnection = !Properties.Settings.Default.isAllowConnection;
             materialSwitch_osuConnection.Checked = !Properties.Settings.Default.isAllowConnection;
-            ToggleFirewall();
+            Firewall.ToggleFirewall();
         }
 
         private void TextBox_GlobalHotkey_Update()
@@ -1098,13 +1098,15 @@ namespace osuEscape
             {
                 isAlt = true;
             }
-            new MainForm().updateMaterialLabel_globalToggleHotkey(
-                "Global Toggle Hotkey: " + 
-                (isCtrl ? "Ctrl + " : "") +
-                (isShift ? "Shift + " : "") +
-                (isAlt ? "Alt + " : "") +
-                Properties.Settings.Default.GlobalHotKey
-            );
+            foreach (Form tmp in Application.OpenForms)
+                foreach (System.Windows.Forms.Control temp in tmp.Controls)
+                    if (temp.Name == "materialLabel_globalToggleHotkey")
+                        temp.Text = "Global Toggle Hotkey: " +
+                                    (isCtrl ? "Ctrl + " : "") +
+                                    (isShift ? "Shift + " : "") +
+                                    (isAlt ? "Alt + " : "") +
+                                    Properties.Settings.Default.GlobalHotKey;
+
             /*materialLabel_globalToggleHotkey.Text = "Global Toggle Hotkey: ";
             materialLabel_globalToggleHotkey.Text += isCtrl ? "Ctrl + " : "";
             materialLabel_globalToggleHotkey.Text += isShift ? "Shift + " : "";
@@ -1142,7 +1144,7 @@ namespace osuEscape
         private void materialSwitch_osuConnection_CheckedChanged(object sender, EventArgs e)
         {
             Properties.Settings.Default.isAllowConnection = !materialSwitch_osuConnection.Checked;
-            ToggleFirewall();
+            Firewall.ToggleFirewall();
         }
 
         private void MainTabResize()

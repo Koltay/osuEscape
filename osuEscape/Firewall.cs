@@ -22,6 +22,22 @@ namespace osuEscape
             cmd.Start();
         }
 
+        public static void ToggleFirewall()
+        {
+            if (Properties.Settings.Default.osuLocation == "")
+            {
+                MainFunction.ShowMessageBox("ERROR: Invalid Location!");
+            }
+            else
+            {
+                AllowConnection(Properties.Settings.Default.isAllowConnection);
+
+                Audio.ToggleSound(Properties.Settings.Default.isToggleSound);
+
+                /*Invoke_FormRefresh();*/
+            }
+        }
+
         async public static void RuleSetUp(string filename)
         {
             await Task.Run(async () =>
