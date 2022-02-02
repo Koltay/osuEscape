@@ -28,6 +28,10 @@ namespace osuEscape
 
     public partial class Root : MaterialForm
     {
+        public Form mainForm = new MainForm();
+        public Form settingsForm = new SettingsForm();
+        public Form uploadedScoresForm = new UploadedScoresForm();
+
         // osu! data reader
         private readonly string _osuWindowTitleHint;
         private int _readDelay = 50;
@@ -232,13 +236,12 @@ namespace osuEscape
 
         private void HomeForm_Load(object sender, EventArgs e)
         {
-
             materialTabControl_menu.TabPages[0].Controls.Clear();
             materialTabControl_menu.TabPages[1].Controls.Clear();
             materialTabControl_menu.TabPages[2].Controls.Clear();
-            materialTabControl_menu.TabPages[0].Controls.Add(ConvertFormToTabPage(new MainForm()));
-            materialTabControl_menu.TabPages[1].Controls.Add(ConvertFormToTabPage(new SettingsForm()));
-            materialTabControl_menu.TabPages[2].Controls.Add(ConvertFormToTabPage(new UploadedScoresForm()));
+            materialTabControl_menu.TabPages[0].Controls.Add(ConvertFormToTabPage(mainForm));
+            materialTabControl_menu.TabPages[1].Controls.Add(ConvertFormToTabPage(settingsForm));
+            materialTabControl_menu.TabPages[2].Controls.Add(ConvertFormToTabPage(uploadedScoresForm));
 
             // check if osu!Escape is already opened 
             if (Process.GetProcessesByName(this.Name).Length > 1)
@@ -986,9 +989,6 @@ namespace osuEscape
         {
             this.Invoke(new MethodInvoker(delegate ()
             {
-                //Access your controls
-                materialSwitch_osuConnection.Checked = !Properties.Settings.Default.isAllowConnection;
-
                 this.Refresh();
             }));
         }
@@ -1139,14 +1139,7 @@ namespace osuEscape
             WindowsPrincipal principal = new(identity);
             return principal.IsInRole(WindowsBuiltInRole.Administrator);
         }     
-        
-
-        private void materialSwitch_osuConnection_CheckedChanged(object sender, EventArgs e)
-        {
-            Properties.Settings.Default.isAllowConnection = !materialSwitch_osuConnection.Checked;
-            Firewall.ToggleFirewall();
-        }
-
+       
         private void MainTabResize()
         {
             // set the ui size for main tab

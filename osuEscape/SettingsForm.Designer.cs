@@ -60,6 +60,7 @@
             this.materialCheckbox_isFullCombo.TabStop = false;
             this.materialCheckbox_isFullCombo.Text = "Full Combo";
             this.materialCheckbox_isFullCombo.UseVisualStyleBackColor = true;
+            this.materialCheckbox_isFullCombo.CheckedChanged += new System.EventHandler(this.materialCheckbox_isFullCombo_CheckedChanged);
             // 
             // materialLabel2
             // 
@@ -90,6 +91,7 @@
             this.materialSwitch_theme.TabStop = false;
             this.materialSwitch_theme.Text = "Dark Theme";
             this.materialSwitch_theme.UseVisualStyleBackColor = true;
+            this.materialSwitch_theme.CheckedChanged += new System.EventHandler(this.materialSwitch_theme_CheckedChanged);
             // 
             // materialTextBox_apiInput
             // 
@@ -140,6 +142,7 @@
             this.materialButton_checkApi.Type = MaterialSkin.Controls.MaterialButton.MaterialButtonType.Contained;
             this.materialButton_checkApi.UseAccentColor = true;
             this.materialButton_checkApi.UseVisualStyleBackColor = true;
+            this.materialButton_checkApi.Click += new System.EventHandler(this.materialButton_checkApi_Click);
             // 
             // materialLabel_apiNeeded
             // 
@@ -170,6 +173,7 @@
             this.materialSwitch_autoDisconnect.TabStop = false;
             this.materialSwitch_autoDisconnect.Text = "Auto Disconnection (API required)";
             this.materialSwitch_autoDisconnect.UseVisualStyleBackColor = true;
+            this.materialSwitch_autoDisconnect.CheckedChanged += new System.EventHandler(this.materialSwitch_autoDisconnect_CheckedChanged);
             // 
             // materialSwitch_submitIfFC
             // 
@@ -186,6 +190,7 @@
             this.materialSwitch_submitIfFC.TabStop = false;
             this.materialSwitch_submitIfFC.Text = "Auto Connection";
             this.materialSwitch_submitIfFC.UseVisualStyleBackColor = true;
+            this.materialSwitch_submitIfFC.CheckedChanged += new System.EventHandler(this.materialSwitch_submitIfFC_CheckedChanged);
             // 
             // materialSwitch_topMost
             // 
@@ -202,6 +207,7 @@
             this.materialSwitch_topMost.TabStop = false;
             this.materialSwitch_topMost.Text = "Always at Top";
             this.materialSwitch_topMost.UseVisualStyleBackColor = true;
+            this.materialSwitch_topMost.CheckedChanged += new System.EventHandler(this.materialSwitch_topMost_CheckedChanged);
             // 
             // materialSwitch_toggleWithSound
             // 
@@ -218,6 +224,7 @@
             this.materialSwitch_toggleWithSound.TabStop = false;
             this.materialSwitch_toggleWithSound.Text = "Toggle with Sound";
             this.materialSwitch_toggleWithSound.UseVisualStyleBackColor = true;
+            this.materialSwitch_toggleWithSound.CheckedChanged += new System.EventHandler(this.materialSwitch_toggleWithSound_CheckedChanged);
             // 
             // materialSwitch_minimizeToSystemTray
             // 
@@ -234,6 +241,7 @@
             this.materialSwitch_minimizeToSystemTray.TabStop = false;
             this.materialSwitch_minimizeToSystemTray.Text = "Minimize to System Tray";
             this.materialSwitch_minimizeToSystemTray.UseVisualStyleBackColor = true;
+            this.materialSwitch_minimizeToSystemTray.CheckedChanged += new System.EventHandler(this.materialSwitch_minimizeToSystemTray_CheckedChanged);
             // 
             // materialSwitch_runAtStartup
             // 
@@ -250,6 +258,7 @@
             this.materialSwitch_runAtStartup.TabStop = false;
             this.materialSwitch_runAtStartup.Text = "Run at Startup";
             this.materialSwitch_runAtStartup.UseVisualStyleBackColor = true;
+            this.materialSwitch_runAtStartup.CheckedChanged += new System.EventHandler(this.materialSwitch_runAtStartup_CheckedChanged);
             // 
             // materialLabel_focus
             // 
@@ -280,6 +289,7 @@
             this.materialSlider_Accuracy.Value = 0;
             this.materialSlider_Accuracy.ValueMax = 100;
             this.materialSlider_Accuracy.ValueSuffix = "%";
+            this.materialSlider_Accuracy.onValueChanged += new MaterialSkin.Controls.MaterialSlider.ValueChanged(this.materialSlider_Accuracy_onValueChanged);
             // 
             // SettingsForm
             // 
