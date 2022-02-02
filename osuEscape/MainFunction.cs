@@ -20,8 +20,6 @@ namespace osuEscape
             /*this.Invoke(new MethodInvoker(delegate ()
             {
                 //Access your controls
-                materialSwitch_osuConnection.Checked = !Properties.Settings.Default.isAllowConnection;
-
                 this.Refresh();
             }));*/
         }

@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using System.Diagnostics;
 using System.Windows.Forms;
 using MaterialSkin.Controls;
+using MaterialSkin;
 
 namespace osuEscape
 {
@@ -23,7 +24,7 @@ namespace osuEscape
             cmd.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
             cmd.Start();
         }
-        public static void Toggle(Form mainFormOnly = null)
+        public static void Toggle()
         {
             if (Properties.Settings.Default.osuLocation == "")
             {
@@ -34,20 +35,29 @@ namespace osuEscape
                 AllowConnection(Properties.Settings.Default.isAllowConnection);
 
                 Audio.ToggleSound(Properties.Settings.Default.isToggleSound);
-
-                if (mainFormOnly != null)
-                {
-                    mainFormOnly.Controls["materialSwitch_osuConnection"].BeginInvoke((MethodInvoker)delegate
-                    {
-                        ((MaterialSwitch)mainFormOnly.Controls["materialSwitch_osuConnection"]).Checked = Properties.Settings.Default.isAllowConnection;
-                    });
-                }
-
-                /*Invoke_FormRefresh();*/
             }
 
             ((Root)Application.OpenForms[0]).ContextMenuStripUpdate();
-            ((Root)Application.OpenForms[0]).ColorSchemeUpdate();
+
+            //((Root)Application.OpenForms[0]).Refresh();
+            //((MainForm)Application.OpenForms[1]).Refresh();
+            //((SettingsForm)Application.OpenForms[2]).Refresh();
+            //((UploadedScoresForm)Application.OpenForms[3]).Refresh();
+
+            //FormStyleManager.materialSkinManager.ColorScheme = Properties.Settings.Default.isAllowConnection ?
+            //    new ColorScheme(
+            //           Primary.Grey800,
+            //           Primary.Grey900,
+            //           Primary.Grey500,
+            //           Accent.Green700,
+            //           TextShade.WHITE)
+            //    :
+            //    new ColorScheme(
+            //           Primary.Grey800,
+            //           Primary.Grey900,
+            //           Primary.Grey500,
+            //           Accent.Red400,
+            //           TextShade.WHITE);
         }
 
         async public static void RuleSetUp(string filename)

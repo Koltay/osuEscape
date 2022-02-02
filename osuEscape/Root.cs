@@ -104,8 +104,6 @@ namespace osuEscape
             [Keys.OemQuestion] = "/"
         };
 
-        /*private bool isEditingHotkey = false;*/
-
         // score upload
         private static readonly HttpClient client = new();
         private static int beatmapLastNoteOffset = Int32.MinValue;
@@ -142,6 +140,7 @@ namespace osuEscape
             // Initialize material skin manager
             FormStyleManager.AddFormToManage(this);
 
+
             _sreader = StructuredOsuMemoryReader.Instance.GetInstanceForWindowTitleHint(osuWindowTitleHint);
 
             // for ui resizing
@@ -156,7 +155,6 @@ namespace osuEscape
                 this.Close();
             }
 
-            // startup issue check
             // hotkey
             keyboardHook.KeyPressed += new EventHandler<KeyPressedEventArgs>(KeyboardHook_OnKeyPressed);
             keyboardHook.RegisterHotKey((ModifierKeys)Properties.Settings.Default.ModifierKeys,
@@ -473,7 +471,7 @@ namespace osuEscape
                             isSubmittableBeatmapStatus())
                         {
                             Properties.Settings.Default.isAllowConnection = true;
-                            Firewall.Toggle(mainForm);
+                            Firewall.Toggle();
                             isSetScore = true;
                         }
                     }
@@ -520,7 +518,7 @@ namespace osuEscape
                                 isRecentSetScoreUploaded = true;
 
                                 Properties.Settings.Default.isAllowConnection = false;
-                                Firewall.Toggle(mainForm);
+                                Firewall.Toggle();
 
                                 isSetScore = false;
 
@@ -744,8 +742,9 @@ namespace osuEscape
         {
             // Toggle Connection status on properties settings and update switch status 
             Properties.Settings.Default.isAllowConnection = !Properties.Settings.Default.isAllowConnection;
-            Firewall.Toggle(mainForm);
-            ((MaterialSwitch) mainForm.Controls["materialSwitch_osuConnection"]).Checked = !Properties.Settings.Default.isAllowConnection;
+            Firewall.Toggle();
+
+            ((MaterialSwitch)mainForm.Controls["materialSwitch_osuConnection"]).Checked = !Properties.Settings.Default.isAllowConnection;
         }
         
 

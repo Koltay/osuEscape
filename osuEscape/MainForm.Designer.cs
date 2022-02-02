@@ -43,7 +43,7 @@
             this.materialSlider_refreshRate.Depth = 0;
             this.materialSlider_refreshRate.Font = new System.Drawing.Font("Roboto", 14F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Pixel);
             this.materialSlider_refreshRate.FontType = MaterialSkin.MaterialSkinManager.fontType.Button;
-            this.materialSlider_refreshRate.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(222)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))));
+            this.materialSlider_refreshRate.ForeColor = System.Drawing.SystemColors.ButtonHighlight;
             this.materialSlider_refreshRate.Location = new System.Drawing.Point(340, 153);
             this.materialSlider_refreshRate.MouseState = MaterialSkin.MouseState.HOVER;
             this.materialSlider_refreshRate.Name = "materialSlider_refreshRate";
@@ -64,6 +64,7 @@
             this.materialLabel3.Depth = 0;
             this.materialLabel3.Font = new System.Drawing.Font("Roboto", 16F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
             this.materialLabel3.FontType = MaterialSkin.MaterialSkinManager.fontType.Subtitle1;
+            this.materialLabel3.ForeColor = System.Drawing.SystemColors.ButtonHighlight;
             this.materialLabel3.Location = new System.Drawing.Point(365, 135);
             this.materialLabel3.MouseState = MaterialSkin.MouseState.HOVER;
             this.materialLabel3.Name = "materialLabel3";
@@ -78,6 +79,7 @@
             this.materialButton_findOsuLocation.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.materialButton_findOsuLocation.Density = MaterialSkin.Controls.MaterialButton.MaterialButtonDensity.Default;
             this.materialButton_findOsuLocation.Depth = 0;
+            this.materialButton_findOsuLocation.ForeColor = System.Drawing.SystemColors.ButtonHighlight;
             this.materialButton_findOsuLocation.HighEmphasis = true;
             this.materialButton_findOsuLocation.Icon = null;
             this.materialButton_findOsuLocation.Location = new System.Drawing.Point(293, 73);
@@ -99,6 +101,7 @@
             this.materialLabel_globalToggleHotkey.AutoSize = true;
             this.materialLabel_globalToggleHotkey.Depth = 0;
             this.materialLabel_globalToggleHotkey.Font = new System.Drawing.Font("Roboto", 14F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
+            this.materialLabel_globalToggleHotkey.ForeColor = System.Drawing.SystemColors.ButtonHighlight;
             this.materialLabel_globalToggleHotkey.Location = new System.Drawing.Point(13, 49);
             this.materialLabel_globalToggleHotkey.MouseState = MaterialSkin.MouseState.HOVER;
             this.materialLabel_globalToggleHotkey.Name = "materialLabel_globalToggleHotkey";
@@ -111,6 +114,7 @@
             this.materialLabel_osuPath.AutoSize = true;
             this.materialLabel_osuPath.Depth = 0;
             this.materialLabel_osuPath.Font = new System.Drawing.Font("Roboto", 14F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
+            this.materialLabel_osuPath.ForeColor = System.Drawing.SystemColors.ButtonHighlight;
             this.materialLabel_osuPath.Location = new System.Drawing.Point(13, 111);
             this.materialLabel_osuPath.MaximumSize = new System.Drawing.Size(200, 0);
             this.materialLabel_osuPath.MouseState = MaterialSkin.MouseState.HOVER;
@@ -123,6 +127,7 @@
             // 
             this.materialSwitch_osuConnection.AutoSize = true;
             this.materialSwitch_osuConnection.Depth = 0;
+            this.materialSwitch_osuConnection.ForeColor = System.Drawing.SystemColors.ButtonHighlight;
             this.materialSwitch_osuConnection.Location = new System.Drawing.Point(3, 3);
             this.materialSwitch_osuConnection.Margin = new System.Windows.Forms.Padding(0);
             this.materialSwitch_osuConnection.MouseLocation = new System.Drawing.Point(-1, -1);
@@ -141,6 +146,7 @@
             this.materialLabel_submissionStatus.AutoSize = true;
             this.materialLabel_submissionStatus.Depth = 0;
             this.materialLabel_submissionStatus.Font = new System.Drawing.Font("Roboto", 14F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
+            this.materialLabel_submissionStatus.ForeColor = System.Drawing.SystemColors.ButtonHighlight;
             this.materialLabel_submissionStatus.Location = new System.Drawing.Point(13, 174);
             this.materialLabel_submissionStatus.MouseState = MaterialSkin.MouseState.HOVER;
             this.materialLabel_submissionStatus.Name = "materialLabel_submissionStatus";
@@ -156,6 +162,7 @@
             this.materialButton_changeToggleHotkey.Density = MaterialSkin.Controls.MaterialButton.MaterialButtonDensity.Default;
             this.materialButton_changeToggleHotkey.Depth = 0;
             this.materialButton_changeToggleHotkey.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.materialButton_changeToggleHotkey.ForeColor = System.Drawing.SystemColors.ButtonHighlight;
             this.materialButton_changeToggleHotkey.HighEmphasis = true;
             this.materialButton_changeToggleHotkey.Icon = null;
             this.materialButton_changeToggleHotkey.Location = new System.Drawing.Point(293, 11);
@@ -178,6 +185,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(45)))), ((int)(((byte)(52)))), ((int)(((byte)(54)))));
             this.ClientSize = new System.Drawing.Size(524, 316);
             this.Controls.Add(this.materialLabel_osuPath);
             this.Controls.Add(this.materialSlider_refreshRate);
@@ -187,6 +195,7 @@
             this.Controls.Add(this.materialSwitch_osuConnection);
             this.Controls.Add(this.materialLabel_submissionStatus);
             this.Controls.Add(this.materialButton_changeToggleHotkey);
+            this.ForeColor = System.Drawing.SystemColors.ButtonHighlight;
             this.Name = "MainForm";
             this.Text = "MainForm";
             this.Load += new System.EventHandler(this.MainForm_Load);

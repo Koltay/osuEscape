@@ -19,7 +19,7 @@ namespace osuEscape
     {
         public SettingsForm()
         {
-            InitializeComponent();          
+            InitializeComponent();
         }
 
         // score upload
@@ -47,10 +47,6 @@ namespace osuEscape
             materialTextBox_apiInput.Text = Properties.Settings.Default.userApiKey;
             materialSlider_Accuracy.Value = Properties.Settings.Default.submitAcc;
             materialCheckbox_isFullCombo.Checked = Properties.Settings.Default.isCheckingFullCombo;
-
-            //materialSkinManager.Theme = (MaterialSkinManager.Themes)Properties.Settings.Default.Theme;
-
-            materialSwitch_theme.Checked = Properties.Settings.Default.Theme == 1; // 1: enum value for Dark Theme
 
             APIRequiredCheckBoxesEnabled();
 
@@ -94,12 +90,6 @@ namespace osuEscape
         private void materialButton_checkApi_Click(object sender, EventArgs e)
        => VerifyAPIKeyAsync();
 
-        private void materialSwitch_theme_CheckedChanged(object sender, EventArgs e)
-        {
-            Properties.Settings.Default.Theme = materialSwitch_theme.Checked ? 1 : 0;
-            //materialSkinManager.Theme = (MaterialSkinManager.Themes)Properties.Settings.Default.Theme;
-        }
-
         private void materialCheckbox_isFullCombo_CheckedChanged(object sender, EventArgs e)
         {
             Properties.Settings.Default.isCheckingFullCombo = materialCheckbox_isFullCombo.Checked;
@@ -139,8 +129,6 @@ namespace osuEscape
                 IncorrectAPITextOutput();
                 materialSwitch_autoDisconnect.Checked = false;
             }
-
-            MainFunction.Invoke_FormRefresh();
         }
 
         private static void IncorrectAPITextOutput()

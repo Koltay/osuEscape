@@ -17,20 +17,29 @@ namespace osuEscape
             materialSkinManager = MaterialSkinManager.Instance;
             materialSkinManager.EnforceBackcolorOnAllComponents = false;
             materialSkinManager.AddFormToManage(f);
-            materialSkinManager.ColorScheme = Properties.Settings.Default.isAllowConnection ?
-            new ColorScheme(
-                    Primary.Grey800,
-                    Primary.Grey900,
-                    Primary.Grey500,
-                    Accent.Green700,
-                    TextShade.WHITE)
-            :
-            new ColorScheme(
-                    Primary.Grey800,
-                    Primary.Grey900,
-                    Primary.Grey500,
-                    Accent.Red400,
-                    TextShade.WHITE);
+            materialSkinManager.Theme = MaterialSkinManager.Themes.DARK;
+        }
+
+        public void ColorSchemeUpdate(MaterialForm mf)
+        {
+            mf.Invoke(new Action(() =>
+            {
+                materialSkinManager.ColorScheme = Properties.Settings.Default.isAllowConnection ?
+                new ColorScheme(
+                       Primary.Grey800,
+                       Primary.Grey900,
+                       Primary.Grey500,
+                       Accent.Green700,
+                       TextShade.WHITE)
+                :
+                new ColorScheme(
+                       Primary.Grey800,
+                       Primary.Grey900,
+                       Primary.Grey500,
+                       Accent.Red400,
+                       TextShade.WHITE);
+
+            }));
         }
     }
 }

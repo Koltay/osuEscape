@@ -43,12 +43,13 @@
             this.materialTabControl_menu.Controls.Add(this.tabPage_settings);
             this.materialTabControl_menu.Controls.Add(this.tabPage_uploadedScores);
             this.materialTabControl_menu.Depth = 0;
-            this.materialTabControl_menu.Location = new System.Drawing.Point(5, 105);
+            this.materialTabControl_menu.Location = new System.Drawing.Point(-1, 98);
             this.materialTabControl_menu.MouseState = MaterialSkin.MouseState.HOVER;
             this.materialTabControl_menu.Multiline = true;
             this.materialTabControl_menu.Name = "materialTabControl_menu";
+            this.materialTabControl_menu.Padding = new System.Drawing.Point(0, 0);
             this.materialTabControl_menu.SelectedIndex = 0;
-            this.materialTabControl_menu.Size = new System.Drawing.Size(548, 386);
+            this.materialTabControl_menu.Size = new System.Drawing.Size(554, 393);
             this.materialTabControl_menu.TabIndex = 0;
             this.materialTabControl_menu.Selected += new System.Windows.Forms.TabControlEventHandler(this.materialTabControl_menu_Selected);
             // 
@@ -57,9 +58,9 @@
             this.tabPage_main.BackColor = System.Drawing.Color.White;
             this.tabPage_main.ImageKey = "Home_32.png";
             this.tabPage_main.Location = new System.Drawing.Point(4, 27);
+            this.tabPage_main.Margin = new System.Windows.Forms.Padding(0);
             this.tabPage_main.Name = "tabPage_main";
-            this.tabPage_main.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage_main.Size = new System.Drawing.Size(540, 355);
+            this.tabPage_main.Size = new System.Drawing.Size(546, 362);
             this.tabPage_main.TabIndex = 0;
             this.tabPage_main.Text = "Main";
             // 
@@ -70,19 +71,19 @@
             this.tabPage_settings.Location = new System.Drawing.Point(4, 27);
             this.tabPage_settings.Name = "tabPage_settings";
             this.tabPage_settings.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage_settings.Size = new System.Drawing.Size(540, 355);
+            this.tabPage_settings.Size = new System.Drawing.Size(546, 362);
             this.tabPage_settings.TabIndex = 1;
             this.tabPage_settings.Text = "Settings";
             // 
             // tabPage_uploadedScores
             // 
+            this.tabPage_uploadedScores.BackColor = System.Drawing.SystemColors.ButtonHighlight;
             this.tabPage_uploadedScores.Location = new System.Drawing.Point(4, 27);
             this.tabPage_uploadedScores.Name = "tabPage_uploadedScores";
             this.tabPage_uploadedScores.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage_uploadedScores.Size = new System.Drawing.Size(540, 355);
+            this.tabPage_uploadedScores.Size = new System.Drawing.Size(546, 362);
             this.tabPage_uploadedScores.TabIndex = 2;
             this.tabPage_uploadedScores.Text = "Uploaded Scores";
-            this.tabPage_uploadedScores.UseVisualStyleBackColor = true;
             // 
             // contextMenuStrip_osu
             // 
@@ -119,6 +120,7 @@
             this.materialTabSelector.Depth = 0;
             this.materialTabSelector.Font = new System.Drawing.Font("Roboto", 14F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
             this.materialTabSelector.Location = new System.Drawing.Point(0, 64);
+            this.materialTabSelector.Margin = new System.Windows.Forms.Padding(3, 3, 0, 3);
             this.materialTabSelector.MouseState = MaterialSkin.MouseState.HOVER;
             this.materialTabSelector.Name = "materialTabSelector";
             this.materialTabSelector.Size = new System.Drawing.Size(553, 35);
@@ -129,7 +131,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.BackColor = System.Drawing.SystemColors.ActiveCaption;
+            this.BackColor = System.Drawing.SystemColors.ButtonShadow;
             this.ClientSize = new System.Drawing.Size(553, 497);
             this.Controls.Add(this.materialTabSelector);
             this.Controls.Add(this.materialTabControl_menu);

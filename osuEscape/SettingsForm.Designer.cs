@@ -31,7 +31,6 @@
             this.components = new System.ComponentModel.Container();
             this.materialCheckbox_isFullCombo = new MaterialSkin.Controls.MaterialCheckbox();
             this.materialLabel2 = new MaterialSkin.Controls.MaterialLabel();
-            this.materialSwitch_theme = new MaterialSkin.Controls.MaterialSwitch();
             this.materialTextBox_apiInput = new MaterialSkin.Controls.MaterialTextBox2();
             this.materialButton_checkApi = new MaterialSkin.Controls.MaterialButton();
             this.materialLabel_apiNeeded = new MaterialSkin.Controls.MaterialLabel();
@@ -77,23 +76,6 @@
             this.materialLabel2.TabIndex = 45;
             this.materialLabel2.Text = "Accuracy";
             this.materialLabel2.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            // 
-            // materialSwitch_theme
-            // 
-            this.materialSwitch_theme.AutoSize = true;
-            this.materialSwitch_theme.Depth = 0;
-            this.materialSwitch_theme.Location = new System.Drawing.Point(1, 247);
-            this.materialSwitch_theme.Margin = new System.Windows.Forms.Padding(0);
-            this.materialSwitch_theme.MouseLocation = new System.Drawing.Point(-1, -1);
-            this.materialSwitch_theme.MouseState = MaterialSkin.MouseState.HOVER;
-            this.materialSwitch_theme.Name = "materialSwitch_theme";
-            this.materialSwitch_theme.Ripple = true;
-            this.materialSwitch_theme.Size = new System.Drawing.Size(144, 37);
-            this.materialSwitch_theme.TabIndex = 44;
-            this.materialSwitch_theme.TabStop = false;
-            this.materialSwitch_theme.Text = "Dark Theme";
-            this.materialSwitch_theme.UseVisualStyleBackColor = true;
-            this.materialSwitch_theme.CheckedChanged += new System.EventHandler(this.materialSwitch_theme_CheckedChanged);
             // 
             // materialTextBox_apiInput
             // 
@@ -296,10 +278,10 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(45)))), ((int)(((byte)(52)))), ((int)(((byte)(54)))));
             this.ClientSize = new System.Drawing.Size(800, 450);
             this.Controls.Add(this.materialCheckbox_isFullCombo);
             this.Controls.Add(this.materialLabel2);
-            this.Controls.Add(this.materialSwitch_theme);
             this.Controls.Add(this.materialTextBox_apiInput);
             this.Controls.Add(this.materialButton_checkApi);
             this.Controls.Add(this.materialLabel_apiNeeded);
@@ -323,7 +305,6 @@
 
         private MaterialSkin.Controls.MaterialCheckbox materialCheckbox_isFullCombo;
         private MaterialSkin.Controls.MaterialLabel materialLabel2;
-        private MaterialSkin.Controls.MaterialSwitch materialSwitch_theme;
         private MaterialSkin.Controls.MaterialTextBox2 materialTextBox_apiInput;
         private MaterialSkin.Controls.MaterialButton materialButton_checkApi;
         private MaterialSkin.Controls.MaterialLabel materialLabel_apiNeeded;
