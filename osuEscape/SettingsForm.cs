@@ -19,15 +19,11 @@ namespace osuEscape
     {
         public SettingsForm()
         {
-            InitializeComponent();
-            
-
-            
+            InitializeComponent();          
         }
 
         // score upload
         private static readonly HttpClient client = new();
-        private static int beatmapLastNoteOffset = Int32.MinValue;
 
         // startup
         private static readonly string StartupKey = "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run";
@@ -55,8 +51,6 @@ namespace osuEscape
             //materialSkinManager.Theme = (MaterialSkinManager.Themes)Properties.Settings.Default.Theme;
 
             materialSwitch_theme.Checked = Properties.Settings.Default.Theme == 1; // 1: enum value for Dark Theme
-
-            Firewall.ToggleFirewall();
 
             APIRequiredCheckBoxesEnabled();
 

@@ -50,7 +50,7 @@
             // 
             this.materialCheckbox_isFullCombo.AutoSize = true;
             this.materialCheckbox_isFullCombo.Depth = 0;
-            this.materialCheckbox_isFullCombo.Location = new System.Drawing.Point(366, 94);
+            this.materialCheckbox_isFullCombo.Location = new System.Drawing.Point(366, 87);
             this.materialCheckbox_isFullCombo.Margin = new System.Windows.Forms.Padding(0);
             this.materialCheckbox_isFullCombo.MouseLocation = new System.Drawing.Point(-1, -1);
             this.materialCheckbox_isFullCombo.MouseState = MaterialSkin.MouseState.HOVER;
@@ -70,7 +70,7 @@
             this.materialLabel2.Depth = 0;
             this.materialLabel2.Font = new System.Drawing.Font("Roboto", 16F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
             this.materialLabel2.FontType = MaterialSkin.MaterialSkinManager.fontType.Subtitle1;
-            this.materialLabel2.Location = new System.Drawing.Point(230, 80);
+            this.materialLabel2.Location = new System.Drawing.Point(230, 73);
             this.materialLabel2.MouseState = MaterialSkin.MouseState.HOVER;
             this.materialLabel2.Name = "materialLabel2";
             this.materialLabel2.Size = new System.Drawing.Size(66, 19);
@@ -82,7 +82,7 @@
             // 
             this.materialSwitch_theme.AutoSize = true;
             this.materialSwitch_theme.Depth = 0;
-            this.materialSwitch_theme.Location = new System.Drawing.Point(1, 254);
+            this.materialSwitch_theme.Location = new System.Drawing.Point(1, 247);
             this.materialSwitch_theme.Margin = new System.Windows.Forms.Padding(0);
             this.materialSwitch_theme.MouseLocation = new System.Drawing.Point(-1, -1);
             this.materialSwitch_theme.MouseState = MaterialSkin.MouseState.HOVER;
@@ -104,7 +104,7 @@
             this.materialTextBox_apiInput.Font = new System.Drawing.Font("Microsoft Sans Serif", 16F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
             this.materialTextBox_apiInput.HideSelection = true;
             this.materialTextBox_apiInput.LeadingIcon = null;
-            this.materialTextBox_apiInput.Location = new System.Drawing.Point(11, 35);
+            this.materialTextBox_apiInput.Location = new System.Drawing.Point(11, 28);
             this.materialTextBox_apiInput.MaxLength = 255;
             this.materialTextBox_apiInput.MouseState = MaterialSkin.MouseState.OUT;
             this.materialTextBox_apiInput.Name = "materialTextBox_apiInput";
@@ -132,7 +132,7 @@
             this.materialButton_checkApi.Depth = 0;
             this.materialButton_checkApi.HighEmphasis = true;
             this.materialButton_checkApi.Icon = null;
-            this.materialButton_checkApi.Location = new System.Drawing.Point(426, 36);
+            this.materialButton_checkApi.Location = new System.Drawing.Point(426, 29);
             this.materialButton_checkApi.Margin = new System.Windows.Forms.Padding(4, 6, 4, 6);
             this.materialButton_checkApi.MouseState = MaterialSkin.MouseState.HOVER;
             this.materialButton_checkApi.Name = "materialButton_checkApi";
@@ -152,7 +152,7 @@
             this.materialLabel_apiNeeded.Depth = 0;
             this.materialLabel_apiNeeded.Font = new System.Drawing.Font("Roboto Medium", 14F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Pixel);
             this.materialLabel_apiNeeded.FontType = MaterialSkin.MaterialSkinManager.fontType.Subtitle2;
-            this.materialLabel_apiNeeded.Location = new System.Drawing.Point(12, 9);
+            this.materialLabel_apiNeeded.Location = new System.Drawing.Point(12, 2);
             this.materialLabel_apiNeeded.MouseState = MaterialSkin.MouseState.HOVER;
             this.materialLabel_apiNeeded.Name = "materialLabel_apiNeeded";
             this.materialLabel_apiNeeded.Size = new System.Drawing.Size(124, 17);
@@ -164,7 +164,7 @@
             this.materialSwitch_autoDisconnect.AutoSize = true;
             this.materialSwitch_autoDisconnect.Depth = 0;
             this.materialSwitch_autoDisconnect.Enabled = false;
-            this.materialSwitch_autoDisconnect.Location = new System.Drawing.Point(1, 134);
+            this.materialSwitch_autoDisconnect.Location = new System.Drawing.Point(1, 127);
             this.materialSwitch_autoDisconnect.Margin = new System.Windows.Forms.Padding(0);
             this.materialSwitch_autoDisconnect.MouseLocation = new System.Drawing.Point(-1, -1);
             this.materialSwitch_autoDisconnect.MouseState = MaterialSkin.MouseState.HOVER;
@@ -181,7 +181,7 @@
             // 
             this.materialSwitch_submitIfFC.AutoSize = true;
             this.materialSwitch_submitIfFC.Depth = 0;
-            this.materialSwitch_submitIfFC.Location = new System.Drawing.Point(1, 94);
+            this.materialSwitch_submitIfFC.Location = new System.Drawing.Point(1, 87);
             this.materialSwitch_submitIfFC.Margin = new System.Windows.Forms.Padding(0);
             this.materialSwitch_submitIfFC.MouseLocation = new System.Drawing.Point(-1, -1);
             this.materialSwitch_submitIfFC.MouseState = MaterialSkin.MouseState.HOVER;
@@ -198,7 +198,7 @@
             // 
             this.materialSwitch_topMost.AutoSize = true;
             this.materialSwitch_topMost.Depth = 0;
-            this.materialSwitch_topMost.Location = new System.Drawing.Point(1, 214);
+            this.materialSwitch_topMost.Location = new System.Drawing.Point(1, 207);
             this.materialSwitch_topMost.Margin = new System.Windows.Forms.Padding(0);
             this.materialSwitch_topMost.MouseLocation = new System.Drawing.Point(-1, -1);
             this.materialSwitch_topMost.MouseState = MaterialSkin.MouseState.HOVER;
@@ -215,7 +215,7 @@
             // 
             this.materialSwitch_toggleWithSound.AutoSize = true;
             this.materialSwitch_toggleWithSound.Depth = 0;
-            this.materialSwitch_toggleWithSound.Location = new System.Drawing.Point(1, 174);
+            this.materialSwitch_toggleWithSound.Location = new System.Drawing.Point(1, 167);
             this.materialSwitch_toggleWithSound.Margin = new System.Windows.Forms.Padding(0);
             this.materialSwitch_toggleWithSound.MouseLocation = new System.Drawing.Point(-1, -1);
             this.materialSwitch_toggleWithSound.MouseState = MaterialSkin.MouseState.HOVER;
@@ -232,7 +232,7 @@
             // 
             this.materialSwitch_minimizeToSystemTray.AutoSize = true;
             this.materialSwitch_minimizeToSystemTray.Depth = 0;
-            this.materialSwitch_minimizeToSystemTray.Location = new System.Drawing.Point(250, 214);
+            this.materialSwitch_minimizeToSystemTray.Location = new System.Drawing.Point(250, 207);
             this.materialSwitch_minimizeToSystemTray.Margin = new System.Windows.Forms.Padding(0);
             this.materialSwitch_minimizeToSystemTray.MouseLocation = new System.Drawing.Point(-1, -1);
             this.materialSwitch_minimizeToSystemTray.MouseState = MaterialSkin.MouseState.HOVER;
@@ -249,7 +249,7 @@
             // 
             this.materialSwitch_runAtStartup.AutoSize = true;
             this.materialSwitch_runAtStartup.Depth = 0;
-            this.materialSwitch_runAtStartup.Location = new System.Drawing.Point(250, 174);
+            this.materialSwitch_runAtStartup.Location = new System.Drawing.Point(250, 167);
             this.materialSwitch_runAtStartup.Margin = new System.Windows.Forms.Padding(0);
             this.materialSwitch_runAtStartup.MouseLocation = new System.Drawing.Point(-1, -1);
             this.materialSwitch_runAtStartup.MouseState = MaterialSkin.MouseState.HOVER;
@@ -266,7 +266,7 @@
             this.materialLabel_focus.AutoSize = true;
             this.materialLabel_focus.Depth = 0;
             this.materialLabel_focus.Font = new System.Drawing.Font("Roboto", 14F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
-            this.materialLabel_focus.Location = new System.Drawing.Point(441, 45);
+            this.materialLabel_focus.Location = new System.Drawing.Point(441, 38);
             this.materialLabel_focus.MouseState = MaterialSkin.MouseState.HOVER;
             this.materialLabel_focus.Name = "materialLabel_focus";
             this.materialLabel_focus.Size = new System.Drawing.Size(41, 19);
@@ -279,7 +279,7 @@
             this.materialSlider_Accuracy.Font = new System.Drawing.Font("Roboto", 14F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Pixel);
             this.materialSlider_Accuracy.FontType = MaterialSkin.MaterialSkinManager.fontType.Button;
             this.materialSlider_Accuracy.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(222)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))));
-            this.materialSlider_Accuracy.Location = new System.Drawing.Point(200, 94);
+            this.materialSlider_Accuracy.Location = new System.Drawing.Point(200, 87);
             this.materialSlider_Accuracy.MouseState = MaterialSkin.MouseState.HOVER;
             this.materialSlider_Accuracy.Name = "materialSlider_Accuracy";
             this.materialSlider_Accuracy.Size = new System.Drawing.Size(146, 40);

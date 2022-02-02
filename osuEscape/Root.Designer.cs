@@ -21,16 +21,11 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            System.Windows.Forms.ListViewGroup listViewGroup1 = new System.Windows.Forms.ListViewGroup("ListViewGroup_Beatmap", System.Windows.Forms.HorizontalAlignment.Center);
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Root));
             this.materialTabControl_menu = new MaterialSkin.Controls.MaterialTabControl();
             this.tabPage_main = new System.Windows.Forms.TabPage();
             this.tabPage_settings = new System.Windows.Forms.TabPage();
             this.tabPage_uploadedScores = new System.Windows.Forms.TabPage();
-            this.materialListView_uploadedScores = new MaterialSkin.Controls.MaterialListView();
-            this.Beatmap = new System.Windows.Forms.ColumnHeader();
-            this.Score = new System.Windows.Forms.ColumnHeader();
-            this.Accuracy = new System.Windows.Forms.ColumnHeader();
             this.contextMenuStrip_osu = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.statusToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.quitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -38,7 +33,6 @@
             this.materialTabSelector = new MaterialSkin.Controls.MaterialTabSelector();
             this.toolTips = new System.Windows.Forms.ToolTip(this.components);
             this.materialTabControl_menu.SuspendLayout();
-            this.tabPage_uploadedScores.SuspendLayout();
             this.contextMenuStrip_osu.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -82,7 +76,6 @@
             // 
             // tabPage_uploadedScores
             // 
-            this.tabPage_uploadedScores.Controls.Add(this.materialListView_uploadedScores);
             this.tabPage_uploadedScores.Location = new System.Drawing.Point(4, 27);
             this.tabPage_uploadedScores.Name = "tabPage_uploadedScores";
             this.tabPage_uploadedScores.Padding = new System.Windows.Forms.Padding(3);
@@ -90,57 +83,6 @@
             this.tabPage_uploadedScores.TabIndex = 2;
             this.tabPage_uploadedScores.Text = "Uploaded Scores";
             this.tabPage_uploadedScores.UseVisualStyleBackColor = true;
-            // 
-            // materialListView_uploadedScores
-            // 
-            this.materialListView_uploadedScores.AutoSizeTable = false;
-            this.materialListView_uploadedScores.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(255)))), ((int)(((byte)(255)))));
-            this.materialListView_uploadedScores.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.materialListView_uploadedScores.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
-            this.Beatmap,
-            this.Score,
-            this.Accuracy});
-            this.materialListView_uploadedScores.Depth = 0;
-            this.materialListView_uploadedScores.FullRowSelect = true;
-            listViewGroup1.CollapsedState = System.Windows.Forms.ListViewGroupCollapsedState.Expanded;
-            listViewGroup1.FooterAlignment = System.Windows.Forms.HorizontalAlignment.Center;
-            listViewGroup1.Header = "ListViewGroup_Beatmap";
-            listViewGroup1.HeaderAlignment = System.Windows.Forms.HorizontalAlignment.Center;
-            listViewGroup1.Name = "Beatmap";
-            this.materialListView_uploadedScores.Groups.AddRange(new System.Windows.Forms.ListViewGroup[] {
-            listViewGroup1});
-            this.materialListView_uploadedScores.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.Nonclickable;
-            this.materialListView_uploadedScores.HideSelection = false;
-            this.materialListView_uploadedScores.LabelWrap = false;
-            this.materialListView_uploadedScores.Location = new System.Drawing.Point(0, 0);
-            this.materialListView_uploadedScores.MaximumSize = new System.Drawing.Size(540, 335);
-            this.materialListView_uploadedScores.MinimumSize = new System.Drawing.Size(540, 335);
-            this.materialListView_uploadedScores.MouseLocation = new System.Drawing.Point(-1, -1);
-            this.materialListView_uploadedScores.MouseState = MaterialSkin.MouseState.OUT;
-            this.materialListView_uploadedScores.MultiSelect = false;
-            this.materialListView_uploadedScores.Name = "materialListView_uploadedScores";
-            this.materialListView_uploadedScores.OwnerDraw = true;
-            this.materialListView_uploadedScores.Scrollable = false;
-            this.materialListView_uploadedScores.ShowGroups = false;
-            this.materialListView_uploadedScores.Size = new System.Drawing.Size(540, 335);
-            this.materialListView_uploadedScores.TabIndex = 3;
-            this.materialListView_uploadedScores.UseCompatibleStateImageBehavior = false;
-            this.materialListView_uploadedScores.View = System.Windows.Forms.View.Details;
-            // 
-            // Beatmap
-            // 
-            this.Beatmap.Text = "Beatmap";
-            this.Beatmap.Width = 340;
-            // 
-            // Score
-            // 
-            this.Score.Text = "Score";
-            this.Score.Width = 120;
-            // 
-            // Accuracy
-            // 
-            this.Accuracy.Text = "Accuracy";
-            this.Accuracy.Width = 100;
             // 
             // contextMenuStrip_osu
             // 
@@ -200,7 +142,6 @@
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.FormClosing_RootForm);
             this.Load += new System.EventHandler(this.HomeForm_Load);
             this.materialTabControl_menu.ResumeLayout(false);
-            this.tabPage_uploadedScores.ResumeLayout(false);
             this.contextMenuStrip_osu.ResumeLayout(false);
             this.ResumeLayout(false);
 

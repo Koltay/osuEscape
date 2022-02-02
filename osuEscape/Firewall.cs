@@ -9,9 +9,9 @@ using MaterialSkin.Controls;
 
 namespace osuEscape
 {
-    class Firewall
-    {
-        public static void AllowConnection(bool isAllow)
+    public class Firewall
+    {        
+        private static void AllowConnection(bool isAllow)
         {
             Process cmd = new();
             cmd.StartInfo.FileName = "netsh";
@@ -23,7 +23,7 @@ namespace osuEscape
             cmd.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
             cmd.Start();
         }
-        public static void ToggleFirewall(Form mainFormOnly = null)
+        public static void Toggle(Form mainFormOnly = null)
         {
             if (Properties.Settings.Default.osuLocation == "")
             {
@@ -45,50 +45,40 @@ namespace osuEscape
 
                 /*Invoke_FormRefresh();*/
             }
+
+            ((Root)Application.OpenForms[0]).ContextMenuStripUpdate();
+            ((Root)Application.OpenForms[0]).ColorSchemeUpdate();
         }
 
         async public static void RuleSetUp(string filename)
         {
             await Task.Run(async () =>
             {
-                /*if (filename.Contains("osu!.exe"))
-                {
+                // create cmd
+                Process cmd = new();
+                cmd.StartInfo.FileName = "netsh";
+                cmd.StartInfo.Verb = "runas";
+                cmd.StartInfo.UseShellExecute = true;
+                cmd.StartInfo.CreateNoWindow = true;
+                cmd.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
 
+                // firstly, delete the rules if the users used this application before
+                cmd.StartInfo.Arguments =
+                    "advfirewall firewall delete rule name=\"osu block\"";
+                cmd.Start();
 
-                    Properties.Settings.Default.osuLocation = filename;
-*/
-                    // UpdateOsuLocationText
-                    // osuPath: osuLocation without osu.exe at the end
+                await Task.Delay(500);
 
-                    /*materialLabel_osuPath.Invoke(new MethodInvoker(delegate
-                    {
-                        materialLabel_osuPath.Text = "osu! Path: " + osuPath;
-                    }));*/
+                // add blocking rule into the advanced firewall 
+                cmd.StartInfo.Arguments =
+                    "advfirewall firewall add rule name=\"osu block\" dir=out action=block program=" + filename;
+                cmd.Start();
 
-                    // create cmd
-                    Process cmd = new();
-                    cmd.StartInfo.FileName = "netsh";
-                    cmd.StartInfo.Verb = "runas";
-                    cmd.StartInfo.UseShellExecute = true;
-                    cmd.StartInfo.CreateNoWindow = true;
-                    cmd.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
+                await Task.Delay(500);
 
-                    // delete the rules if the users used this application before
-                    cmd.StartInfo.Arguments =
-                        "advfirewall firewall delete rule name=\"osu block\"";
-                    cmd.Start();
+                Debug.WriteLine("Connection status: " + Properties.Settings.Default.isAllowConnection);
 
-                    await Task.Delay(500);
-
-                    // add blocking rule into advanced firewall 
-                    cmd.StartInfo.Arguments =
-                        "advfirewall firewall add rule name=\"osu block\" dir=out action=block program=" + filename;
-                    cmd.Start();
-
-                    await Task.Delay(500);
-
-                    Debug.WriteLine("Connection status: " + Properties.Settings.Default.isAllowConnection);
-                /*}*/
+                Toggle();
             });
         }
     }

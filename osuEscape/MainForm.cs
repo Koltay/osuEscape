@@ -113,7 +113,7 @@ namespace osuEscape
         public void materialSwitch_osuConnection_CheckedChanged(object sender, EventArgs e)
         {
             Properties.Settings.Default.isAllowConnection = !materialSwitch_osuConnection.Checked;
-            Firewall.ToggleFirewall();
+            Firewall.Toggle();
         }
 
         public void materialButton_findOsuLocation_Click(object sender, EventArgs e)
@@ -247,10 +247,5 @@ namespace osuEscape
         }
 
         #endregion
-
-        private void materialLabel_submissionStatus_TextChanged(string str)
-        {
-            materialLabel_submissionStatus.Text = "Submission Status: " + str;
-        }
     }
 }

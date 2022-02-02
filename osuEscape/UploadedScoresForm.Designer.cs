@@ -47,19 +47,16 @@
             this.materialListView_uploadedScores.Depth = 0;
             this.materialListView_uploadedScores.FullRowSelect = true;
             listViewGroup1.CollapsedState = System.Windows.Forms.ListViewGroupCollapsedState.Expanded;
-            listViewGroup1.Footer = "";
             listViewGroup1.FooterAlignment = System.Windows.Forms.HorizontalAlignment.Center;
             listViewGroup1.Header = "ListViewGroup_Beatmap";
             listViewGroup1.HeaderAlignment = System.Windows.Forms.HorizontalAlignment.Center;
             listViewGroup1.Name = "Beatmap";
-            listViewGroup1.Subtitle = "";
-            listViewGroup1.TaskLink = "";
             this.materialListView_uploadedScores.Groups.AddRange(new System.Windows.Forms.ListViewGroup[] {
             listViewGroup1});
             this.materialListView_uploadedScores.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.Nonclickable;
             this.materialListView_uploadedScores.HideSelection = false;
             this.materialListView_uploadedScores.LabelWrap = false;
-            this.materialListView_uploadedScores.Location = new System.Drawing.Point(12, 12);
+            this.materialListView_uploadedScores.Location = new System.Drawing.Point(0, 1);
             this.materialListView_uploadedScores.MaximumSize = new System.Drawing.Size(540, 335);
             this.materialListView_uploadedScores.MinimumSize = new System.Drawing.Size(540, 335);
             this.materialListView_uploadedScores.MouseLocation = new System.Drawing.Point(-1, -1);
