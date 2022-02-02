@@ -103,6 +103,7 @@ namespace osuEscape
             }
             else
             {
+                materialLabel_osuPath.Text = "osu! Path: " + Properties.Settings.Default.osuPath;
                 Firewall.RuleSetUp(Properties.Settings.Default.osuLocation);
             }
 
@@ -142,31 +143,38 @@ namespace osuEscape
         {
             OpenFileDialog ofd = new()
             {
-                Filter = "osu!.exe |*.EXE"
+                Filter = "osu!.exe |*.EXE",
+                InitialDirectory = ""
             };
-
-            if (ofd.ShowDialog() == DialogResult.OK && ofd.FileName.Contains("osu!.exe"))
+            DialogResult result = ofd.ShowDialog();
+            if (result == DialogResult.Cancel || result == DialogResult.Abort)
+            {
+                materialButton_findOsuLocation.UseAccentColor = false;
+                return;
+            }
+            if (result == DialogResult.OK && ofd.FileName.Contains("osu!.exe"))
             {
                 Properties.Settings.Default.osuLocation = ofd.FileName;
-
+                Properties.Settings.Default.osuPath = String.Join("\\", ofd.FileName.Split('\\').Reverse().Skip(1).Reverse()) + "\\";
+                materialLabel_osuPath.Text = "osu! Path: " + Properties.Settings.Default.osuPath;
                 Firewall.RuleSetUp(Properties.Settings.Default.osuLocation);
             }
-            else if(ofd.ShowDialog() == DialogResult.OK)
+            else if(result == DialogResult.OK && !ofd.FileName.Contains("osu!.exe"))
             {
                 // run again until user finds osu.exe or user cancelled the action
                 OpenFileDialog_FindOsuLocation();
             }
             materialButton_findOsuLocation.UseAccentColor = false;
         }
+        public void materialLabel_SubmissionStatus_TextChanged(string str)
+        {
+            materialLabel_submissionStatus.Text = "Submission Status: " + str;
+        }
         private void materialSlider_refreshRate_onValueChanged(object sender, int newValue)
         {
             materialSlider_refreshRate.Value    = materialSlider_refreshRate.Value < 50 
                                                 ? 50 
                                                 : materialSlider_refreshRate.Value;
-
-            // not fixed for static 
-            //_readDelay = materialSlider_refreshRate.Value;
-
             Properties.Settings.Default.refreshRate = materialSlider_refreshRate.Value;
         }
 

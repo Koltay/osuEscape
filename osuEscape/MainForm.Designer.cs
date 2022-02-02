@@ -172,24 +172,24 @@
             this.materialButton_changeToggleHotkey.UseAccentColor = false;
             this.materialButton_changeToggleHotkey.UseVisualStyleBackColor = false;
             this.materialButton_changeToggleHotkey.Click += new System.EventHandler(this.materialButton_changeToggleHotkey_Click);
+            this.materialButton_changeToggleHotkey.KeyDown += new System.Windows.Forms.KeyEventHandler(this.MainForm_KeyDown);
             // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(524, 316);
+            this.Controls.Add(this.materialLabel_osuPath);
             this.Controls.Add(this.materialSlider_refreshRate);
             this.Controls.Add(this.materialLabel3);
             this.Controls.Add(this.materialButton_findOsuLocation);
             this.Controls.Add(this.materialLabel_globalToggleHotkey);
-            this.Controls.Add(this.materialLabel_osuPath);
             this.Controls.Add(this.materialSwitch_osuConnection);
             this.Controls.Add(this.materialLabel_submissionStatus);
             this.Controls.Add(this.materialButton_changeToggleHotkey);
             this.Name = "MainForm";
             this.Text = "MainForm";
             this.Load += new System.EventHandler(this.MainForm_Load);
-            this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.MainForm_KeyDown);
             this.ResumeLayout(false);
             this.PerformLayout();
 

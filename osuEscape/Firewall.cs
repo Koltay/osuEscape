@@ -4,6 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Diagnostics;
+using System.Windows.Forms;
+using MaterialSkin.Controls;
 
 namespace osuEscape
 {
@@ -21,8 +23,7 @@ namespace osuEscape
             cmd.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
             cmd.Start();
         }
-
-        public static void ToggleFirewall()
+        public static void ToggleFirewall(Form mainFormOnly = null)
         {
             if (Properties.Settings.Default.osuLocation == "")
             {
@@ -34,6 +35,14 @@ namespace osuEscape
 
                 Audio.ToggleSound(Properties.Settings.Default.isToggleSound);
 
+                if (mainFormOnly != null)
+                {
+                    mainFormOnly.Controls["materialSwitch_osuConnection"].BeginInvoke((MethodInvoker)delegate
+                    {
+                        ((MaterialSwitch)mainFormOnly.Controls["materialSwitch_osuConnection"]).Checked = Properties.Settings.Default.isAllowConnection;
+                    });
+                }
+
                 /*Invoke_FormRefresh();*/
             }
         }
@@ -42,16 +51,14 @@ namespace osuEscape
         {
             await Task.Run(async () =>
             {
-                if (filename.Contains("osu!.exe"))
+                /*if (filename.Contains("osu!.exe"))
                 {
 
 
                     Properties.Settings.Default.osuLocation = filename;
-
+*/
                     // UpdateOsuLocationText
                     // osuPath: osuLocation without osu.exe at the end
-                    string osuPath = String.Join("\\", Properties.Settings.Default.osuLocation.Split('\\').Reverse().Skip(1).Reverse()) + "\\";
-                    Properties.Settings.Default.osuPath = osuPath;
 
                     /*materialLabel_osuPath.Invoke(new MethodInvoker(delegate
                     {
@@ -81,7 +88,7 @@ namespace osuEscape
                     await Task.Delay(500);
 
                     Debug.WriteLine("Connection status: " + Properties.Settings.Default.isAllowConnection);
-                }
+                /*}*/
             });
         }
     }

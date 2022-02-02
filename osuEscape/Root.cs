@@ -151,10 +151,8 @@ namespace osuEscape
             // design editor pixels height offset (50px)
             this.Size = new Size(this.Size.Width, this.Size.Height - 50);
             FormSize_init = this.Size;
-            this.Size = new Size(this.Size.Width, this.Size.Height - 50);
 
 
-            //labelSubmissionStatus_Location_init = materialLabel_submissionStatus.Location;
             // main tab page component to be fixed
 
             // avoid opening osu!Escape twice
@@ -497,7 +495,7 @@ namespace osuEscape
                             isSubmittableBeatmapStatus())
                         {
                             Properties.Settings.Default.isAllowConnection = true;
-                            Firewall.ToggleFirewall();
+                            Firewall.ToggleFirewall(mainForm);
                             isSetScore = true;
                         }
                     }
@@ -521,11 +519,13 @@ namespace osuEscape
 
                         /*
                          * main tab page to be fixed
-                        materialLabel_submissionStatus.BeginInvoke((MethodInvoker)delegate
+                         */
+                        mainForm.Controls["materialLabel_submissionStatus"].BeginInvoke((MethodInvoker)delegate
                         {
-                            materialLabel_SubmissionStatus_TextChanged("Uploading recent score...");
+                            mainForm.materialLabel_SubmissionStatus_TextChanged("Uploading recent score...");
                         });
-                        */
+                        
+                        //mainForm.Controls["materialLabel_submissionStatus"].Text = "Uploading recent score...";
 
                         // submission frequency test
                         await Task.Delay(750);
@@ -533,12 +533,12 @@ namespace osuEscape
                         // GET Method of user's recent score (osu! api v1)
                         // get the recent 3 scores, even though there is multiple submissions at one connection
                         // the recent score could still be recognized
-                        Dictionary<int, int> recentUploadScoreDict = await GetUserRecentScoreAsync(baseAddresses.Player.Username, baseAddresses.Player.Mode, 3);
+                        KV[] recentUploadScoreDict = await GetUserRecentScoreAsync(baseAddresses.Player.Username, baseAddresses.Player.Mode, 3);
 
                         bool isRecentSetScoreUploaded = false;
-
-                        foreach (var responseScore in recentUploadScoreDict)
+                        /*foreach (var responseScore in recentUploadScoreDict)
                         {
+                            MessageBox.Show(responseScore.Key + ": " + responseScore.Value);
                             // the score player recently submitted
                             if (responseScore.Key == baseAddresses.Beatmap.Id &&
                                 responseScore.Value == baseAddresses.Player.Score)
@@ -546,7 +546,7 @@ namespace osuEscape
                                 isRecentSetScoreUploaded = true;
 
                                 Properties.Settings.Default.isAllowConnection = false;
-                                Firewall.ToggleFirewall();
+                                Firewall.ToggleFirewall(mainForm);
 
                                 isSetScore = false;
 
@@ -564,13 +564,42 @@ namespace osuEscape
 
                                 break;
                             }
+                        }*/
+                        for(int i = 0; i < recentUploadScoreDict.Length; i++)
+                        {
+                            KV pair = recentUploadScoreDict[i];
+                            if (pair.key == baseAddresses.Beatmap.Id &&
+                                recentUploadScoreDict[i].value == baseAddresses.Player.Score)
+                            {
+                                isRecentSetScoreUploaded = true;
+
+                                Properties.Settings.Default.isAllowConnection = false;
+                                Firewall.ToggleFirewall(mainForm);
+
+                                isSetScore = false;
+
+                                // uploaded scores tab page update
+
+                                /*this.Invoke(new MethodInvoker(delegate ()
+                                {
+                                    ListViewItem item = new(baseAddresses.Beatmap.MapString);
+                                    item.SubItems.Add(baseAddresses.Player.Score.ToString());
+                                    item.SubItems.Add(baseAddresses.Player.Accuracy.ToString("0.00"));
+                                    // rank icon TBD
+                                    // pp TBD
+                                    materialListView_uploadedScores.Items.Add(item);
+                                }));*/
+
+                                break;
+                            }
                         }
 
                         mainForm.Controls["materialLabel_submissionStatus"].BeginInvoke((MethodInvoker)delegate
                         {
                             string text = isRecentSetScoreUploaded ? "Uploaded recent score." : "";
-                            materialLabel_SubmissionStatus_TextChanged(text);
+                            mainForm.materialLabel_SubmissionStatus_TextChanged(text);
                         });
+                        //mainForm.Controls["materialLabel_submissionStatus"].Text = isRecentSetScoreUploaded ? "Uploaded recent score." : "";
                     }
 
                     bool isSubmittableBeatmapStatus()
@@ -821,7 +850,7 @@ namespace osuEscape
         #endregion
 
         #region Global HotKey
-        private bool isEditingHotkey = false;
+        /*private bool isEditingHotkey = false;
         private void HomeForm_KeyDown(object sender, KeyEventArgs e)
         {
             if (isEditingHotkey)
@@ -856,14 +885,15 @@ namespace osuEscape
                     ((MaterialButton) mainForm.Controls["materialButton_changeToggleHotkey"]).UseAccentColor = false;
                 }
             }
-        }
+        }*/
 
 
         #endregion
 
         #region GET Method from osu! api   
 
-        private static async Task<Dictionary<int, int>> GetUserRecentScoreAsync(string userName, int mode, int recentScoreLimits)
+        //private static async Task<Dictionary<int, int>> GetUserRecentScoreAsync(string userName, int mode, int recentScoreLimits)
+        private static async Task<KV[]> GetUserRecentScoreAsync(string userName, int mode, int recentScoreLimits)
         {
             var url = $"https://osu.ppy.sh/api/get_user_recent?k={Properties.Settings.Default.userApiKey}&u={userName}&m={mode}&limit={recentScoreLimits}";
 
@@ -875,7 +905,9 @@ namespace osuEscape
             request.Content = new StringContent("{...}", Encoding.UTF8, "application/json");
 
             // beatmap_id, score
-            Dictionary<int, int> resultDict = new();
+            /*Dictionary<int, int> resultDict = new();*/
+            //var resultList = new (int, int)[] { };
+            KV[] resultList = new KV[recentScoreLimits];
 
             var response = await client.SendAsync(request, CancellationToken.None);
 
@@ -889,9 +921,11 @@ namespace osuEscape
                 {
                     for (int i = 0; i < System.Math.Min(arr.Count, recentScoreLimits); i++)
                     {
-                        int beatmap_id = Convert.ToInt32(arr[i]["beatmap_id"]);
+
+                        resultList[i] = new KV(Convert.ToInt32(arr[i]["beatmap_id"]), Convert.ToInt32(arr[i]["score"]));
+                        /*int beatmap_id = Convert.ToInt32(arr[i]["beatmap_id"]);
                         int score = Convert.ToInt32(arr[i]["score"]);
-                        resultDict[beatmap_id] = score;
+                        resultDict[beatmap_id] = score;*/
                     }
                 }
             }
@@ -900,14 +934,7 @@ namespace osuEscape
                 IncorrectAPITextOutput();
             }
 
-            return resultDict;
-        }
-        private void Invoke_FormRefresh()
-        {
-            this.Invoke(new MethodInvoker(delegate ()
-            {
-                this.Refresh();
-            }));
+            return resultList;
         }
         #endregion
 
@@ -940,11 +967,6 @@ namespace osuEscape
         }
 
         #endregion
-
-        private void materialLabel_SubmissionStatus_TextChanged(string str)
-        {
-            mainForm.Controls["materialLabel_submissionStatus"].Text = "Submission Status: " + str;
-        }
         //
         private void materialTabControl_menu_Selected(object sender, TabControlEventArgs e)
         {
@@ -987,7 +1009,7 @@ namespace osuEscape
             // Toggle Connection status on properties settings and update switch status 
             Properties.Settings.Default.isAllowConnection = !Properties.Settings.Default.isAllowConnection;
             ((MaterialSwitch) mainForm.Controls["materialSwitch_osuConnection"]).Checked = !Properties.Settings.Default.isAllowConnection;
-            Firewall.ToggleFirewall();
+            Firewall.ToggleFirewall(mainForm);
         }
 
         private void TextBox_GlobalHotkey_Update()
@@ -1063,9 +1085,9 @@ namespace osuEscape
             // set the ui size for main tab
             int unneededWidth = 45;
             int unneededHeight = 130;
+            this.MinimumSize = new Size(this.Size.Width - unneededWidth, this.Size.Height - unneededHeight);
             this.MaximumSize = new Size(this.Size.Width - unneededWidth, this.Size.Height - unneededHeight);
             this.Size = new Size(this.Size.Width - unneededWidth, this.Size.Height - unneededHeight);
-            this.MinimumSize = new Size(this.Size.Width - unneededWidth, this.Size.Height - unneededHeight);
         }
     }
 }
