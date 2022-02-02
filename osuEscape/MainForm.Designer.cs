@@ -56,6 +56,7 @@
             this.materialSlider_refreshRate.UseAccentColor = true;
             this.materialSlider_refreshRate.ValueMax = 1000;
             this.materialSlider_refreshRate.ValueSuffix = "ms";
+            this.materialSlider_refreshRate.onValueChanged += new MaterialSkin.Controls.MaterialSlider.ValueChanged(this.materialSlider_refreshRate_onValueChanged);
             // 
             // materialLabel3
             // 
@@ -169,7 +170,7 @@
             this.materialButton_changeToggleHotkey.TextAlign = System.Drawing.ContentAlignment.BottomCenter;
             this.materialButton_changeToggleHotkey.Type = MaterialSkin.Controls.MaterialButton.MaterialButtonType.Contained;
             this.materialButton_changeToggleHotkey.UseAccentColor = false;
-            this.materialButton_changeToggleHotkey.UseVisualStyleBackColor = false;
+            this.materialButton_changeToggleHotkey.UseVisualStyleBackColor = false;        
             // 
             // MainForm
             // 

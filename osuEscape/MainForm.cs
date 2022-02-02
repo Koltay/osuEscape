@@ -16,6 +16,69 @@ namespace osuEscape
     public partial class MainForm : Form
     {
         public static bool isEditingHotkey { get; set; } = false;
+
+        private static readonly Dictionary<Keys, string> KeysToStringDictionary = new()
+        {
+            [Keys.A] = "A",
+            [Keys.B] = "B",
+            [Keys.C] = "C",
+            [Keys.D] = "D",
+            [Keys.E] = "E",
+            [Keys.F] = "F",
+            [Keys.G] = "G",
+            [Keys.H] = "H",
+            [Keys.I] = "I",
+            [Keys.J] = "J",
+            [Keys.K] = "K",
+            [Keys.L] = "L",
+            [Keys.M] = "M",
+            [Keys.N] = "N",
+            [Keys.O] = "O",
+            [Keys.P] = "P",
+            [Keys.Q] = "Q",
+            [Keys.R] = "R",
+            [Keys.S] = "S",
+            [Keys.T] = "T",
+            [Keys.U] = "U",
+            [Keys.V] = "V",
+            [Keys.W] = "W",
+            [Keys.X] = "X",
+            [Keys.Y] = "Y",
+            [Keys.Z] = "Z",
+            [Keys.D1] = "1",
+            [Keys.D2] = "2",
+            [Keys.D3] = "3",
+            [Keys.D4] = "4",
+            [Keys.D5] = "5",
+            [Keys.D6] = "6",
+            [Keys.D7] = "7",
+            [Keys.D8] = "8",
+            [Keys.D9] = "9",
+            [Keys.D0] = "0",
+            [Keys.F1] = "F1",
+            [Keys.F2] = "F2",
+            [Keys.F3] = "F3",
+            [Keys.F4] = "F4",
+            [Keys.F5] = "F5",
+            [Keys.F6] = "F6",
+            [Keys.F7] = "F7",
+            [Keys.F8] = "F8",
+            [Keys.F9] = "F9",
+            [Keys.F10] = "F10",
+            [Keys.F11] = "F11",
+            [Keys.F12] = "F12",
+            [Keys.OemMinus] = "-",
+            [Keys.Oemplus] = "=",
+            [Keys.OemOpenBrackets] = "[",
+            [Keys.OemCloseBrackets] = "]",
+            [Keys.OemPipe] = @"\",
+            [Keys.OemSemicolon] = ";",
+            [Keys.OemQuotes] = "'",
+            [Keys.Oemtilde] = "`",
+            [Keys.Oemcomma] = ",",
+            [Keys.OemPeriod] = ".",
+            [Keys.OemQuestion] = "/"
+        };
         public MainForm()
         {
             InitializeComponent();
@@ -41,12 +104,15 @@ namespace osuEscape
             {
                 Firewall.RuleSetUp(Properties.Settings.Default.osuLocation);
             }
+
+            TextBox_GlobalHotkey_Update();
         }
         public void updateMaterialLabel_globalToggleHotkey(string text)
         {
             /*SafeUpdate(() => materialLabel_globalToggleHotkey.Text = text);*/
             this.materialLabel_globalToggleHotkey.Text = text;
         }
+
         /*private void SafeUpdate(Action action)
         {
             if (this.InvokeRequired)
@@ -58,6 +124,7 @@ namespace osuEscape
                 action();
             }
         }*/
+
         public void materialSwitch_osuConnection_CheckedChanged(object sender, EventArgs e)
         {
             Properties.Settings.Default.isAllowConnection = !materialSwitch_osuConnection.Checked;
@@ -69,9 +136,10 @@ namespace osuEscape
             materialButton_findOsuLocation.UseAccentColor = true;
             OpenFileDialog_FindOsuLocation();
         }
-        public void MaterialButton_changeToggleHotKey_Click(object sender, EventArgs e)
+        public void materialButton_changeToggleHotkey_Click(object sender, EventArgs e)
         {
             isEditingHotkey = !isEditingHotkey;
+
             if (isEditingHotkey)
             {
                 materialButton_changeToggleHotkey.UseAccentColor = true;
@@ -104,6 +172,93 @@ namespace osuEscape
                 OpenFileDialog_FindOsuLocation();
             }
             materialButton_findOsuLocation.UseAccentColor = false;
+        }
+        private void materialSlider_refreshRate_onValueChanged(object sender, int newValue)
+        {
+            materialSlider_refreshRate.Value    = materialSlider_refreshRate.Value < 50 
+                                                ? 50 
+                                                : materialSlider_refreshRate.Value;
+
+            // not fixed for static 
+            //_readDelay = materialSlider_refreshRate.Value;
+
+            Properties.Settings.Default.refreshRate = materialSlider_refreshRate.Value;
+        }
+
+        private void TextBox_GlobalHotkey_Update()
+        {
+            int modifierKeys = Properties.Settings.Default.ModifierKeys;
+            bool isCtrl = false;
+            bool isAlt = false;
+            bool isShift = false;
+
+            if (modifierKeys >= 4)
+            {
+                isShift = true;
+                modifierKeys -= 4;
+            }
+
+            if (modifierKeys >= 2)
+            {
+                isCtrl = true;
+                modifierKeys -= 2;
+            }
+
+            if (modifierKeys == 1)
+            {
+                isAlt = true;
+            }
+
+            materialLabel_globalToggleHotkey.Text = "Global Toggle Hotkey: ";
+            materialLabel_globalToggleHotkey.Text += isCtrl ? "Ctrl + " : "";
+            materialLabel_globalToggleHotkey.Text += isShift ? "Shift + " : "";
+            materialLabel_globalToggleHotkey.Text += isAlt ? "Alt + " : "";
+            materialLabel_globalToggleHotkey.Text += Properties.Settings.Default.GlobalHotKey;
+        }
+
+        #region Global HotKey
+
+        private void HomeForm_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (isEditingHotkey)
+            {
+                // cancel changes
+                if (e.KeyCode == Keys.Escape)
+                {
+                    TextBox_GlobalHotkey_Update();
+                    isEditingHotkey = false;
+                }
+                else if (KeysToStringDictionary.ContainsKey(e.KeyCode))
+                {
+                    keyboardHook.Dispose();
+
+                    // user settings
+                    Properties.Settings.Default.ModifierKeys = 0;
+                    Properties.Settings.Default.ModifierKeys += e.Alt ? 1 : 0;
+                    Properties.Settings.Default.ModifierKeys += e.Control ? 2 : 0;
+                    Properties.Settings.Default.ModifierKeys += e.Shift ? 4 : 0;
+                    Properties.Settings.Default.GlobalHotKey = KeysToStringDictionary[e.KeyCode];
+
+                    // ui
+                    TextBox_GlobalHotkey_Update();
+
+                    keyboardHook.RegisterHotKey((ModifierKeys)Properties.Settings.Default.ModifierKeys,
+                                        KeysToStringDictionary.FirstOrDefault(x => x.Value == Properties.Settings.Default.GlobalHotKey).Key);
+
+                    System.Media.SystemSounds.Asterisk.Play();
+
+                    isEditingHotkey = false;
+
+                    materialButton_changeToggleHotkey.UseAccentColor = false;
+                }
+            }
+        }
+
+        #endregion
+
+        private void materialLabel_submissionStatus_TextChanged(string str)
+        {
+            materialLabel_submissionStatus.Text = "Submission Status: " + str;
         }
     }
 }

@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             this.materialCheckbox_isFullCombo = new MaterialSkin.Controls.MaterialCheckbox();
             this.materialLabel2 = new MaterialSkin.Controls.MaterialLabel();
             this.materialSwitch_theme = new MaterialSkin.Controls.MaterialSwitch();
@@ -42,6 +43,7 @@
             this.materialSwitch_runAtStartup = new MaterialSkin.Controls.MaterialSwitch();
             this.materialLabel_focus = new MaterialSkin.Controls.MaterialLabel();
             this.materialSlider_Accuracy = new MaterialSkin.Controls.MaterialSlider();
+            this.toolTips = new System.Windows.Forms.ToolTip(this.components);
             this.SuspendLayout();
             // 
             // materialCheckbox_isFullCombo
@@ -258,7 +260,6 @@
             this.materialSwitch_runAtStartup.TabStop = false;
             this.materialSwitch_runAtStartup.Text = "Run at Startup";
             this.materialSwitch_runAtStartup.UseVisualStyleBackColor = true;
-            this.materialSwitch_runAtStartup.CheckedChanged += new System.EventHandler(this.materialSwitch_runAtStartup_CheckedChanged);
             // 
             // materialLabel_focus
             // 
@@ -334,5 +335,6 @@
         private MaterialSkin.Controls.MaterialSwitch materialSwitch_runAtStartup;
         private MaterialSkin.Controls.MaterialLabel materialLabel_focus;
         private MaterialSkin.Controls.MaterialSlider materialSlider_Accuracy;
+        private System.Windows.Forms.ToolTip toolTips;
     }
 }

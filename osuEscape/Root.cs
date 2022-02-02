@@ -28,9 +28,9 @@ namespace osuEscape
 
     public partial class Root : MaterialForm
     {
-        public Form mainForm = new MainForm();
-        public Form settingsForm = new SettingsForm();
-        public Form uploadedScoresForm = new UploadedScoresForm();
+        public MainForm mainForm;
+        public SettingsForm settingsForm;
+        public UploadedScoresForm uploadedScoresForm;
 
         // osu! data reader
         private readonly string _osuWindowTitleHint;
@@ -40,7 +40,7 @@ namespace osuEscape
 
         // Hotkey
         // Keyboard hook for multiple keys
-        private readonly KeyboardHook keyboardHook = new();
+        public readonly KeyboardHook keyboardHook = new();
         private static readonly Dictionary<Keys, string> KeysToStringDictionary = new()
         {
             [Keys.A] = "A",
@@ -103,6 +103,7 @@ namespace osuEscape
             [Keys.OemPeriod] = ".",
             [Keys.OemQuestion] = "/"
         };
+
         /*private bool isEditingHotkey = false;*/
 
         // score upload
@@ -110,11 +111,11 @@ namespace osuEscape
         private static int beatmapLastNoteOffset = Int32.MinValue;
 
         // resize ui variables
-        /*private Size FormSize_init;*/
+        private Size FormSize_init;
         private Point labelSubmissionStatus_Location_init;
 
         // material skin ui
-        readonly MaterialSkinManager materialSkinManager;
+        public readonly MaterialSkinManager materialSkinManager;
 
         // startup
         private static readonly string StartupKey = "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run";
@@ -128,9 +129,12 @@ namespace osuEscape
         bool isOffsetFound = false;
 
 
-        public Root(string osuWindowTitleHint)
+        public Root(string osuWindowTitleHint, MainForm mainForm, SettingsForm settingsForm, UploadedScoresForm uploadedScoresForm)
         {
             _osuWindowTitleHint = osuWindowTitleHint;
+            this.mainForm = mainForm;
+            this.settingsForm = settingsForm;
+            this.uploadedScoresForm = uploadedScoresForm;
 
             InitializeComponent();
 
@@ -143,10 +147,13 @@ namespace osuEscape
 
             // for ui resizing
             // design editor pixels height offset (50px)
-            /*this.Size = new Size(this.Size.Width, this.Size.Height - 50);
-            FormSize_init = this.Size;*/
             this.Size = new Size(this.Size.Width, this.Size.Height - 50);
-            labelSubmissionStatus_Location_init = materialLabel_submissionStatus.Location;
+            FormSize_init = this.Size;
+            this.Size = new Size(this.Size.Width, this.Size.Height - 50);
+
+
+            //labelSubmissionStatus_Location_init = materialLabel_submissionStatus.Location;
+            // main tab page component to be fixed
 
             // avoid opening osu!Escape twice
             if (Process.GetProcessesByName("osuEscape").Length > 1)
@@ -201,29 +208,6 @@ namespace osuEscape
 
         #endregion
 
-
-        private void SettingForm_Init()
-        {
-            // UI Update with saved user settings
-            materialSwitch_runAtStartup.Checked = Properties.Settings.Default.isStartup;
-            materialSwitch_toggleWithSound.Checked = Properties.Settings.Default.isToggleSound;
-            materialSwitch_minimizeToSystemTray.Checked = Properties.Settings.Default.isSystemTray;
-            materialSwitch_topMost.Checked = Properties.Settings.Default.isTopMost;
-            materialSwitch_submitIfFC.Checked = Properties.Settings.Default.isSubmitIfFC;
-            materialSwitch_autoDisconnect.Checked = Properties.Settings.Default.isAutoDisconnect;
-            materialSwitch_autoDisconnect.Enabled = Properties.Settings.Default.isAPIKeyVerified;
-            materialTextBox_apiInput.Text = Properties.Settings.Default.userApiKey;
-            materialSlider_Accuracy.Value = Properties.Settings.Default.submitAcc;
-            materialCheckbox_isFullCombo.Checked = Properties.Settings.Default.isCheckingFullCombo;
-            /*materialSlider_refreshRate.Value = Properties.Settings.Default.refreshRate;*/
-            materialSkinManager.Theme = (MaterialSkinManager.Themes)Properties.Settings.Default.Theme;         
-
-            materialSwitch_theme.Checked = Properties.Settings.Default.Theme == 1; // 1: enum value for Dark Theme
-            /*materialSwitch_osuConnection.Checked = !Properties.Settings.Default.isAllowConnection;*/
-            Firewall.ToggleFirewall();
-
-            TextBox_GlobalHotkey_Update();
-        }
         private Form ConvertFormToTabPage(Form f)
         {
             Form form = f;
@@ -268,23 +252,12 @@ namespace osuEscape
             if (Properties.Settings.Default.osuLocation == string.Empty)
             {
                 // if the app is first opened and there is no existing osu! process
-                OpenFileDialog_FindOsuLocation();
+                mainForm.OpenFileDialog_FindOsuLocation();
             }
             else
             {
                 Firewall.RuleSetUp(Properties.Settings.Default.osuLocation);
             }
-
-            #region Tooltip setup
-
-            toolTips.SetToolTip(materialSwitch_autoDisconnect, "Enabling this option will automatically disconnect after the recent score is submitted.");
-            toolTips.SetToolTip(materialSwitch_toggleWithSound, "Enabling this option will toggle firewall with system notification sound.");
-            toolTips.SetToolTip(materialSwitch_topMost, "Enabling this option will overlap all the other application even if it is not focused.");
-            toolTips.SetToolTip(materialSwitch_runAtStartup, "Enabling this option will allow osu!Escape to run automatically when the system is booted.");
-            toolTips.SetToolTip(materialSwitch_minimizeToSystemTray, "Enabling this option will hide osu!Escape to taskbar when clicking the close button.");
-            toolTips.SetToolTip(materialSwitch_submitIfFC, "Enabling this option will automatically submit before jumping into result screen if the set score meets the requirement.");
-
-            #endregion
 
             #region Check for Update
             WebClient webClient = new();
@@ -300,8 +273,6 @@ namespace osuEscape
             }
             #endregion
 
-            // setting form
-            SettingForm_Init();
         }
 
         #endregion
@@ -546,10 +517,13 @@ namespace osuEscape
                     {
                         previousSubmittedBeatmapMd5 = baseAddresses.Beatmap.Md5;
 
+                        /*
+                         * main tab page to be fixed
                         materialLabel_submissionStatus.BeginInvoke((MethodInvoker)delegate
                         {
                             materialLabel_SubmissionStatus_TextChanged("Uploading recent score...");
                         });
+                        */
 
                         // submission frequency test
                         await Task.Delay(750);
@@ -812,29 +786,6 @@ namespace osuEscape
 
         #region Checkboxes' Checked changed
 
-        private void materialCheckbox_autoDisconnect_CheckedChanged(object sender, EventArgs e) => Properties.Settings.Default.isAutoDisconnect = materialSwitch_autoDisconnect.Checked;
-
-        private void materialCheckbox_submitIfFC_CheckedChanged(object sender, EventArgs e)
-        => Properties.Settings.Default.isSubmitIfFC = materialSwitch_submitIfFC.Checked;
-
-        private void materialCheckbox_topMost_CheckedChanged(object sender, EventArgs e)
-        {
-            Properties.Settings.Default.isTopMost = materialSwitch_topMost.Checked;
-            this.TopMost = materialSwitch_topMost.Checked;
-        }
-
-        private void materialCheckbox_toggleWithSound_CheckedChanged(object sender, EventArgs e)
-        => Properties.Settings.Default.isToggleSound = materialSwitch_toggleWithSound.Checked;
-
-        private void materialCheckbox_minimizeToSystemTray_CheckedChanged(object sender, EventArgs e)
-        => Properties.Settings.Default.isSystemTray = materialSwitch_minimizeToSystemTray.Checked;
-
-        private void materialCheckbox_runAtStartup_CheckedChanged(object sender, EventArgs e)
-        {
-            Properties.Settings.Default.isStartup = materialSwitch_runAtStartup.Checked;
-
-            StartupSetUp(materialSwitch_runAtStartup.Checked);
-        }
 
         #endregion
 
@@ -842,8 +793,6 @@ namespace osuEscape
 
         #region Buttons
 
-        private void materialButton_checkApi_Click(object sender, EventArgs e)
-        => VerifyAPIKeyAsync();
 
         /*private void MaterialButton_findOsuLocation_Click(object sender, EventArgs e)
         {
@@ -951,40 +900,6 @@ namespace osuEscape
 
             return resultDict;
         }
-
-        private async void VerifyAPIKeyAsync()
-        {
-            // verifying api key using one of the osu! api urls
-            // using get_beatmaps as it requires the least parameter
-
-            var url = $"https://osu.ppy.sh/api/get_beatmaps?k={materialTextBox_apiInput.Text}&b=100&m=0";
-
-            var request = new HttpRequestMessage(HttpMethod.Get, url);
-            request.Headers.Accept.Clear();
-            request.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer");
-            request.Content = new StringContent("{...}", Encoding.UTF8, "application/json");
-
-            var response = await client.SendAsync(request, CancellationToken.None);
-
-            Properties.Settings.Default.isAPIKeyVerified = response.IsSuccessStatusCode;
-            materialSwitch_autoDisconnect.Enabled = response.IsSuccessStatusCode;
-
-            if (response.IsSuccessStatusCode)
-            {
-                // only success status code is needed
-                // response content is not needed
-                Properties.Settings.Default.userApiKey = materialTextBox_apiInput.Text;
-            }
-            else
-            {
-                IncorrectAPITextOutput();
-                materialSwitch_autoDisconnect.Checked = false;
-            }
-
-            Invoke_FormRefresh();
-        }
-
         private void Invoke_FormRefresh()
         {
             this.Invoke(new MethodInvoker(delegate ()
@@ -1005,7 +920,7 @@ namespace osuEscape
         }
         private void APIRequiredCheckBoxesEnabled()
         {
-            if (materialSwitch_autoDisconnect.InvokeRequired)
+            /*if (materialSwitch_autoDisconnect.InvokeRequired)
             {
                 materialSwitch_autoDisconnect.Invoke(new MethodInvoker(delegate
                 {
@@ -1019,7 +934,7 @@ namespace osuEscape
                 materialSwitch_autoDisconnect.Enabled = Properties.Settings.Default.isAPIKeyVerified;
                 if (!materialSwitch_autoDisconnect.Enabled)
                     materialSwitch_autoDisconnect.Checked = false;
-            }
+            }*/
         }
 
         #endregion
@@ -1038,11 +953,9 @@ namespace osuEscape
             else
             {
                 // reset ui size with fixed min/max
-                /*this.MaximumSize = FormSize_init;
+                this.MaximumSize = FormSize_init;
                 this.Size = FormSize_init;
-                this.MinimumSize = FormSize_init;*/
-
-                materialLabel_focus.Focus();
+                this.MinimumSize = FormSize_init;
 
                 APIRequiredCheckBoxesEnabled();
             }
@@ -1071,7 +984,7 @@ namespace osuEscape
         {
             // Toggle Connection status on properties settings and update switch status 
             Properties.Settings.Default.isAllowConnection = !Properties.Settings.Default.isAllowConnection;
-            materialSwitch_osuConnection.Checked = !Properties.Settings.Default.isAllowConnection;
+            mainForm.materialSwitch_osuConnection.Checked = !Properties.Settings.Default.isAllowConnection;
             Firewall.ToggleFirewall();
         }
 
@@ -1114,9 +1027,10 @@ namespace osuEscape
             materialLabel_globalToggleHotkey.Text += Properties.Settings.Default.GlobalHotKey;*/
         }
 
-        private void FormClosing_HomeForm(object sender, FormClosingEventArgs e)
+        private void FormClosing_RootForm(object sender, FormClosingEventArgs e)
         {
-            if (materialSwitch_minimizeToSystemTray.Checked && !isItemQuit)
+            /*
+            if (settingsForm.materialSwitch_minimizeToSystemTray.Checked && !isItemQuit)
             {
                 // cancel form closing event
                 e.Cancel = true;
@@ -1125,6 +1039,8 @@ namespace osuEscape
                 ToggleSystemTray(materialSwitch_minimizeToSystemTray.Checked);
                 ContextMenuStripUpdate();
             }
+            */
+            // settings form component to be fixed
 
             // save the last position of the application
             if (this.WindowState != FormWindowState.Minimized)
@@ -1148,28 +1064,6 @@ namespace osuEscape
             this.MaximumSize = new Size(this.Size.Width - unneededWidth, this.Size.Height - unneededHeight);
             this.Size = new Size(this.Size.Width - unneededWidth, this.Size.Height - unneededHeight);
             this.MinimumSize = new Size(this.Size.Width - unneededWidth, this.Size.Height - unneededHeight);
-        }
-
-        private void materialSwitch_theme_CheckedChanged(object sender, EventArgs e)
-        {
-            Properties.Settings.Default.Theme = materialSwitch_theme.Checked ? 1 : 0;
-            materialSkinManager.Theme = (MaterialSkinManager.Themes)Properties.Settings.Default.Theme;
-        }
-
-        private void materialCheckbox_isFullCombo_CheckedChanged(object sender, EventArgs e)
-        {
-            Properties.Settings.Default.isCheckingFullCombo = materialCheckbox_isFullCombo.Checked;
-        }
-        private void materialSlider_refreshRate_onValueChanged(object sender, int newValue)
-        {
-            _readDelay = materialSlider_refreshRate.Value < 50 ? 50 : materialSlider_refreshRate.Value;
-
-            Properties.Settings.Default.refreshRate = materialSlider_refreshRate.Value;
-        }
-
-        private void materialSlider_Accuracy_onValueChanged(object sender, int newValue)
-        {
-            Properties.Settings.Default.submitAcc = materialSlider_Accuracy.Value;
         }
     }
 }
