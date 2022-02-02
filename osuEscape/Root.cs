@@ -129,19 +129,21 @@ namespace osuEscape
         bool isOffsetFound = false;
 
 
-        public Root(string osuWindowTitleHint, MainForm mainForm, SettingsForm settingsForm, UploadedScoresForm uploadedScoresForm)
+        public Root(string osuWindowTitleHint)
         {
+
             _osuWindowTitleHint = osuWindowTitleHint;
-            this.mainForm = mainForm;
-            this.settingsForm = settingsForm;
-            this.uploadedScoresForm = uploadedScoresForm;
+            this.mainForm = new MainForm(this);
+            this.settingsForm = new SettingsForm();
+            this.uploadedScoresForm = new UploadedScoresForm();
 
             InitializeComponent();
 
             // Initialize material skin manager
-            materialSkinManager = MaterialSkinManager.Instance;
+            FormStyleManager.AddFormToManage(this);
+            /*materialSkinManager = MaterialSkinManager.Instance;
             materialSkinManager.EnforceBackcolorOnAllComponents = false;
-            materialSkinManager.AddFormToManage(this);
+            materialSkinManager.AddFormToManage(this);*/
 
             _sreader = StructuredOsuMemoryReader.Instance.GetInstanceForWindowTitleHint(osuWindowTitleHint);
 
@@ -564,7 +566,7 @@ namespace osuEscape
                             }
                         }
 
-                        materialLabel_submissionStatus.BeginInvoke((MethodInvoker)delegate
+                        mainForm.Controls["materialLabel_submissionStatus"].BeginInvoke((MethodInvoker)delegate
                         {
                             string text = isRecentSetScoreUploaded ? "Uploaded recent score." : "";
                             materialLabel_SubmissionStatus_TextChanged(text);
@@ -822,7 +824,7 @@ namespace osuEscape
         private bool isEditingHotkey = false;
         private void HomeForm_KeyDown(object sender, KeyEventArgs e)
         {
-            if (MainForm.isEditingHotkey)
+            if (isEditingHotkey)
             {
                 // cancel changes
                 if (e.KeyCode == Keys.Escape)
@@ -851,7 +853,7 @@ namespace osuEscape
 
                     isEditingHotkey = false;
 
-                    materialButton_changeToggleHotkey.UseAccentColor = false;
+                    ((MaterialButton) mainForm.Controls["materialButton_changeToggleHotkey"]).UseAccentColor = false;
                 }
             }
         }
@@ -941,7 +943,7 @@ namespace osuEscape
 
         private void materialLabel_SubmissionStatus_TextChanged(string str)
         {
-            materialLabel_submissionStatus.Text = "Submission Status: " + str;
+            mainForm.Controls["materialLabel_submissionStatus"].Text = "Submission Status: " + str;
         }
         //
         private void materialTabControl_menu_Selected(object sender, TabControlEventArgs e)
@@ -984,7 +986,7 @@ namespace osuEscape
         {
             // Toggle Connection status on properties settings and update switch status 
             Properties.Settings.Default.isAllowConnection = !Properties.Settings.Default.isAllowConnection;
-            mainForm.materialSwitch_osuConnection.Checked = !Properties.Settings.Default.isAllowConnection;
+            ((MaterialSwitch) mainForm.Controls["materialSwitch_osuConnection"]).Checked = !Properties.Settings.Default.isAllowConnection;
             Firewall.ToggleFirewall();
         }
 

@@ -199,7 +199,6 @@
             this.Text = "osu! Escape";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.FormClosing_RootForm);
             this.Load += new System.EventHandler(this.HomeForm_Load);
-            this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.HomeForm_KeyDown);
             this.materialTabControl_menu.ResumeLayout(false);
             this.tabPage_uploadedScores.ResumeLayout(false);
             this.contextMenuStrip_osu.ResumeLayout(false);

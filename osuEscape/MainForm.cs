@@ -15,8 +15,8 @@ namespace osuEscape
 {
     public partial class MainForm : Form
     {
-        public static bool isEditingHotkey { get; set; } = false;
-
+        private bool isEditingHotkey = false;
+        private Root parent;
         private static readonly Dictionary<Keys, string> KeysToStringDictionary = new()
         {
             [Keys.A] = "A",
@@ -79,9 +79,10 @@ namespace osuEscape
             [Keys.OemPeriod] = ".",
             [Keys.OemQuestion] = "/"
         };
-        public MainForm()
+        public MainForm(Root parent)
         {
             InitializeComponent();
+            this.parent = parent;
         }
 
         private void MainForm_Load(object sender, EventArgs e)
@@ -107,23 +108,6 @@ namespace osuEscape
 
             TextBox_GlobalHotkey_Update();
         }
-        public void updateMaterialLabel_globalToggleHotkey(string text)
-        {
-            /*SafeUpdate(() => materialLabel_globalToggleHotkey.Text = text);*/
-            this.materialLabel_globalToggleHotkey.Text = text;
-        }
-
-        /*private void SafeUpdate(Action action)
-        {
-            if (this.InvokeRequired)
-            {
-                this.BeginInvoke(action);
-            }
-            else
-            {
-                action();
-            }
-        }*/
 
         public void materialSwitch_osuConnection_CheckedChanged(object sender, EventArgs e)
         {
@@ -148,6 +132,7 @@ namespace osuEscape
             }
             else
             {
+                // click again to cancel edit
                 materialButton_changeToggleHotkey.UseAccentColor = false;
                 materialLabel_globalToggleHotkey.Text = Properties.Settings.Default.GHKText;
             }
@@ -218,19 +203,20 @@ namespace osuEscape
 
         #region Global HotKey
 
-        private void HomeForm_KeyDown(object sender, KeyEventArgs e)
+        private void MainForm_KeyDown(object sender, KeyEventArgs e)
         {
             if (isEditingHotkey)
             {
                 // cancel changes
                 if (e.KeyCode == Keys.Escape)
                 {
-                    TextBox_GlobalHotkey_Update();
                     isEditingHotkey = false;
+                    TextBox_GlobalHotkey_Update();
                 }
                 else if (KeysToStringDictionary.ContainsKey(e.KeyCode))
                 {
-                    keyboardHook.Dispose();
+                    isEditingHotkey = false;
+                    parent.keyboardHook.Dispose();
 
                     // user settings
                     Properties.Settings.Default.ModifierKeys = 0;
@@ -242,12 +228,10 @@ namespace osuEscape
                     // ui
                     TextBox_GlobalHotkey_Update();
 
-                    keyboardHook.RegisterHotKey((ModifierKeys)Properties.Settings.Default.ModifierKeys,
+                    parent.keyboardHook.RegisterHotKey((ModifierKeys)Properties.Settings.Default.ModifierKeys,
                                         KeysToStringDictionary.FirstOrDefault(x => x.Value == Properties.Settings.Default.GlobalHotKey).Key);
 
                     System.Media.SystemSounds.Asterisk.Play();
-
-                    isEditingHotkey = false;
 
                     materialButton_changeToggleHotkey.UseAccentColor = false;
                 }

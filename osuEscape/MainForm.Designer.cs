@@ -170,7 +170,8 @@
             this.materialButton_changeToggleHotkey.TextAlign = System.Drawing.ContentAlignment.BottomCenter;
             this.materialButton_changeToggleHotkey.Type = MaterialSkin.Controls.MaterialButton.MaterialButtonType.Contained;
             this.materialButton_changeToggleHotkey.UseAccentColor = false;
-            this.materialButton_changeToggleHotkey.UseVisualStyleBackColor = false;        
+            this.materialButton_changeToggleHotkey.UseVisualStyleBackColor = false;
+            this.materialButton_changeToggleHotkey.Click += new System.EventHandler(this.materialButton_changeToggleHotkey_Click);
             // 
             // MainForm
             // 
@@ -188,6 +189,7 @@
             this.Name = "MainForm";
             this.Text = "MainForm";
             this.Load += new System.EventHandler(this.MainForm_Load);
+            this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.MainForm_KeyDown);
             this.ResumeLayout(false);
             this.PerformLayout();
 

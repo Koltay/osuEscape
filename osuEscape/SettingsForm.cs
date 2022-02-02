@@ -52,7 +52,7 @@ namespace osuEscape
             materialSlider_Accuracy.Value = Properties.Settings.Default.submitAcc;
             materialCheckbox_isFullCombo.Checked = Properties.Settings.Default.isCheckingFullCombo;
 
-            materialSkinManager.Theme = (MaterialSkinManager.Themes)Properties.Settings.Default.Theme;
+            //materialSkinManager.Theme = (MaterialSkinManager.Themes)Properties.Settings.Default.Theme;
 
             materialSwitch_theme.Checked = Properties.Settings.Default.Theme == 1; // 1: enum value for Dark Theme
 
@@ -103,7 +103,7 @@ namespace osuEscape
         private void materialSwitch_theme_CheckedChanged(object sender, EventArgs e)
         {
             Properties.Settings.Default.Theme = materialSwitch_theme.Checked ? 1 : 0;
-            materialSkinManager.Theme = (MaterialSkinManager.Themes)Properties.Settings.Default.Theme;
+            //materialSkinManager.Theme = (MaterialSkinManager.Themes)Properties.Settings.Default.Theme;
         }
 
         private void materialCheckbox_isFullCombo_CheckedChanged(object sender, EventArgs e)
