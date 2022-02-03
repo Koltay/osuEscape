@@ -513,7 +513,7 @@ namespace osuEscape
                         {
                             KV pair = recentUploadScoreDict[i];
                             if (pair.key == baseAddresses.Beatmap.Id &&
-                                recentUploadScoreDict[i].value == baseAddresses.Player.Score)
+                                pair.value == baseAddresses.Player.Score)
                             {
                                 isRecentSetScoreUploaded = true;
 
@@ -523,16 +523,7 @@ namespace osuEscape
                                 isSetScore = false;
 
                                 // uploaded scores tab page update
-
-                                /*this.Invoke(new MethodInvoker(delegate ()
-                                {
-                                    ListViewItem item = new(baseAddresses.Beatmap.MapString);
-                                    item.SubItems.Add(baseAddresses.Player.Score.ToString());
-                                    item.SubItems.Add(baseAddresses.Player.Accuracy.ToString("0.00"));
-                                    // rank icon TBD
-                                    // pp TBD
-                                    materialListView_uploadedScores.Items.Add(item);
-                                }));*/
+                                uploadedScoresForm.UpdateScores(baseAddresses);
 
                                 break;
                             }
