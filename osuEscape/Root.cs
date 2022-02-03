@@ -572,27 +572,6 @@ namespace osuEscape
 
         #endregion 
 
-        public void ColorSchemeUpdate()
-        {
-            /*
-            // Allow: Green; Blocked: Red
-            FormStyleManager.materialSkinManager.ColorScheme = Properties.Settings.Default.isAllowConnection ?
-            new ColorScheme(
-                    Primary.Grey800,
-                    Primary.Grey900,
-                    Primary.Grey500,
-                    Accent.Green700,
-                    TextShade.WHITE)
-            :
-            new ColorScheme(
-                    Primary.Grey800,
-                    Primary.Grey900,
-                    Primary.Grey500,
-                    Accent.Red400,
-                    TextShade.WHITE);
-            */
-        }
-
         #endregion
 
         #region CheckBoxes related 

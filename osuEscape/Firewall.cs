@@ -39,25 +39,9 @@ namespace osuEscape
 
             ((Root)Application.OpenForms[0]).ContextMenuStripUpdate();
 
-            //((Root)Application.OpenForms[0]).Refresh();
-            //((MainForm)Application.OpenForms[1]).Refresh();
-            //((SettingsForm)Application.OpenForms[2]).Refresh();
-            //((UploadedScoresForm)Application.OpenForms[3]).Refresh();
+            FormStyleManager.ColorSchemeUpdate((MaterialForm)Application.OpenForms[0]);
 
-            //FormStyleManager.materialSkinManager.ColorScheme = Properties.Settings.Default.isAllowConnection ?
-            //    new ColorScheme(
-            //           Primary.Grey800,
-            //           Primary.Grey900,
-            //           Primary.Grey500,
-            //           Accent.Green700,
-            //           TextShade.WHITE)
-            //    :
-            //    new ColorScheme(
-            //           Primary.Grey800,
-            //           Primary.Grey900,
-            //           Primary.Grey500,
-            //           Accent.Red400,
-            //           TextShade.WHITE);
+            FormStyleManager.Refresh();
         }
 
         async public static void RuleSetUp(string filename)

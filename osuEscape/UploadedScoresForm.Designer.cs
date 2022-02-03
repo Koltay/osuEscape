@@ -56,7 +56,7 @@
             this.materialListView_uploadedScores.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.Nonclickable;
             this.materialListView_uploadedScores.HideSelection = false;
             this.materialListView_uploadedScores.LabelWrap = false;
-            this.materialListView_uploadedScores.Location = new System.Drawing.Point(0, 1);
+            this.materialListView_uploadedScores.Location = new System.Drawing.Point(5, 4);
             this.materialListView_uploadedScores.MaximumSize = new System.Drawing.Size(540, 335);
             this.materialListView_uploadedScores.MinimumSize = new System.Drawing.Size(540, 335);
             this.materialListView_uploadedScores.MouseLocation = new System.Drawing.Point(-1, -1);

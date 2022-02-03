@@ -20,9 +20,9 @@ namespace osuEscape
             materialSkinManager.Theme = MaterialSkinManager.Themes.DARK;
         }
 
-        public void ColorSchemeUpdate(MaterialForm mf)
+        public static void ColorSchemeUpdate(MaterialForm mf)
         {
-            mf.Invoke(new Action(() =>
+            mf.Invoke(new MethodInvoker(delegate()
             {
                 materialSkinManager.ColorScheme = Properties.Settings.Default.isAllowConnection ?
                 new ColorScheme(
@@ -40,6 +40,17 @@ namespace osuEscape
                        TextShade.WHITE);
 
             }));
+        }
+
+        public static void Refresh()
+        {
+            foreach (Form form in Application.OpenForms)
+            {
+                form.Invoke(new MethodInvoker(delegate ()
+                {
+                    form.Refresh();
+                }));
+            }
         }
     }
 }
