@@ -135,11 +135,10 @@ namespace osuEscape
             this.settingsForm = new SettingsForm();
             this.uploadedScoresForm = new UploadedScoresForm();
 
-            InitializeComponent();
-
             // Initialize material skin manager
             FormStyleManager.AddFormToManage(this);
 
+            InitializeComponent();
 
             _sreader = StructuredOsuMemoryReader.Instance.GetInstanceForWindowTitleHint(osuWindowTitleHint);
 
