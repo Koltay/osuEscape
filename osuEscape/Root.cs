@@ -502,17 +502,20 @@ namespace osuEscape
                         await Task.Delay(50);
 
                         // GET Method of user's recent score (osu! api v1)
-                        // get the recent 3 scores, even though there is multiple submissions at one connection
-                        // the recent score could still be recognized
-                        KV[] recentUploadScoreDict = await GetUserRecentScoreAsync(baseAddresses.Player.Username, baseAddresses.Player.Mode, 3);
+                        // get the recent 3 scores, as there might be multiple submissions at one connection, so that the recent set score could be recognized
+
+                        int checkScoresCount = 3;
+
+                        KV[] userScoresKV = new KV[checkScoresCount];
+                        userScoresKV = await GetUserRecentScoreAsync(baseAddresses.Player.Username, baseAddresses.Player.Mode, checkScoresCount);
 
                         bool isRecentSetScoreUploaded = false;
 
-                        for(int i = 0; i < recentUploadScoreDict.Length; i++)
+                        
+                        for(int i = 0; i < userScoresKV.Length; i++)
                         {
-                            KV pair = recentUploadScoreDict[i];
-                            if (pair.key == baseAddresses.Beatmap.Id &&
-                                pair.value == baseAddresses.Player.Score)
+                            if (userScoresKV[i].key == baseAddresses.Beatmap.Id &&
+                                userScoresKV[i].value == baseAddresses.Player.Score)
                             {
                                 isRecentSetScoreUploaded = true;
 
@@ -524,15 +527,16 @@ namespace osuEscape
                                 // uploaded scores tab page update
                                 uploadedScoresForm.UpdateScores(baseAddresses);
 
+                                // submission status update
+                                mainForm.Controls["materialLabel_submissionStatus"].BeginInvoke((MethodInvoker)delegate
+                                {
+                                    string text = isRecentSetScoreUploaded ? "Uploaded recent score." : "";
+                                    mainForm.materialLabel_SubmissionStatus_TextChanged(text);
+                                });
+
                                 break;
                             }
                         }
-
-                        mainForm.Controls["materialLabel_submissionStatus"].BeginInvoke((MethodInvoker)delegate
-                        {
-                            string text = isRecentSetScoreUploaded ? "Uploaded recent score." : "";
-                            mainForm.materialLabel_SubmissionStatus_TextChanged(text);
-                        });
                     }
 
                     bool isSubmittableBeatmapStatus()
