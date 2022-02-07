@@ -506,16 +506,14 @@ namespace osuEscape
 
                         int checkScoresCount = 3;
 
-                        KV[] userScoresKV = new KV[checkScoresCount];
-                        userScoresKV = await GetUserRecentScoreAsync(baseAddresses.Player.Username, baseAddresses.Player.Mode, checkScoresCount);
+                        JArray jarr = await GetUserRecentScoreAsync(baseAddresses.Player.Username, baseAddresses.Player.Mode, checkScoresCount);
 
                         bool isRecentSetScoreUploaded = false;
 
-                        
-                        for(int i = 0; i < userScoresKV.Length; i++)
+                        foreach (var element in jarr)
                         {
-                            if (userScoresKV[i].key == baseAddresses.Beatmap.Id &&
-                                userScoresKV[i].value == baseAddresses.Player.Score)
+                            if (Convert.ToInt32(element["beatmap_id"]) == baseAddresses.Beatmap.Id &&
+                                Convert.ToInt32(element["score"]) == baseAddresses.Player.Score)
                             {
                                 isRecentSetScoreUploaded = true;
 
@@ -633,9 +631,7 @@ namespace osuEscape
         #endregion
 
         #region GET Method from osu! api   
-
-        //private static async Task<Dictionary<int, int>> GetUserRecentScoreAsync(string userName, int mode, int recentScoreLimits)
-        private static async Task<KV[]> GetUserRecentScoreAsync(string userName, int mode, int recentScoreLimits)
+        private static async Task<JArray> GetUserRecentScoreAsync(string userName, int mode, int recentScoreLimits)
         {
             var url = $"https://osu.ppy.sh/api/get_user_recent?k={Properties.Settings.Default.userApiKey}&u={userName}&m={mode}&limit={recentScoreLimits}";
 
@@ -646,11 +642,6 @@ namespace osuEscape
             request.Headers.Authorization = new AuthenticationHeaderValue("Bearer");
             request.Content = new StringContent("{...}", Encoding.UTF8, "application/json");
 
-            // beatmap_id, score
-            /*Dictionary<int, int> resultDict = new();*/
-            //var resultList = new (int, int)[] { };
-            KV[] resultList = new KV[recentScoreLimits];
-
             var response = await client.SendAsync(request, CancellationToken.None);
 
             if (response.IsSuccessStatusCode)
@@ -659,24 +650,14 @@ namespace osuEscape
 
                 JArray arr = (JArray)JsonConvert.DeserializeObject(JsonString);
 
-                if (arr.Count != 0)
-                {
-                    for (int i = 0; i < System.Math.Min(arr.Count, recentScoreLimits); i++)
-                    {
-
-                        resultList[i] = new KV(Convert.ToInt32(arr[i]["beatmap_id"]), Convert.ToInt32(arr[i]["score"]));
-                        /*int beatmap_id = Convert.ToInt32(arr[i]["beatmap_id"]);
-                        int score = Convert.ToInt32(arr[i]["score"]);
-                        resultDict[beatmap_id] = score;*/
-                    }
-                }
+                return arr;
             }
             else
             {
                 IncorrectAPITextOutput();
-            }
 
-            return resultList;
+                return null;
+            }
         }
         #endregion
 
