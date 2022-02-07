@@ -316,8 +316,6 @@ namespace osuEscape
                     if (baseAddresses.GeneralData.OsuStatus == OsuMemoryStatus.SongSelect)
                     {
                         _sreader.TryRead(baseAddresses.SongSelectionScores);
-
-                        beatmapLastNoteOffset = -9999;
                     }
                     else
                     {
@@ -440,9 +438,8 @@ namespace osuEscape
                                             beatmapLastNoteOffset += (sliderLengthOffset * sliderRepeatCount);
                                         }
                                     });
+                                    isOffsetFound = true;
                                 });
-
-                                isOffsetFound = true;
                             }
                             catch (Exception ex)
                             {
