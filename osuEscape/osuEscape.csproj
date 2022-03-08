@@ -58,7 +58,7 @@
     </PackageReference>
     <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
-    <PackageReference Include="OsuMemoryDataProvider" Version="0.8.6" />
+    <PackageReference Include="OsuMemoryDataProvider" Version="0.8.7" />
   </ItemGroup>
   <ItemGroup>
     <Compile Update="Properties\Resources.Designer.cs">
