@@ -717,6 +717,8 @@ namespace osuEscape
                 Properties.Settings.Default.appPosition = this.Location;
 
             Properties.Settings.Default.Save();
+
+            notifyIcon_osuEscape.Visible = false;
         }
 
         public static bool IsAdministrator()
