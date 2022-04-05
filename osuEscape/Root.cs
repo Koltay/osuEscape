@@ -26,8 +26,12 @@ using System.Windows.Forms;
 namespace osuEscape
 {
 
-    public partial class HomeForm : MaterialForm
+    public partial class Root : MaterialForm
     {
+        public MainForm mainForm;
+        public SettingsForm settingsForm;
+        public UploadedScoresForm uploadedScoresForm;
+
         // osu! data reader
         private readonly string _osuWindowTitleHint;
         private int _readDelay = 50;
@@ -36,7 +40,7 @@ namespace osuEscape
 
         // Hotkey
         // Keyboard hook for multiple keys
-        private readonly KeyboardHook keyboardHook = new();
+        public readonly KeyboardHook keyboardHook = new();
         private static readonly Dictionary<Keys, string> KeysToStringDictionary = new()
         {
             [Keys.A] = "A",
@@ -99,18 +103,17 @@ namespace osuEscape
             [Keys.OemPeriod] = ".",
             [Keys.OemQuestion] = "/"
         };
-        private bool isEditingHotkey = false;
 
         // score upload
         private static readonly HttpClient client = new();
-        private static int beatmapLastNoteOffset = -9999;
+        private static int beatmapLastNoteOffset = Int32.MinValue;
 
         // resize ui variables
         private Size FormSize_init;
         private Point labelSubmissionStatus_Location_init;
 
         // material skin ui
-        readonly MaterialSkinManager materialSkinManager;
+        public readonly MaterialSkinManager materialSkinManager;
 
         // startup
         private static readonly string StartupKey = "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run";
@@ -124,16 +127,18 @@ namespace osuEscape
         bool isOffsetFound = false;
 
 
-        public HomeForm(string osuWindowTitleHint)
+        public Root(string osuWindowTitleHint)
         {
-            _osuWindowTitleHint = osuWindowTitleHint;
 
-            InitializeComponent();
+            _osuWindowTitleHint = osuWindowTitleHint;
+            this.mainForm = new MainForm(this);
+            this.settingsForm = new SettingsForm();
+            this.uploadedScoresForm = new UploadedScoresForm();
 
             // Initialize material skin manager
-            materialSkinManager = MaterialSkinManager.Instance;
-            materialSkinManager.EnforceBackcolorOnAllComponents = false;
-            materialSkinManager.AddFormToManage(this);
+            FormStyleManager.AddFormToManage(this);
+
+            InitializeComponent();
 
             _sreader = StructuredOsuMemoryReader.Instance.GetInstanceForWindowTitleHint(osuWindowTitleHint);
 
@@ -141,7 +146,6 @@ namespace osuEscape
             // design editor pixels height offset (50px)
             this.Size = new Size(this.Size.Width, this.Size.Height - 50);
             FormSize_init = this.Size;
-            labelSubmissionStatus_Location_init = materialLabel_submissionStatus.Location;
 
             // avoid opening osu!Escape twice
             if (Process.GetProcessesByName("osuEscape").Length > 1)
@@ -150,7 +154,6 @@ namespace osuEscape
                 this.Close();
             }
 
-            // startup issue check
             // hotkey
             keyboardHook.KeyPressed += new EventHandler<KeyPressedEventArgs>(KeyboardHook_OnKeyPressed);
             keyboardHook.RegisterHotKey((ModifierKeys)Properties.Settings.Default.ModifierKeys,
@@ -196,32 +199,25 @@ namespace osuEscape
 
         #endregion
 
-
-        private void SettingForm_Init()
+        private Form ConvertFormToTabPage(Form f)
         {
-            // UI Update with saved user settings
-            materialSwitch_runAtStartup.Checked = Properties.Settings.Default.isStartup;
-            materialSwitch_toggleWithSound.Checked = Properties.Settings.Default.isToggleSound;
-            materialSwitch_minimizeToSystemTray.Checked = Properties.Settings.Default.isSystemTray;
-            materialSwitch_topMost.Checked = Properties.Settings.Default.isTopMost;
-            materialSwitch_submitIfFC.Checked = Properties.Settings.Default.isSubmitIfFC;
-            materialSwitch_autoDisconnect.Checked = Properties.Settings.Default.isAutoDisconnect;
-            materialSwitch_autoDisconnect.Enabled = Properties.Settings.Default.isAPIKeyVerified;
-            materialTextBox_apiInput.Text = Properties.Settings.Default.userApiKey;
-            materialSlider_Accuracy.Value = Properties.Settings.Default.submitAcc;
-            materialCheckbox_isFullCombo.Checked = Properties.Settings.Default.isCheckingFullCombo;
-            materialSlider_refreshRate.Value = Properties.Settings.Default.refreshRate;
-            materialSkinManager.Theme = (MaterialSkinManager.Themes)Properties.Settings.Default.Theme;         
-
-            materialSwitch_theme.Checked = Properties.Settings.Default.Theme == 1; // 1: enum value for Dark Theme
-            materialSwitch_osuConnection.Checked = !Properties.Settings.Default.isAllowConnection;
-            ToggleFirewall();
-
-            TextBox_GlobalHotkey_Update();
+            Form form = f;
+            form.TopLevel = false;
+            form.Visible = true;
+            form.FormBorderStyle = FormBorderStyle.None;
+            form.Dock = DockStyle.Fill;
+            return form;
         }
 
         private void HomeForm_Load(object sender, EventArgs e)
         {
+            materialTabControl_menu.TabPages[0].Controls.Clear();
+            materialTabControl_menu.TabPages[1].Controls.Clear();
+            materialTabControl_menu.TabPages[2].Controls.Clear();
+            materialTabControl_menu.TabPages[0].Controls.Add(ConvertFormToTabPage(mainForm));
+            materialTabControl_menu.TabPages[1].Controls.Add(ConvertFormToTabPage(settingsForm));
+            materialTabControl_menu.TabPages[2].Controls.Add(ConvertFormToTabPage(uploadedScoresForm));
+
             // check if osu!Escape is already opened 
             if (Process.GetProcessesByName(this.Name).Length > 1)
                 this.Close();
@@ -233,38 +229,10 @@ namespace osuEscape
                 this.Close();
             }
 
-
             osuDataReaderAsync();
 
             // open the app at the previous position (location on window) 
             this.Location = Properties.Settings.Default.appPosition;
-
-            // get osu! directory from running process
-            Properties.Settings.Default.osuLocation = Process.GetProcessesByName("osu!").Length == 0
-                                                    ? Properties.Settings.Default.osuLocation
-                                                    : Process.GetProcessesByName("osu!").FirstOrDefault().MainModule.FileName;
-
-            // let user manually find the osu directory if it's still finding
-            if (Properties.Settings.Default.osuLocation == string.Empty)
-            {
-                // if the app is first opened and there is no existing osu! process
-                OpenFileDialog_FindOsuLocation();
-            }
-            else
-            {
-                FirewallRuleSetUp(Properties.Settings.Default.osuLocation);
-            }
-
-            #region Tooltip setup
-
-            toolTips.SetToolTip(materialSwitch_autoDisconnect, "Enabling this option will automatically disconnect after the recent score is submitted.");
-            toolTips.SetToolTip(materialSwitch_toggleWithSound, "Enabling this option will toggle firewall with system notification sound.");
-            toolTips.SetToolTip(materialSwitch_topMost, "Enabling this option will overlap all the other application even if it is not focused.");
-            toolTips.SetToolTip(materialSwitch_runAtStartup, "Enabling this option will allow osu!Escape to run automatically when the system is booted.");
-            toolTips.SetToolTip(materialSwitch_minimizeToSystemTray, "Enabling this option will hide osu!Escape to taskbar when clicking the close button.");
-            toolTips.SetToolTip(materialSwitch_submitIfFC, "Enabling this option will automatically submit before jumping into result screen if the set score meets the requirement.");
-
-            #endregion
 
             #region Check for Update
             WebClient webClient = new();
@@ -280,8 +248,6 @@ namespace osuEscape
             }
             #endregion
 
-            // setting form
-            SettingForm_Init();
         }
 
         #endregion
@@ -350,8 +316,6 @@ namespace osuEscape
                     if (baseAddresses.GeneralData.OsuStatus == OsuMemoryStatus.SongSelect)
                     {
                         _sreader.TryRead(baseAddresses.SongSelectionScores);
-
-                        beatmapLastNoteOffset = -9999;
                     }
                     else
                     {
@@ -474,9 +438,8 @@ namespace osuEscape
                                             beatmapLastNoteOffset += (sliderLengthOffset * sliderRepeatCount);
                                         }
                                     });
+                                    isOffsetFound = true;
                                 });
-
-                                isOffsetFound = true;
                             }
                             catch (Exception ex)
                             {
@@ -504,7 +467,7 @@ namespace osuEscape
                             isSubmittableBeatmapStatus())
                         {
                             Properties.Settings.Default.isAllowConnection = true;
-                            ToggleFirewall();
+                            Firewall.Toggle();
                             isSetScore = true;
                         }
                     }
@@ -526,55 +489,49 @@ namespace osuEscape
                     {
                         previousSubmittedBeatmapMd5 = baseAddresses.Beatmap.Md5;
 
-                        materialLabel_submissionStatus.BeginInvoke((MethodInvoker)delegate
+
+                        mainForm.Controls["materialLabel_submissionStatus"].BeginInvoke((MethodInvoker)delegate
                         {
-                            materialLabel_SubmissionStatus_TextChanged("Uploading recent score...");
+                            mainForm.materialLabel_SubmissionStatus_TextChanged("Uploading recent score...");
                         });
 
                         // submission frequency test
-                        await Task.Delay(750);
+                        await Task.Delay(50);
 
                         // GET Method of user's recent score (osu! api v1)
-                        // get the recent 3 scores, even though there is multiple submissions at one connection
-                        // the recent score could still be recognized
-                        Dictionary<int, int> recentUploadScoreDict = await GetUserRecentScoreAsync(baseAddresses.Player.Username, baseAddresses.Player.Mode, 3);
+                        // get the recent 3 scores, as there might be multiple submissions at one connection, so that the recent set score could be recognized
+
+                        int checkScoresCount = 3;
+
+                        JArray jarr = await GetUserRecentScoreAsync(baseAddresses.Player.Username, baseAddresses.Player.Mode, checkScoresCount);
 
                         bool isRecentSetScoreUploaded = false;
 
-                        foreach (var responseScore in recentUploadScoreDict)
+                        foreach (var element in jarr)
                         {
-                            // the score player recently submitted
-                            if (responseScore.Key == baseAddresses.Beatmap.Id &&
-                                responseScore.Value == baseAddresses.Player.Score)
+                            if (Convert.ToInt32(element["beatmap_id"]) == baseAddresses.Beatmap.Id &&
+                                Convert.ToInt32(element["score"]) == baseAddresses.Player.Score)
                             {
                                 isRecentSetScoreUploaded = true;
 
                                 Properties.Settings.Default.isAllowConnection = false;
-                                ToggleFirewall();
+                                Firewall.Toggle();
 
                                 isSetScore = false;
 
                                 // uploaded scores tab page update
+                                uploadedScoresForm.UpdateScores(baseAddresses);
 
-                                this.Invoke(new MethodInvoker(delegate ()
+                                // submission status update
+                                mainForm.Controls["materialLabel_submissionStatus"].BeginInvoke((MethodInvoker)delegate
                                 {
-                                    ListViewItem item = new(baseAddresses.Beatmap.MapString);
-                                    item.SubItems.Add(baseAddresses.Player.Score.ToString());
-                                    item.SubItems.Add(baseAddresses.Player.Accuracy.ToString("0.00"));
-                                    // rank icon TBD
-                                    // pp TBD
-                                    materialListView_uploadedScores.Items.Add(item);
-                                }));
+                                    string text = isRecentSetScoreUploaded ? "Uploaded recent score." : "";
+                                    mainForm.materialLabel_SubmissionStatus_TextChanged(text);
+                                });
 
                                 break;
                             }
                         }
-
-                        materialLabel_submissionStatus.BeginInvoke((MethodInvoker)delegate
-                        {
-                            string text = isRecentSetScoreUploaded ? "Uploaded recent score." : "";
-                            materialLabel_SubmissionStatus_TextChanged(text);
-                        });
                     }
 
                     bool isSubmittableBeatmapStatus()
@@ -604,138 +561,6 @@ namespace osuEscape
 
         #endregion 
 
-        #region ToggleConnection 
-
-        private void ToggleFirewall()
-        {
-            if (Properties.Settings.Default.osuLocation == "")
-            {
-                ShowMessageBox("ERROR: Invalid Location!");
-            }
-            else
-            {
-                AllowConnection(Properties.Settings.Default.isAllowConnection);
-
-                ToggleSound(Properties.Settings.Default.isToggleSound);
-
-                Invoke_FormRefresh();
-            }
-        }
-
-        private void AllowConnection(bool isAllow)
-        {
-            Process cmd = new();
-            cmd.StartInfo.FileName = "netsh";
-            cmd.StartInfo.Arguments =
-                  @"advfirewall firewall set rule name=""osu block"" new enable=" + (isAllow ? "no" : "yes");
-            cmd.StartInfo.Verb = "runas";
-            cmd.StartInfo.UseShellExecute = true;
-            cmd.StartInfo.CreateNoWindow = true;
-            cmd.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
-            cmd.Start();
-
-            ColorSchemeUpdate();
-
-            ContextMenuStripUpdate();
-        }
-
-        private void ColorSchemeUpdate()
-        {
-            // Allow: Green; Blocked: Red
-            materialSkinManager.ColorScheme = Properties.Settings.Default.isAllowConnection ?
-            new ColorScheme(
-                    Primary.Grey800,
-                    Primary.Grey900,
-                    Primary.Grey500,
-                    Accent.Green700,
-                    TextShade.WHITE)
-            :
-            new ColorScheme(
-                    Primary.Grey800,
-                    Primary.Grey900,
-                    Primary.Grey500,
-                    Accent.Red400,
-                    TextShade.WHITE);
-        }
-
-        private async void FirewallRuleSetUp(string filename)
-        {
-            await Task.Run(async () =>
-            {
-                if (filename.Contains("osu!.exe"))
-                {
-
-
-                    Properties.Settings.Default.osuLocation = filename;
-
-                    // UpdateOsuLocationText
-                    // osuPath: osuLocation without osu.exe at the end
-                    string osuPath = String.Join("\\", Properties.Settings.Default.osuLocation.Split('\\').Reverse().Skip(1).Reverse()) + "\\";
-                    Properties.Settings.Default.osuPath = osuPath;
-
-                    materialLabel_osuPath.Invoke(new MethodInvoker(delegate
-                    {
-                        materialLabel_osuPath.Text = "osu! Path: " + osuPath;
-                    }));
-
-                    // create cmd
-                    Process cmd = new();
-                    cmd.StartInfo.FileName = "netsh";
-                    cmd.StartInfo.Verb = "runas";
-                    cmd.StartInfo.UseShellExecute = true;
-                    cmd.StartInfo.CreateNoWindow = true;
-                    cmd.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
-
-                    // delete the rules if the users used this application before
-                    cmd.StartInfo.Arguments =
-                        "advfirewall firewall delete rule name=\"osu block\"";
-                    cmd.Start();
-
-                    await Task.Delay(500);
-
-                    // add blocking rule into advanced firewall 
-                    cmd.StartInfo.Arguments =
-                        "advfirewall firewall add rule name=\"osu block\" dir=out action=block program=" + filename;
-                    cmd.Start();
-
-                    await Task.Delay(500);
-
-                    Debug.WriteLine("Connection status: " + Properties.Settings.Default.isAllowConnection);
-                }
-            });
-        }
-
-        #endregion
-
-        #endregion
-
-        #region Find osu! location
-
-
-        private void OpenFileDialog_FindOsuLocation()
-        {
-            OpenFileDialog ofd = new()
-            {
-                Filter = "osu.exe |*.EXE"
-            };
-
-            if (ofd.ShowDialog() == DialogResult.OK)
-            {
-                if (!ofd.FileName.Contains("osu!.exe"))
-                {
-                    // run again until user finds osu.exe or user cancelled the action
-                    OpenFileDialog_FindOsuLocation();
-                }
-                else
-                {
-                    Properties.Settings.Default.osuLocation = ofd.FileName;
-
-                    FirewallRuleSetUp(Properties.Settings.Default.osuLocation);
-                }
-            }
-            materialButton_findOsuLocation.UseAccentColor = false;
-        }
-
         #endregion
 
         #region CheckBoxes related 
@@ -754,7 +579,7 @@ namespace osuEscape
             }
             catch (Exception ex)
             {
-                ShowMessageBox(ex.Message);
+                MainFunction.ShowMessageBox(ex.Message);
             }
         }
         #endregion
@@ -768,7 +593,7 @@ namespace osuEscape
         #endregion
 
         #region ContextMenuStrip
-        private void ContextMenuStripUpdate()
+        public void ContextMenuStripUpdate()
         {
             notifyIcon_osuEscape.ContextMenuStrip = contextMenuStrip_osu;
 
@@ -792,107 +617,18 @@ namespace osuEscape
 
         #region Checkboxes' Checked changed
 
-        private void materialCheckbox_autoDisconnect_CheckedChanged(object sender, EventArgs e) => Properties.Settings.Default.isAutoDisconnect = materialSwitch_autoDisconnect.Checked;
-
-        private void materialCheckbox_submitIfFC_CheckedChanged(object sender, EventArgs e)
-        => Properties.Settings.Default.isSubmitIfFC = materialSwitch_submitIfFC.Checked;
-
-        private void materialCheckbox_topMost_CheckedChanged(object sender, EventArgs e)
-        {
-            Properties.Settings.Default.isTopMost = materialSwitch_topMost.Checked;
-            this.TopMost = materialSwitch_topMost.Checked;
-        }
-
-        private void materialCheckbox_toggleWithSound_CheckedChanged(object sender, EventArgs e)
-        => Properties.Settings.Default.isToggleSound = materialSwitch_toggleWithSound.Checked;
-
-        private void materialCheckbox_minimizeToSystemTray_CheckedChanged(object sender, EventArgs e)
-        => Properties.Settings.Default.isSystemTray = materialSwitch_minimizeToSystemTray.Checked;
-
-        private void materialCheckbox_runAtStartup_CheckedChanged(object sender, EventArgs e)
-        {
-            Properties.Settings.Default.isStartup = materialSwitch_runAtStartup.Checked;
-
-            StartupSetUp(materialSwitch_runAtStartup.Checked);
-        }
 
         #endregion
 
         #endregion
 
-        #region Buttons
-
-        private void materialButton_checkApi_Click(object sender, EventArgs e)
-        => VerifyAPIKeyAsync();
-
-        private void MaterialButton_findOsuLocation_Click(object sender, EventArgs e)
-        {
-            materialButton_findOsuLocation.UseAccentColor = true;
-            OpenFileDialog_FindOsuLocation();
-        }
-        private void MaterialButton_changeToggleHotKey_Click(object sender, EventArgs e)
-        {
-            isEditingHotkey = !isEditingHotkey;
-            if (isEditingHotkey)
-            {
-                materialButton_changeToggleHotkey.UseAccentColor = true;
-                Properties.Settings.Default.GHKText = materialLabel_globalToggleHotkey.Text;
-                materialLabel_globalToggleHotkey.Text = "Press Key(s) as Global Toggle Hotkey...";
-            }
-            else
-            {
-                materialButton_changeToggleHotkey.UseAccentColor = false;
-                materialLabel_globalToggleHotkey.Text = Properties.Settings.Default.GHKText;
-            }
-        }
-
-
-        #endregion
-
-        #region Global HotKey
-
-        private void HomeForm_KeyDown(object sender, KeyEventArgs e)
-        {
-            if (isEditingHotkey)
-            {
-                // cancel changes
-                if (e.KeyCode == Keys.Escape)
-                {
-                    TextBox_GlobalHotkey_Update();
-                    isEditingHotkey = false;
-                }
-                else if (KeysToStringDictionary.ContainsKey(e.KeyCode))
-                {
-                    keyboardHook.Dispose();
-
-                    // user settings
-                    Properties.Settings.Default.ModifierKeys = 0;
-                    Properties.Settings.Default.ModifierKeys += e.Alt ? 1 : 0;
-                    Properties.Settings.Default.ModifierKeys += e.Control ? 2 : 0;
-                    Properties.Settings.Default.ModifierKeys += e.Shift ? 4 : 0;
-                    Properties.Settings.Default.GlobalHotKey = KeysToStringDictionary[e.KeyCode];
-
-                    // ui
-                    TextBox_GlobalHotkey_Update();
-
-                    keyboardHook.RegisterHotKey((ModifierKeys)Properties.Settings.Default.ModifierKeys,
-                                        KeysToStringDictionary.FirstOrDefault(x => x.Value == Properties.Settings.Default.GlobalHotKey).Key);
-
-                    System.Media.SystemSounds.Asterisk.Play();
-
-                    isEditingHotkey = false;
-
-                    materialButton_changeToggleHotkey.UseAccentColor = false;
-                }
-            }
-        }
+        #region Global HotKey        
 
 
         #endregion
 
         #region GET Method from osu! api   
-
-        private static async Task<Dictionary<int, int>> GetUserRecentScoreAsync(string userName, int mode, int recentScoreLimits)
+        private static async Task<JArray> GetUserRecentScoreAsync(string userName, int mode, int recentScoreLimits)
         {
             var url = $"https://osu.ppy.sh/api/get_user_recent?k={Properties.Settings.Default.userApiKey}&u={userName}&m={mode}&limit={recentScoreLimits}";
 
@@ -903,9 +639,6 @@ namespace osuEscape
             request.Headers.Authorization = new AuthenticationHeaderValue("Bearer");
             request.Content = new StringContent("{...}", Encoding.UTF8, "application/json");
 
-            // beatmap_id, score
-            Dictionary<int, int> resultDict = new();
-
             var response = await client.SendAsync(request, CancellationToken.None);
 
             if (response.IsSuccessStatusCode)
@@ -914,66 +647,14 @@ namespace osuEscape
 
                 JArray arr = (JArray)JsonConvert.DeserializeObject(JsonString);
 
-                if (arr.Count != 0)
-                {
-                    for (int i = 0; i < System.Math.Min(arr.Count, recentScoreLimits); i++)
-                    {
-                        int beatmap_id = Convert.ToInt32(arr[i]["beatmap_id"]);
-                        int score = Convert.ToInt32(arr[i]["score"]);
-                        resultDict[beatmap_id] = score;
-                    }
-                }
+                return arr;
             }
             else
             {
                 IncorrectAPITextOutput();
+
+                return null;
             }
-
-            return resultDict;
-        }
-
-        private async void VerifyAPIKeyAsync()
-        {
-            // verifying api key using one of the osu! api urls
-            // using get_beatmaps as it requires the least parameter
-
-            var url = $"https://osu.ppy.sh/api/get_beatmaps?k={materialTextBox_apiInput.Text}&b=100&m=0";
-
-            var request = new HttpRequestMessage(HttpMethod.Get, url);
-            request.Headers.Accept.Clear();
-            request.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer");
-            request.Content = new StringContent("{...}", Encoding.UTF8, "application/json");
-
-            var response = await client.SendAsync(request, CancellationToken.None);
-
-            Properties.Settings.Default.isAPIKeyVerified = response.IsSuccessStatusCode;
-            materialSwitch_autoDisconnect.Enabled = response.IsSuccessStatusCode;
-
-            if (response.IsSuccessStatusCode)
-            {
-                // only success status code is needed
-                // response content is not needed
-                Properties.Settings.Default.userApiKey = materialTextBox_apiInput.Text;
-            }
-            else
-            {
-                IncorrectAPITextOutput();
-                materialSwitch_autoDisconnect.Checked = false;
-            }
-
-            Invoke_FormRefresh();
-        }
-
-        private void Invoke_FormRefresh()
-        {
-            this.Invoke(new MethodInvoker(delegate ()
-            {
-                //Access your controls
-                materialSwitch_osuConnection.Checked = !Properties.Settings.Default.isAllowConnection;
-
-                this.Refresh();
-            }));
         }
         #endregion
 
@@ -981,36 +662,12 @@ namespace osuEscape
 
         private static void IncorrectAPITextOutput()
         {
-            ShowMessageBox(
+            MainFunction.ShowMessageBox(
                     $"Internal server Error/ Incorrect API! {Environment.NewLine} " +
                     $"Please check if your API key is correct.")
                     ;
         }
-        private void APIRequiredCheckBoxesEnabled()
-        {
-            if (materialSwitch_autoDisconnect.InvokeRequired)
-            {
-                materialSwitch_autoDisconnect.Invoke(new MethodInvoker(delegate
-                {
-                    materialSwitch_autoDisconnect.Enabled = Properties.Settings.Default.isAPIKeyVerified;
-                    if (!materialSwitch_autoDisconnect.Enabled)
-                        materialSwitch_autoDisconnect.Checked = false;
-                }));
-            }
-            else
-            {
-                materialSwitch_autoDisconnect.Enabled = Properties.Settings.Default.isAPIKeyVerified;
-                if (!materialSwitch_autoDisconnect.Enabled)
-                    materialSwitch_autoDisconnect.Checked = false;
-            }
-        }
-
         #endregion
-
-        private void materialLabel_SubmissionStatus_TextChanged(string str)
-        {
-            materialLabel_submissionStatus.Text = "Submission Status: " + str;
-        }
         private void materialTabControl_menu_Selected(object sender, TabControlEventArgs e)
         {
             if (materialTabControl_menu.SelectedTab == tabPage_main)
@@ -1023,24 +680,7 @@ namespace osuEscape
                 this.MaximumSize = FormSize_init;
                 this.Size = FormSize_init;
                 this.MinimumSize = FormSize_init;
-
-                materialLabel_focus.Focus();
-
-                APIRequiredCheckBoxesEnabled();
             }
-        }
-
-        private static void ShowMessageBox(string message)
-        {
-            ToggleSound(Properties.Settings.Default.isToggleSound);
-
-            MessageBox.Show(message);
-        }
-
-        private static void ToggleSound(bool enabled)
-        {
-            if (enabled)
-                System.Media.SystemSounds.Asterisk.Play();
         }
 
         private void notifyIcon_osuEscape_MouseDoubleClick(object sender, MouseEventArgs e)
@@ -1053,58 +693,32 @@ namespace osuEscape
         {
             // Toggle Connection status on properties settings and update switch status 
             Properties.Settings.Default.isAllowConnection = !Properties.Settings.Default.isAllowConnection;
-            materialSwitch_osuConnection.Checked = !Properties.Settings.Default.isAllowConnection;
-            ToggleFirewall();
+            Firewall.Toggle();
+
+            ((MaterialSwitch)mainForm.Controls["materialSwitch_osuConnection"]).Checked = !Properties.Settings.Default.isAllowConnection;
         }
+        
 
-        private void TextBox_GlobalHotkey_Update()
+        private void FormClosing_RootForm(object sender, FormClosingEventArgs e)
         {
-            int modifierKeys = Properties.Settings.Default.ModifierKeys;
-            bool isCtrl = false;
-            bool isAlt = false;
-            bool isShift = false;
-
-            if (modifierKeys >= 4)
-            {
-                isShift = true;
-                modifierKeys -= 4;
-            }
-
-            if (modifierKeys >= 2)
-            {
-                isCtrl = true;
-                modifierKeys -= 2;
-            }
-
-            if (modifierKeys == 1)
-            {
-                isAlt = true;
-            }
-
-            materialLabel_globalToggleHotkey.Text = "Global Toggle Hotkey: ";
-            materialLabel_globalToggleHotkey.Text += isCtrl ? "Ctrl + " : "";
-            materialLabel_globalToggleHotkey.Text += isShift ? "Shift + " : "";
-            materialLabel_globalToggleHotkey.Text += isAlt ? "Alt + " : "";
-            materialLabel_globalToggleHotkey.Text += Properties.Settings.Default.GlobalHotKey;
-        }
-
-        private void FormClosing_HomeForm(object sender, FormClosingEventArgs e)
-        {
-            if (materialSwitch_minimizeToSystemTray.Checked && !isItemQuit)
+            if (((MaterialSwitch)settingsForm.Controls["materialSwitch_minimizeToSystemTray"]).Checked && !isItemQuit)
             {
                 // cancel form closing event
                 e.Cancel = true;
 
                 this.WindowState = FormWindowState.Minimized;
-                ToggleSystemTray(materialSwitch_minimizeToSystemTray.Checked);
+                ToggleSystemTray(((MaterialCheckbox)settingsForm.Controls["materialSwitch_minimizeToSystemTray"]).Checked);
                 ContextMenuStripUpdate();
             }
+
 
             // save the last position of the application
             if (this.WindowState != FormWindowState.Minimized)
                 Properties.Settings.Default.appPosition = this.Location;
 
             Properties.Settings.Default.Save();
+
+            notifyIcon_osuEscape.Visible = false;
         }
 
         public static bool IsAdministrator()
@@ -1113,44 +727,15 @@ namespace osuEscape
             WindowsPrincipal principal = new(identity);
             return principal.IsInRole(WindowsBuiltInRole.Administrator);
         }     
-        
-
-        private void materialSwitch_osuConnection_CheckedChanged(object sender, EventArgs e)
-        {
-            Properties.Settings.Default.isAllowConnection = !materialSwitch_osuConnection.Checked;
-            ToggleFirewall();
-        }
-
+       
         private void MainTabResize()
         {
             // set the ui size for main tab
             int unneededWidth = 45;
             int unneededHeight = 130;
-            this.MaximumSize = new Size(FormSize_init.Width - unneededWidth, FormSize_init.Height - unneededHeight);
-            this.Size = new Size(FormSize_init.Width - unneededWidth, FormSize_init.Height - unneededHeight);
-            this.MinimumSize = new Size(FormSize_init.Width - unneededWidth, FormSize_init.Height - unneededHeight);
-        }
-
-        private void materialSwitch_theme_CheckedChanged(object sender, EventArgs e)
-        {
-            Properties.Settings.Default.Theme = materialSwitch_theme.Checked ? 1 : 0;
-            materialSkinManager.Theme = (MaterialSkinManager.Themes)Properties.Settings.Default.Theme;
-        }
-
-        private void materialCheckbox_isFullCombo_CheckedChanged(object sender, EventArgs e)
-        {
-            Properties.Settings.Default.isCheckingFullCombo = materialCheckbox_isFullCombo.Checked;
-        }
-        private void materialSlider_refreshRate_onValueChanged(object sender, int newValue)
-        {
-            _readDelay = materialSlider_refreshRate.Value < 50 ? 50 : materialSlider_refreshRate.Value;
-
-            Properties.Settings.Default.refreshRate = materialSlider_refreshRate.Value;
-        }
-
-        private void materialSlider_Accuracy_onValueChanged(object sender, int newValue)
-        {
-            Properties.Settings.Default.submitAcc = materialSlider_Accuracy.Value;
+            this.MinimumSize = new Size(this.Size.Width - unneededWidth, this.Size.Height - unneededHeight);
+            this.MaximumSize = new Size(this.Size.Width - unneededWidth, this.Size.Height - unneededHeight);
+            this.Size = new Size(this.Size.Width - unneededWidth, this.Size.Height - unneededHeight);
         }
     }
 }
