@@ -1,0 +1,114 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Diagnostics;
+using System.Windows.Forms;
+using MaterialSkin.Controls;
+using MaterialSkin;
+
+using NetFwTypeLib;
+
+namespace osuEscape
+{
+    public class Firewall
+    {        
+        private static void AllowConnection(bool isAllow)
+        {
+            ExecuteCommandLine(@$"advfirewall firewall set rule name=""osu block"" new enable={(isAllow ? "no" : "yes")}");
+        }
+
+        private static void ExecuteCommandLine(string line)
+        {
+            Process cmd = new();
+            cmd.StartInfo.FileName = "netsh";
+            cmd.StartInfo.Verb = "runas";
+            cmd.StartInfo.Arguments = line;            
+            cmd.StartInfo.UseShellExecute = true;
+            cmd.StartInfo.CreateNoWindow = true;
+            cmd.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
+            cmd.Start();
+        }
+
+
+        public static void Toggle()
+        {
+            if (Properties.Settings.Default.osuLocation == "")
+            {
+                MainFunction.ShowMessageBox("ERROR: Invalid Location!");
+            }
+            else
+            {
+                AllowConnection(Properties.Settings.Default.isAllowConnection);
+
+                Audio.ToggleSound(Properties.Settings.Default.isToggleSound);
+            }
+
+            ((Root)Application.OpenForms[0]).ContextMenuStripUpdate();
+
+            FormStyleManager.ColorSchemeUpdate((MaterialForm)Application.OpenForms[0]);
+
+            FormStyleManager.Refresh();
+        }
+
+        async public static void RuleSetUp(string filename)
+        {
+            // 1. delete the previous rules of "osu block"
+            // 2. add a new "osu block" rule
+
+            await Task.Run(async () =>
+            {
+                RemoveFirewallRules("osu block");
+
+                await Task.Delay(500);
+
+                CreateFirewallRule("osu block", filename);
+
+                await Task.Delay(500);
+
+                Debug.WriteLine("Connection status: " + Properties.Settings.Default.isAllowConnection);
+
+                Toggle();
+            });
+        }
+
+        public static void RemoveFirewallRules(string RuleName)
+        {
+            try
+            {
+                Type tNetFwPolicy2 = Type.GetTypeFromProgID("HNetCfg.FwPolicy2");
+                INetFwPolicy2 fwPolicy2 = (INetFwPolicy2)Activator.CreateInstance(tNetFwPolicy2);
+                var currentProfiles = fwPolicy2.CurrentProfileTypes;
+
+                // List of rules
+                List<INetFwRule> RuleList = new List<INetFwRule>();
+
+                foreach (INetFwRule rule in fwPolicy2.Rules)
+                {
+                    // Add rule to list
+                    // RuleList.Add(rule);
+                    // Console.WriteLine(rule.Name);
+                    if (rule.Name.IndexOf(RuleName) != -1)
+                    {
+                        // Now add the rule
+                        INetFwPolicy2 firewallPolicy = (INetFwPolicy2)Activator.CreateInstance(Type.GetTypeFromProgID("HNetCfg.FwPolicy2"));
+                        firewallPolicy.Rules.Remove(rule.Name);
+                        Console.WriteLine(rule.Name + " has been deleted from Firewall Policy");                
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Error: Cannot delete the rule(s) from firewall");
+            }
+        }
+
+        public static void CreateFirewallRule(string RuleName, string filename)
+        {
+            MessageBox.Show(filename);
+
+            ExecuteCommandLine(@$"advfirewall firewall add rule name=""{RuleName}"" dir=out action=block program=""{filename}""");
+        }
+    }
+}
