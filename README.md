@@ -19,6 +19,9 @@
 
 > osu! Escape uploaded scores tab page
  
+ ## Video Showcase (Click here!)
+
+[![Watch the video showcase here!](http://i3.ytimg.com/vi/N0ui0FeIaPE/hqdefault.jpg)](https://www.youtube.com/watch?v=N0ui0FeIaPE&ab_channel=Koltay)
  
  ## Inspiration from top osu! players
  
@@ -49,11 +52,9 @@
  ### Auto Connection:
  
  - **Auto Submission:** 
- > After players hit the last note of the beatmap, *"full combo"* score meeting the user requirement (accuracy) would be submitted 
-
- *Dropping slider ends still count as a "full combo" score
+ > After players hit the last note of the beatmap, score meeting the user requirement (accuracy or full combo) would be submitted 
   
- > The score would be submitted to the server while players are on the results screen
+ > The score would be submitted to the server while players are on the result screen
  
  - **Auto Blocking:** 
  
@@ -78,10 +79,6 @@
  This application uses [osu! API v1](https://github.com/ppy/osu-api/wiki) to get users' recent uploaded score and automatically disconnect after uploading.
  
  As for the users who are concerned about the API usage, please feel free to not use it :D
-
-## Video Showcase (Click here!)
-
-[![Watch the video showcase here!](http://i3.ytimg.com/vi/N0ui0FeIaPE/hqdefault.jpg)](https://www.youtube.com/watch?v=N0ui0FeIaPE&ab_channel=Koltay)
 
 ## Details on Advanced Firewall Rule
 
