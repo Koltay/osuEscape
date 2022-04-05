@@ -16,9 +16,9 @@ namespace osuEscape
         {
             Process cmd = new();
             cmd.StartInfo.FileName = "netsh";
+            cmd.StartInfo.Verb = "runas";
             cmd.StartInfo.Arguments =
                   @"advfirewall firewall set rule name=""osu block"" new enable=" + (isAllow ? "no" : "yes");
-            cmd.StartInfo.Verb = "runas";
             cmd.StartInfo.UseShellExecute = true;
             cmd.StartInfo.CreateNoWindow = true;
             cmd.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
@@ -63,7 +63,7 @@ namespace osuEscape
 
                 await Task.Delay(500);
 
-                // add blocking rule into the advanced firewall 
+                // then, add blocking rule into the advanced firewall 
                 cmd.StartInfo.Arguments =
                     "advfirewall firewall add rule name=\"osu block\" dir=out action=block program=" + filename;
                 cmd.Start();
