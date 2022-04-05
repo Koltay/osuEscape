@@ -8,6 +8,8 @@ using System.Windows.Forms;
 using MaterialSkin.Controls;
 using MaterialSkin;
 
+using NetFwTypeLib;
+
 namespace osuEscape
 {
     public class Firewall
@@ -19,6 +21,15 @@ namespace osuEscape
             cmd.StartInfo.Verb = "runas";
             cmd.StartInfo.Arguments =
                   @"advfirewall firewall set rule name=""osu block"" new enable=" + (isAllow ? "no" : "yes");
+            ExecuteCommandLine(@$"advfirewall firewall set rule name=""osu block"" new enable={(isAllow ? "no" : "yes")}");
+        }
+
+        private static void ExecuteCommandLine(string line)
+        {
+            Process cmd = new();
+            cmd.StartInfo.FileName = "netsh";
+            cmd.StartInfo.Verb = "runas";
+            cmd.StartInfo.Arguments = line;            
             cmd.StartInfo.UseShellExecute = true;
             cmd.StartInfo.CreateNoWindow = true;
             cmd.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
@@ -48,25 +59,13 @@ namespace osuEscape
         {
             await Task.Run(async () =>
             {
-                // create cmd
-                Process cmd = new();
-                cmd.StartInfo.FileName = "netsh";
-                cmd.StartInfo.Verb = "runas";
-                cmd.StartInfo.UseShellExecute = true;
-                cmd.StartInfo.CreateNoWindow = true;
-                cmd.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
-
-                // firstly, delete the rules if the users used this application before
-                cmd.StartInfo.Arguments =
-                    "advfirewall firewall delete rule name=\"osu block\"";
-                cmd.Start();
+            // 1. delete the previous rules of "osu block"
+            // 2. add a new "osu block" rule
+                RemoveFirewallRules("osu block");
 
                 await Task.Delay(500);
 
-                // then, add blocking rule into the advanced firewall 
-                cmd.StartInfo.Arguments =
-                    "advfirewall firewall add rule name=\"osu block\" dir=out action=block program=" + filename;
-                cmd.Start();
+                CreateFirewallRule("osu block", filename);
 
                 await Task.Delay(500);
 
@@ -74,6 +73,44 @@ namespace osuEscape
 
                 Toggle();
             });
+        }
+
+        public static void RemoveFirewallRules(string RuleName)
+        {
+            try
+            {
+                Type tNetFwPolicy2 = Type.GetTypeFromProgID("HNetCfg.FwPolicy2");
+                INetFwPolicy2 fwPolicy2 = (INetFwPolicy2)Activator.CreateInstance(tNetFwPolicy2);
+                var currentProfiles = fwPolicy2.CurrentProfileTypes;
+
+                // List of rules
+                List<INetFwRule> RuleList = new List<INetFwRule>();
+
+                foreach (INetFwRule rule in fwPolicy2.Rules)
+                {
+                    // Add rule to list
+                    // RuleList.Add(rule);
+                    // Console.WriteLine(rule.Name);
+                    if (rule.Name.IndexOf(RuleName) != -1)
+                    {
+                        // Now add the rule
+                        INetFwPolicy2 firewallPolicy = (INetFwPolicy2)Activator.CreateInstance(Type.GetTypeFromProgID("HNetCfg.FwPolicy2"));
+                        firewallPolicy.Rules.Remove(rule.Name);
+                        Console.WriteLine(rule.Name + " has been deleted from Firewall Policy");                
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Error: Cannot delete the rule(s) from firewall");
+            }
+        }
+
+        public static void CreateFirewallRule(string RuleName, string filename)
+        {
+            MessageBox.Show(filename);
+
+            ExecuteCommandLine(@$"advfirewall firewall add rule name=""{RuleName}"" dir=out action=block program=""{filename}""");
         }
     }
 }
