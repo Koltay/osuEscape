@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace osuEscape
+﻿namespace osuEscape
 {
     class Audio
     {
@@ -14,7 +8,7 @@ namespace osuEscape
             {
                 System.Media.SystemSounds.Asterisk.Play();
             }
-                
+
         }
     }
 }

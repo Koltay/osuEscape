@@ -1,15 +1,8 @@
-﻿using MaterialSkin;
-using MaterialSkin.Controls;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
 using System.Diagnostics;
+using System.Linq;
+using System.Windows.Forms;
 
 namespace osuEscape
 {
@@ -94,7 +87,7 @@ namespace osuEscape
             Properties.Settings.Default.osuLocation = Process.GetProcessesByName("osu!").Length == 0
                                                     ? Properties.Settings.Default.osuLocation
                                                     : Process.GetProcessesByName("osu!").FirstOrDefault().MainModule.FileName;
-            
+
             // let user manually find the osu directory if it's still finding
             if (Properties.Settings.Default.osuLocation == string.Empty)
             {
@@ -159,7 +152,7 @@ namespace osuEscape
                 materialLabel_osuPath.Text = "osu! Path: " + Properties.Settings.Default.osuPath;
                 Firewall.RuleSetUp(Properties.Settings.Default.osuLocation);
             }
-            else if(result == DialogResult.OK && !ofd.FileName.Contains("osu!.exe"))
+            else if (result == DialogResult.OK && !ofd.FileName.Contains("osu!.exe"))
             {
                 // run again until user finds osu.exe or user cancelled the action
                 OpenFileDialog_FindOsuLocation();
@@ -172,8 +165,8 @@ namespace osuEscape
         }
         private void materialSlider_refreshRate_onValueChanged(object sender, int newValue)
         {
-            materialSlider_refreshRate.Value    = materialSlider_refreshRate.Value < 50 
-                                                ? 50 
+            materialSlider_refreshRate.Value = materialSlider_refreshRate.Value < 50
+                                                ? 50
                                                 : materialSlider_refreshRate.Value;
             Properties.Settings.Default.refreshRate = materialSlider_refreshRate.Value;
         }

@@ -365,13 +365,13 @@ namespace osuEscape
                                         string[] beatmapFileLines = File.ReadAllLines(beatmapFile);
 
                                         for (int i = 0; i < beatmapFileLines.Length; i++)
-                                        { 
+                                        {
                                             if (beatmapFileLines[i].Contains("Mode: "))
                                             {
                                                 beatmapMode = beatmapFileLines[i].Last();
                                                 Debug.WriteLine("Beatmap Mode: " + beatmapMode);
                                             }
-                                        }                                 
+                                        }
 
                                         if (File.ReadLines(beatmapFile).Last().Contains("|") && beatmapMode == '0')
                                         {
@@ -389,7 +389,7 @@ namespace osuEscape
                                             int timingPointSessionIndex = 0;
                                             int sliderLengthOffset = 0;
                                             bool uninherited = true;
-                                            
+
                                             // locate the sessions
                                             for (int i = 0; i < beatmapFileLines.Length; i++)
                                             {
@@ -697,7 +697,7 @@ namespace osuEscape
 
             ((MaterialSwitch)mainForm.Controls["materialSwitch_osuConnection"]).Checked = !Properties.Settings.Default.isAllowConnection;
         }
-        
+
 
         private void FormClosing_RootForm(object sender, FormClosingEventArgs e)
         {
@@ -726,8 +726,8 @@ namespace osuEscape
             using WindowsIdentity identity = WindowsIdentity.GetCurrent();
             WindowsPrincipal principal = new(identity);
             return principal.IsInRole(WindowsBuiltInRole.Administrator);
-        }     
-       
+        }
+
         private void MainTabResize()
         {
             // set the ui size for main tab

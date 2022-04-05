@@ -1,18 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
-using MaterialSkin;
+﻿using MaterialSkin;
 using MaterialSkin.Controls;
+using System.Windows.Forms;
 
 namespace osuEscape
 {
     class FormStyleManager
     {
         public static MaterialSkinManager materialSkinManager;
-        public static void AddFormToManage (MaterialForm f)
+        public static void AddFormToManage(MaterialForm f)
         {
             materialSkinManager = MaterialSkinManager.Instance;
             materialSkinManager.EnforceBackcolorOnAllComponents = false;
@@ -22,7 +17,7 @@ namespace osuEscape
 
         public static void ColorSchemeUpdate(MaterialForm mf)
         {
-            mf.Invoke(new MethodInvoker(delegate()
+            mf.Invoke(new MethodInvoker(delegate ()
             {
                 materialSkinManager.ColorScheme = Properties.Settings.Default.isAllowConnection ?
                 new ColorScheme(

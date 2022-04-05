@@ -1,19 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Diagnostics;
-using System.Windows.Forms;
-using MaterialSkin.Controls;
-using MaterialSkin;
-
+﻿using MaterialSkin.Controls;
 using NetFwTypeLib;
+using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Threading.Tasks;
+using System.Windows.Forms;
 
 namespace osuEscape
 {
     public class Firewall
-    {        
+    {
         private static void AllowConnection(bool isAllow)
         {
             Process cmd = new();
@@ -29,7 +25,7 @@ namespace osuEscape
             Process cmd = new();
             cmd.StartInfo.FileName = "netsh";
             cmd.StartInfo.Verb = "runas";
-            cmd.StartInfo.Arguments = line;            
+            cmd.StartInfo.Arguments = line;
             cmd.StartInfo.UseShellExecute = true;
             cmd.StartInfo.CreateNoWindow = true;
             cmd.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
@@ -59,8 +55,8 @@ namespace osuEscape
         {
             await Task.Run(async () =>
             {
-            // 1. delete the previous rules of "osu block"
-            // 2. add a new "osu block" rule
+                // 1. delete the previous rules of "osu block"
+                // 2. add a new "osu block" rule
                 RemoveFirewallRules("osu block");
 
                 await Task.Delay(500);
@@ -96,7 +92,7 @@ namespace osuEscape
                         // Now add the rule
                         INetFwPolicy2 firewallPolicy = (INetFwPolicy2)Activator.CreateInstance(Type.GetTypeFromProgID("HNetCfg.FwPolicy2"));
                         firewallPolicy.Rules.Remove(rule.Name);
-                        Console.WriteLine(rule.Name + " has been deleted from Firewall Policy");                
+                        Console.WriteLine(rule.Name + " has been deleted from Firewall Policy");
                     }
                 }
             }
@@ -108,7 +104,7 @@ namespace osuEscape
 
         public static void CreateFirewallRule(string RuleName, string filename)
         {
-            MessageBox.Show(filename);
+            //MessageBox.Show(filename);
 
             ExecuteCommandLine(@$"advfirewall firewall add rule name=""{RuleName}"" dir=out action=block program=""{filename}""");
         }
