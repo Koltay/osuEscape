@@ -381,16 +381,16 @@ namespace osuEscape
                                             // reverse slider 
                                             int sliderRepeatCount = Convert.ToInt32(File.ReadLines(beatmapFile).Last().Split(",")[6]);
 
-                                            decimal sliderMultiplier = 0;
-                                            decimal beatLength = 0;
-                                            decimal BPM = 0;
+                                            decimal sliderMultiplier = 1;
+                                            decimal beatLength = 1;
+                                            decimal BPM = 1;
                                             decimal sliderVelocity = 1;
                                             int difficultySessionIndex = 0;
                                             int timingPointSessionIndex = 0;
                                             int sliderLengthOffset = 0;
                                             bool uninherited = true;
 
-                                            // locate the sessions
+                                            // locate the sessions: difficulty and timing
                                             for (int i = 0; i < beatmapFileLines.Length; i++)
                                             {
                                                 if (beatmapFileLines[i] == "[Difficulty]")
@@ -403,13 +403,17 @@ namespace osuEscape
                                                 }
                                             }
 
+                                            // difficulty session to find slider multiplier
                                             for (int i = difficultySessionIndex + 1; i < beatmapFileLines.Length; i++)
                                             {
                                                 if (!beatmapFileLines[i].Contains(":"))
                                                     break;
 
                                                 if (File.ReadAllLines(beatmapFile)[i].Contains("SliderMultiplier:"))
+                                                {
                                                     sliderMultiplier = Convert.ToDecimal(File.ReadAllLines(beatmapFile)[i][17..]);
+                                                    Debug.WriteLine("Slider Multiplier: " + sliderMultiplier);
+                                                }
                                             }
 
                                             // timing point syntax: time,beatLength,meter,sampleSet,sampleIndex,volume,uninherited,effects
@@ -419,23 +423,33 @@ namespace osuEscape
                                                 if (!beatmapFileLines[i].Contains(","))
                                                     break;
 
-                                                beatLength = Convert.ToDecimal(File.ReadAllLines(beatmapFile)[i].Split(",")[1]);
-
-                                                // uninherited == 1, red line
-                                                if (Convert.ToInt32(File.ReadAllLines(beatmapFile)[i].Split(",")[6]) == 1)
+                                                // only find the timing point before the last note
+                                                if (Convert.ToInt32(File.ReadAllLines(beatmapFile)[i].Split(",")[0]) <= beatmapLastNoteOffset)
                                                 {
-                                                    BPM = 60000 / Convert.ToDecimal(File.ReadAllLines(beatmapFile)[i].Split(",")[1]);
-                                                    uninherited = true;
+                                                    beatLength = Convert.ToDecimal(File.ReadAllLines(beatmapFile)[i].Split(",")[1]);
+
+                                                    // uninherited == 1, red line
+                                                    if (Convert.ToInt32(File.ReadAllLines(beatmapFile)[i].Split(",")[6]) == 1)
+                                                    {
+                                                        BPM = 60000 / Convert.ToDecimal(File.ReadAllLines(beatmapFile)[i].Split(",")[1]);
+                                                        uninherited = true;
+                                                    }
+                                                    else
+                                                        uninherited = false;
                                                 }
-                                                else
-                                                    uninherited = false;
                                             }
+
                                             if (!uninherited)
                                                 sliderVelocity = -100 / beatLength;
 
                                             sliderLengthOffset = (int)Math.Abs(Math.Round(600 * sliderPixelLength / (BPM * sliderMultiplier * sliderVelocity)));
-
                                             beatmapLastNoteOffset += (sliderLengthOffset * sliderRepeatCount);
+
+                                            Debug.WriteLine("Beatmap BPM: " + BPM);
+                                            Debug.WriteLine("Beatmap slider uninherited?: " + uninherited);
+                                            Debug.WriteLine("Beatmap slider length offset: " + sliderLengthOffset);
+                                            Debug.WriteLine("Beatmap slider repeat count:" + sliderRepeatCount);
+                                            Debug.WriteLine("Beatmap last note offset: " + beatmapLastNoteOffset);
                                         }
                                     });
                                     isOffsetFound = true;
@@ -615,11 +629,6 @@ namespace osuEscape
 
         #endregion
 
-        #region Checkboxes' Checked changed
-
-
-        #endregion
-
         #endregion
 
         #region Global HotKey        
@@ -707,7 +716,7 @@ namespace osuEscape
                 e.Cancel = true;
 
                 this.WindowState = FormWindowState.Minimized;
-                ToggleSystemTray(((MaterialCheckbox)settingsForm.Controls["materialSwitch_minimizeToSystemTray"]).Checked);
+                ToggleSystemTray(((MaterialSwitch)settingsForm.Controls["materialSwitch_minimizeToSystemTray"]).Checked);
                 ContextMenuStripUpdate();
             }
 

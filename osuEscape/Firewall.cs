@@ -12,11 +12,6 @@ namespace osuEscape
     {
         private static void AllowConnection(bool isAllow)
         {
-            Process cmd = new();
-            cmd.StartInfo.FileName = "netsh";
-            cmd.StartInfo.Verb = "runas";
-            cmd.StartInfo.Arguments =
-                  @"advfirewall firewall set rule name=""osu block"" new enable=" + (isAllow ? "no" : "yes");
             ExecuteCommandLine(@$"advfirewall firewall set rule name=""osu block"" new enable={(isAllow ? "no" : "yes")}");
         }
 
@@ -79,14 +74,10 @@ namespace osuEscape
                 INetFwPolicy2 fwPolicy2 = (INetFwPolicy2)Activator.CreateInstance(tNetFwPolicy2);
                 var currentProfiles = fwPolicy2.CurrentProfileTypes;
 
-                // List of rules
                 List<INetFwRule> RuleList = new List<INetFwRule>();
 
                 foreach (INetFwRule rule in fwPolicy2.Rules)
                 {
-                    // Add rule to list
-                    // RuleList.Add(rule);
-                    // Console.WriteLine(rule.Name);
                     if (rule.Name.IndexOf(RuleName) != -1)
                     {
                         // Now add the rule
@@ -104,8 +95,6 @@ namespace osuEscape
 
         public static void CreateFirewallRule(string RuleName, string filename)
         {
-            //MessageBox.Show(filename);
-
             ExecuteCommandLine(@$"advfirewall firewall add rule name=""{RuleName}"" dir=out action=block program=""{filename}""");
         }
     }
