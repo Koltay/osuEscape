@@ -340,6 +340,7 @@ namespace osuEscape
                             _sreader.TryReadProperty(baseAddresses.Player, nameof(Player.Mods), out var dummyResult);
                         }
 
+                        // Beatmap Offset
                         // only read the audio offset if it is not the previous beatmap
                         if (!isOffsetFound)
                         {
@@ -474,9 +475,10 @@ namespace osuEscape
                             }
                         }
 
+                        // Automatic Function #1: Auto Connection
 
-                        // 1.   *** Auto Connection has to be done on playing status for instant connection,
-                        //      otherwise, connection checking on result screen would take about 30 seconds or more
+                        // 1.   *** It has to be done on playing status for instant connection
+                        //      otherwise, connection checking on result screen would cause about 30 seconds or more
                         // 2.   Use beatmap's last HitObject's offset to determine if the map ended
                         // 3.   Determine if it meets the requirement (acc, fc)
                         //      "FC": 0 misscount / dropped some sliderends / sliderbreak at start
@@ -488,7 +490,8 @@ namespace osuEscape
 
                         if (Properties.Settings.Default.isSubmitIfFC &&
                             baseAddresses.GeneralData.AudioTime >= beatmapLastNoteOffset &&
-                            baseAddresses.GeneralData.AudioTime >= 12000 && // test
+                            baseAddresses.GeneralData.AudioTime >= 12000 && // shortest map in ranked 
+                            baseAddresses.Player.MaxCombo >= 1 && // least combo required
                             isOffsetFound &&
                             baseAddresses.Player.HitMiss == 0 &&
                             (!Properties.Settings.Default.isCheckingFullCombo || baseAddresses.Player.Combo == baseAddresses.Player.MaxCombo) &&
@@ -501,6 +504,13 @@ namespace osuEscape
                             Properties.Settings.Default.isAllowConnection = true;
                             Firewall.Toggle();
                             isSetScore = true;
+
+                            mainForm.Controls["materialLabel_submissionStatus"].BeginInvoke((MethodInvoker)delegate
+                            {
+                                mainForm.materialLabel_SubmissionStatus_TextChanged("Uploading recent score...");
+                            });
+
+                            Debug.WriteLine("Submission: uploading recent score.");
                         }
                     }
                     else
@@ -509,29 +519,21 @@ namespace osuEscape
                         isOffsetFound = false;
                     }
 
-                    // score submission
-                    // upload if only it is not a replay
-                    // miss count == 0 means full comboing 
-                    // do not upload if the map is pending or not submitted
+                    // Automatic Function #2: Auto Disconnection
                     if (isSetScore &&
                         Properties.Settings.Default.isAutoDisconnect &&
                         Properties.Settings.Default.isAllowConnection &&
-                        baseAddresses.GeneralData.OsuStatus != OsuMemoryStatus.Playing &&
+                        //baseAddresses.GeneralData.OsuStatus != OsuMemoryStatus.Playing &&
                         isSubmittableBeatmapStatus())
                     {
                         previousSubmittedBeatmapMd5 = baseAddresses.Beatmap.Md5;
-
-
-                        mainForm.Controls["materialLabel_submissionStatus"].BeginInvoke((MethodInvoker)delegate
-                        {
-                            mainForm.materialLabel_SubmissionStatus_TextChanged("Uploading recent score...");
-                        });
 
                         // submission frequency test
                         await Task.Delay(50);
 
                         // GET Method of user's recent score (osu! api v1)
-                        // get the recent 3 scores, as there might be multiple submissions at one connection, so that the recent set score could be recognized
+                        // get the recent 3 scores, as there might be multiple submissions at one connection
+                        // so that the recent set score could be recognized
 
                         int checkScoresCount = 3;
 
@@ -560,6 +562,8 @@ namespace osuEscape
                                     string text = isRecentSetScoreUploaded ? "Uploaded recent score." : "";
                                     mainForm.materialLabel_SubmissionStatus_TextChanged(text);
                                 });
+
+                                Debug.WriteLine("Submission: Uploaded recent score.");
 
                                 break;
                             }
