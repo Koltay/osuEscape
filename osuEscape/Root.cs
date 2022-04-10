@@ -351,6 +351,8 @@ namespace osuEscape
 
                                     await Task.Run(() =>
                                     {
+                                        beatmapLastNoteOffset = 0;
+
                                         foreach (string str in File.ReadLines(beatmapFile).Last().Split(","))
                                         {
                                             if (Int32.TryParse(str, out var value))
