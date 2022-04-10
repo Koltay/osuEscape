@@ -356,6 +356,8 @@ namespace osuEscape
                                             if (Int32.TryParse(str, out var value))
                                                 beatmapLastNoteOffset = Math.Max(beatmapLastNoteOffset, value);
                                         }
+
+                                        Debug.WriteLine($"Beatmap last note offset before adding slider value: {beatmapLastNoteOffset}");
                                         // special case: slider (and reverse slider)
                                         // Hit object syntax: x,y,time,type,hitSound,curveType|curvePoints,slides,length,edgeSounds,edgeSets,hitSample
                                         // old: 0,2 and 6 mean slider in type
@@ -373,13 +375,14 @@ namespace osuEscape
                                             }
                                         }
 
+                                        // slider
                                         if (File.ReadLines(beatmapFile).Last().Contains("|") && beatmapMode == '0')
                                         {
                                             // [7] is the slider pixel length of slider (syntax above)
                                             decimal sliderPixelLength = Convert.ToDecimal(File.ReadLines(beatmapFile).Last().Split(",")[7]);
 
-                                            // reverse slider 
-                                            int sliderRepeatCount = Convert.ToInt32(File.ReadLines(beatmapFile).Last().Split(",")[6]);
+                                            // reverse slider's repeat count
+                                            int revSliderRepeatCount = Convert.ToInt32(File.ReadLines(beatmapFile).Last().Split(",")[6]);
 
                                             decimal sliderMultiplier = 1;
                                             decimal beatLength = 1;
@@ -417,6 +420,7 @@ namespace osuEscape
                                             }
 
                                             // timing point syntax: time,beatLength,meter,sampleSet,sampleIndex,volume,uninherited,effects
+                                            // depends on format version, old format only contains time, beatLength
                                             for (int i = timingPointSessionIndex + 1; i < beatmapFileLines.Length; i++)
                                             {
                                                 // check the corresponding timing point
@@ -429,13 +433,16 @@ namespace osuEscape
                                                     beatLength = Convert.ToDecimal(File.ReadAllLines(beatmapFile)[i].Split(",")[1]);
 
                                                     // uninherited == 1, red line
-                                                    if (Convert.ToInt32(File.ReadAllLines(beatmapFile)[i].Split(",")[6]) == 1)
+                                                    if (File.ReadAllLines(beatmapFile)[i].Split(",").Count() >= 7)
                                                     {
-                                                        BPM = 60000 / Convert.ToDecimal(File.ReadAllLines(beatmapFile)[i].Split(",")[1]);
-                                                        uninherited = true;
+                                                        if (Convert.ToInt32(File.ReadAllLines(beatmapFile)[i].Split(",")[6]) == 1)
+                                                        {
+                                                            BPM = 60000 / Convert.ToDecimal(File.ReadAllLines(beatmapFile)[i].Split(",")[1]);
+                                                            uninherited = true;
+                                                        }
+                                                        else
+                                                            uninherited = false;
                                                     }
-                                                    else
-                                                        uninherited = false;
                                                 }
                                             }
 
@@ -443,16 +450,20 @@ namespace osuEscape
                                                 sliderVelocity = -100 / beatLength;
 
                                             sliderLengthOffset = (int)Math.Abs(Math.Round(600 * sliderPixelLength / (BPM * sliderMultiplier * sliderVelocity)));
-                                            beatmapLastNoteOffset += (sliderLengthOffset * sliderRepeatCount);
+                                            beatmapLastNoteOffset += (sliderLengthOffset * revSliderRepeatCount);
+
+                                            Debug.WriteLine($"Beatmap id: {baseAddresses.Beatmap.Id}");
+                                            Debug.WriteLine($"Beatmap name: {baseAddresses.Beatmap.MapString}");
 
                                             Debug.WriteLine("Beatmap BPM: " + BPM);
                                             Debug.WriteLine("Beatmap slider uninherited?: " + uninherited);
                                             Debug.WriteLine("Beatmap slider length offset: " + sliderLengthOffset);
-                                            Debug.WriteLine("Beatmap slider repeat count:" + sliderRepeatCount);
-                                            Debug.WriteLine("Beatmap last note offset: " + beatmapLastNoteOffset);
+                                            Debug.WriteLine("Beatmap slider repeat count:" + revSliderRepeatCount);
                                         }
                                     });
                                     isOffsetFound = true;
+                                    Debug.WriteLine("Offset Found!");
+                                    Debug.WriteLine("Beatmap last note offset: " + beatmapLastNoteOffset);
                                 });
                             }
                             catch (Exception ex)
@@ -463,22 +474,27 @@ namespace osuEscape
 
 
                         // 1.   *** Auto Connection has to be done on playing status for instant connection,
-                        //      otherwise, connection checking on results screen would take about 30 seconds or more
-                        // 2.   Using beatmap's last HitObject's offset to determine if the map ended
-                        // 3.   Determine if it is an "FC" (depends on user)
+                        //      otherwise, connection checking on result screen would take about 30 seconds or more
+                        // 2.   Use beatmap's last HitObject's offset to determine if the map ended
+                        // 3.   Determine if it meets the requirement (acc, fc)
                         //      "FC": 0 misscount / dropped some sliderends / sliderbreak at start
-                        // 4.   Submit if it is above or equal to the required accuracy, and it has to be not a replay
-                        // 5.   If there is already blocked connection, disable the block rule
-                        //      Verify Md5 to avoid false auto connection on same beatmap set
+                        // 4.   Submit if it meets the requirement, and it has to be not a replay and the map has a leaderboard (qualifed/ ranked/ loved)
+                        // 5.   Disable the block rule to connect to the server
+                        // 6.   Verify Md5 to avoid false auto connection on same beatmap set
+
+                        //Debug.WriteLine($"Recent Combo: {baseAddresses.Player.Combo}");
+
                         if (Properties.Settings.Default.isSubmitIfFC &&
                             baseAddresses.GeneralData.AudioTime >= beatmapLastNoteOffset &&
+                            baseAddresses.GeneralData.AudioTime >= 12000 && // test
                             isOffsetFound &&
                             baseAddresses.Player.HitMiss == 0 &&
                             (!Properties.Settings.Default.isCheckingFullCombo || baseAddresses.Player.Combo == baseAddresses.Player.MaxCombo) &&
                             baseAddresses.Player.Accuracy >= Properties.Settings.Default.submitAcc &&
                             !Properties.Settings.Default.isAllowConnection &&
                             previousSubmittedBeatmapMd5 != baseAddresses.Beatmap.Md5 &&
-                            isSubmittableBeatmapStatus())
+                            isSubmittableBeatmapStatus()
+                            )
                         {
                             Properties.Settings.Default.isAllowConnection = true;
                             Firewall.Toggle();
@@ -550,6 +566,8 @@ namespace osuEscape
 
                     bool isSubmittableBeatmapStatus()
                     {
+                        // disable isreplay for testing
+
                         return !baseAddresses.Player.IsReplay &&
                                 baseAddresses.Beatmap.Status != ((short)BeatmapStatus.Pending) &&
                                 baseAddresses.Beatmap.Status != ((short)BeatmapStatus.NotSubmitted);
