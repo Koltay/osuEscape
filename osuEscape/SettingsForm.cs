@@ -129,8 +129,8 @@ namespace osuEscape
         {
             MainFunction.ShowMessageBox(
                     $"Internal server Error/ Incorrect API! {Environment.NewLine} " +
-                    $"Please check if your API key is correct.")
-                    ;
+                    $"Please check if your API key/ Sniping username is correct. {Environment.NewLine}"
+                    );
         }
         private void APIRequiredCheckBoxesEnabled()
         {
@@ -168,5 +168,40 @@ namespace osuEscape
             }
         }
 
+        private void materialButton_sniping_Click(object sender, EventArgs e)
+        {
+            VerifyUsernameAsync();
+        }
+
+        private async void VerifyUsernameAsync()
+        {
+            // verifying api key using one of the osu! api urls
+            // using get_beatmaps as it requires the least parameter
+
+            var url = $"https://osu.ppy.sh/api/get_user?k={materialTextBox_apiInput.Text}&u={materialTextBox_userId.Text}";
+
+            var request = new HttpRequestMessage(HttpMethod.Get, url);
+            request.Headers.Accept.Clear();
+            request.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer");
+            request.Content = new StringContent("{...}", Encoding.UTF8, "application/json");
+
+            var response = await client.SendAsync(request, CancellationToken.None);
+
+            Properties.Settings.Default.isAPIKeyVerified = response.IsSuccessStatusCode;
+            materialSwitch_autoDisconnect.Enabled = response.IsSuccessStatusCode;
+
+            if (response.IsSuccessStatusCode)
+            {
+                // only success status code is needed
+                // response content is not needed
+                Properties.Settings.Default.userApiKey = materialTextBox_apiInput.Text;
+
+            }
+            else
+            {
+                IncorrectAPITextOutput();                
+            }
+        }
     }
 }

@@ -110,7 +110,6 @@ namespace osuEscape
 
         // resize ui variables
         private Size FormSize_init;
-        private Point labelSubmissionStatus_Location_init;
 
         // material skin ui
         public readonly MaterialSkinManager materialSkinManager;
@@ -160,7 +159,7 @@ namespace osuEscape
                                         KeysToStringDictionary.FirstOrDefault(x => x.Value == Properties.Settings.Default.GlobalHotKey).Key);
 
             // ui 
-            MainTabResize();
+            MainTabResize();          
         }
 
         #region Initialize and OnLoad
@@ -199,7 +198,7 @@ namespace osuEscape
 
         #endregion
 
-        private Form ConvertFormToTabPage(Form f)
+        private static Form ConvertFormToTabPage(Form f)
         {
             Form form = f;
             form.TopLevel = false;
@@ -209,7 +208,7 @@ namespace osuEscape
             return form;
         }
 
-        private void HomeForm_Load(object sender, EventArgs e)
+        private void Root_Load(object sender, EventArgs e)
         {
             materialTabControl_menu.TabPages[0].Controls.Clear();
             materialTabControl_menu.TabPages[1].Controls.Clear();
@@ -247,7 +246,6 @@ namespace osuEscape
                 }
             }
             #endregion
-
         }
 
         #endregion
@@ -436,7 +434,7 @@ namespace osuEscape
                                                     beatLength = Convert.ToDecimal(File.ReadAllLines(beatmapFile)[i].Split(",")[1]);
 
                                                     // uninherited == 1, red line
-                                                    if (File.ReadAllLines(beatmapFile)[i].Split(",").Count() >= 7)
+                                                    if (File.ReadAllLines(beatmapFile)[i].Split(",").Length >= 7)
                                                     {
                                                         if (Convert.ToInt32(File.ReadAllLines(beatmapFile)[i].Split(",")[6]) == 1)
                                                         {

@@ -38,16 +38,17 @@
             // 
             // materialTabControl_menu
             // 
-            this.materialTabControl_menu.Appearance = System.Windows.Forms.TabAppearance.FlatButtons;
+            this.materialTabControl_menu.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.materialTabControl_menu.Controls.Add(this.tabPage_main);
             this.materialTabControl_menu.Controls.Add(this.tabPage_settings);
             this.materialTabControl_menu.Controls.Add(this.tabPage_uploadedScores);
             this.materialTabControl_menu.Depth = 0;
+            this.materialTabControl_menu.ItemSize = new System.Drawing.Size(25, 23);
             this.materialTabControl_menu.Location = new System.Drawing.Point(-1, 98);
             this.materialTabControl_menu.MouseState = MaterialSkin.MouseState.HOVER;
-            this.materialTabControl_menu.Multiline = true;
             this.materialTabControl_menu.Name = "materialTabControl_menu";
-            this.materialTabControl_menu.Padding = new System.Drawing.Point(0, 0);
             this.materialTabControl_menu.SelectedIndex = 0;
             this.materialTabControl_menu.Size = new System.Drawing.Size(554, 393);
             this.materialTabControl_menu.TabIndex = 0;
@@ -142,7 +143,7 @@
             this.Name = "Root";
             this.Text = "osu! Escape";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.FormClosing_RootForm);
-            this.Load += new System.EventHandler(this.HomeForm_Load);
+            this.Load += new System.EventHandler(this.Root_Load);
             this.materialTabControl_menu.ResumeLayout(false);
             this.contextMenuStrip_osu.ResumeLayout(false);
             this.ResumeLayout(false);

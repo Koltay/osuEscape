@@ -64,7 +64,7 @@
     <PackageReference Include="MaterialSkin.2" Version="2.3.1">
       <TreatAsUsed>true</TreatAsUsed>
     </PackageReference>
-    <PackageReference Include="Microsoft.AspNet.WebApi.Client" Version="5.2.7">
+    <PackageReference Include="Microsoft.AspNet.WebApi.Client" Version="5.2.8">
       <TreatAsUsed>true</TreatAsUsed>
     </PackageReference>
     <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />

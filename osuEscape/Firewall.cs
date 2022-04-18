@@ -74,7 +74,7 @@ namespace osuEscape
                 INetFwPolicy2 fwPolicy2 = (INetFwPolicy2)Activator.CreateInstance(tNetFwPolicy2);
                 var currentProfiles = fwPolicy2.CurrentProfileTypes;
 
-                List<INetFwRule> RuleList = new List<INetFwRule>();
+                List<INetFwRule> RuleList = new();
 
                 foreach (INetFwRule rule in fwPolicy2.Rules)
                 {

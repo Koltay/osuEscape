@@ -43,6 +43,9 @@
             this.materialLabel_focus = new MaterialSkin.Controls.MaterialLabel();
             this.materialSlider_Accuracy = new MaterialSkin.Controls.MaterialSlider();
             this.toolTips = new System.Windows.Forms.ToolTip(this.components);
+            this.materialSwitch_sniping = new MaterialSkin.Controls.MaterialSwitch();
+            this.materialTextBox_userId = new MaterialSkin.Controls.MaterialTextBox2();
+            this.materialButton_sniping = new MaterialSkin.Controls.MaterialButton();
             this.SuspendLayout();
             // 
             // materialCheckbox_isFullCombo
@@ -114,7 +117,7 @@
             this.materialButton_checkApi.Depth = 0;
             this.materialButton_checkApi.HighEmphasis = true;
             this.materialButton_checkApi.Icon = null;
-            this.materialButton_checkApi.Location = new System.Drawing.Point(426, 29);
+            this.materialButton_checkApi.Location = new System.Drawing.Point(426, 30);
             this.materialButton_checkApi.Margin = new System.Windows.Forms.Padding(4, 6, 4, 6);
             this.materialButton_checkApi.MouseState = MaterialSkin.MouseState.HOVER;
             this.materialButton_checkApi.Name = "materialButton_checkApi";
@@ -274,12 +277,82 @@
             this.materialSlider_Accuracy.ValueSuffix = "%";
             this.materialSlider_Accuracy.onValueChanged += new MaterialSkin.Controls.MaterialSlider.ValueChanged(this.materialSlider_Accuracy_onValueChanged);
             // 
+            // materialSwitch_sniping
+            // 
+            this.materialSwitch_sniping.AutoSize = true;
+            this.materialSwitch_sniping.Depth = 0;
+            this.materialSwitch_sniping.Location = new System.Drawing.Point(1, 327);
+            this.materialSwitch_sniping.Margin = new System.Windows.Forms.Padding(0);
+            this.materialSwitch_sniping.MouseLocation = new System.Drawing.Point(-1, -1);
+            this.materialSwitch_sniping.MouseState = MaterialSkin.MouseState.HOVER;
+            this.materialSwitch_sniping.Name = "materialSwitch_sniping";
+            this.materialSwitch_sniping.Ripple = true;
+            this.materialSwitch_sniping.Size = new System.Drawing.Size(256, 37);
+            this.materialSwitch_sniping.TabIndex = 48;
+            this.materialSwitch_sniping.TabStop = false;
+            this.materialSwitch_sniping.Text = "Sniping Mode (API required)";
+            this.materialSwitch_sniping.UseVisualStyleBackColor = true;
+            // 
+            // materialTextBox_userId
+            // 
+            this.materialTextBox_userId.AnimateReadOnly = false;
+            this.materialTextBox_userId.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
+            this.materialTextBox_userId.CharacterCasing = System.Windows.Forms.CharacterCasing.Normal;
+            this.materialTextBox_userId.Depth = 0;
+            this.materialTextBox_userId.Font = new System.Drawing.Font("Microsoft Sans Serif", 16F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
+            this.materialTextBox_userId.HideSelection = true;
+            this.materialTextBox_userId.LeadingIcon = null;
+            this.materialTextBox_userId.Location = new System.Drawing.Point(264, 325);
+            this.materialTextBox_userId.MaxLength = 255;
+            this.materialTextBox_userId.MouseState = MaterialSkin.MouseState.OUT;
+            this.materialTextBox_userId.Name = "materialTextBox_userId";
+            this.materialTextBox_userId.PasswordChar = '●';
+            this.materialTextBox_userId.PrefixSuffixText = null;
+            this.materialTextBox_userId.ReadOnly = false;
+            this.materialTextBox_userId.RightToLeft = System.Windows.Forms.RightToLeft.No;
+            this.materialTextBox_userId.SelectedText = "";
+            this.materialTextBox_userId.SelectionLength = 0;
+            this.materialTextBox_userId.SelectionStart = 0;
+            this.materialTextBox_userId.ShortcutsEnabled = true;
+            this.materialTextBox_userId.Size = new System.Drawing.Size(128, 36);
+            this.materialTextBox_userId.TabIndex = 49;
+            this.materialTextBox_userId.TabStop = false;
+            this.materialTextBox_userId.TextAlign = System.Windows.Forms.HorizontalAlignment.Left;
+            this.materialTextBox_userId.TrailingIcon = null;
+            this.materialTextBox_userId.UseSystemPasswordChar = true;
+            this.materialTextBox_userId.UseTallSize = false;
+            // 
+            // materialButton_sniping
+            // 
+            this.materialButton_sniping.AutoSize = false;
+            this.materialButton_sniping.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.materialButton_sniping.Density = MaterialSkin.Controls.MaterialButton.MaterialButtonDensity.Default;
+            this.materialButton_sniping.Depth = 0;
+            this.materialButton_sniping.HighEmphasis = true;
+            this.materialButton_sniping.Icon = null;
+            this.materialButton_sniping.Location = new System.Drawing.Point(408, 327);
+            this.materialButton_sniping.Margin = new System.Windows.Forms.Padding(4, 6, 4, 6);
+            this.materialButton_sniping.MouseState = MaterialSkin.MouseState.HOVER;
+            this.materialButton_sniping.Name = "materialButton_sniping";
+            this.materialButton_sniping.NoAccentTextColor = System.Drawing.Color.Empty;
+            this.materialButton_sniping.Size = new System.Drawing.Size(56, 34);
+            this.materialButton_sniping.TabIndex = 50;
+            this.materialButton_sniping.TabStop = false;
+            this.materialButton_sniping.Text = "Check";
+            this.materialButton_sniping.Type = MaterialSkin.Controls.MaterialButton.MaterialButtonType.Contained;
+            this.materialButton_sniping.UseAccentColor = true;
+            this.materialButton_sniping.UseVisualStyleBackColor = true;
+            this.materialButton_sniping.Click += new System.EventHandler(this.materialButton_sniping_Click);
+            // 
             // SettingsForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(45)))), ((int)(((byte)(52)))), ((int)(((byte)(54)))));
             this.ClientSize = new System.Drawing.Size(800, 450);
+            this.Controls.Add(this.materialButton_sniping);
+            this.Controls.Add(this.materialTextBox_userId);
+            this.Controls.Add(this.materialSwitch_sniping);
             this.Controls.Add(this.materialCheckbox_isFullCombo);
             this.Controls.Add(this.materialLabel2);
             this.Controls.Add(this.materialTextBox_apiInput);
@@ -317,5 +390,8 @@
         private MaterialSkin.Controls.MaterialLabel materialLabel_focus;
         private MaterialSkin.Controls.MaterialSlider materialSlider_Accuracy;
         private System.Windows.Forms.ToolTip toolTips;
+        private MaterialSkin.Controls.MaterialSwitch materialSwitch_sniping;
+        private MaterialSkin.Controls.MaterialTextBox2 materialTextBox_userId;
+        private MaterialSkin.Controls.MaterialButton materialButton_sniping;
     }
 }
