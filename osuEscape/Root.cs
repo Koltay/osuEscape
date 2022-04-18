@@ -32,6 +32,10 @@ namespace osuEscape
         public SettingsForm settingsForm;
         public UploadedScoresForm uploadedScoresForm;
 
+        private Size mainFormSize;
+        private Size settingsFormSize;
+        private Size uploadedScoresFormSize;
+
         // osu! data reader
         private readonly string _osuWindowTitleHint;
         private int _readDelay = 50;
@@ -108,9 +112,6 @@ namespace osuEscape
         private static readonly HttpClient client = new();
         private static int beatmapLastNoteOffset = Int32.MinValue;
 
-        // resize ui variables
-        private Size FormSize_init;
-
         // material skin ui
         public readonly MaterialSkinManager materialSkinManager;
 
@@ -134,6 +135,10 @@ namespace osuEscape
             this.settingsForm = new SettingsForm();
             this.uploadedScoresForm = new UploadedScoresForm();
 
+            mainFormSize = mainForm.Size;
+            settingsFormSize = settingsForm.Size;
+            uploadedScoresFormSize = uploadedScoresForm.Size;
+
             // Initialize material skin manager
             FormStyleManager.AddFormToManage(this);
 
@@ -143,8 +148,7 @@ namespace osuEscape
 
             // for ui resizing
             // design editor pixels height offset (50px)
-            this.Size = new Size(this.Size.Width, this.Size.Height - 50);
-            FormSize_init = this.Size;
+            this.Size = new Size(this.Size.Width, this.Size.Height);
 
             // avoid opening osu!Escape twice
             if (Process.GetProcessesByName("osuEscape").Length > 1)
@@ -159,7 +163,7 @@ namespace osuEscape
                                         KeysToStringDictionary.FirstOrDefault(x => x.Value == Properties.Settings.Default.GlobalHotKey).Key);
 
             // ui 
-            MainTabResize();          
+            Resize();    
         }
 
         #region Initialize and OnLoad
@@ -701,17 +705,7 @@ namespace osuEscape
         #endregion
         private void materialTabControl_menu_Selected(object sender, TabControlEventArgs e)
         {
-            if (materialTabControl_menu.SelectedTab == tabPage_main)
-            {
-                MainTabResize();
-            }
-            else
-            {
-                // reset ui size with fixed min/max
-                this.MaximumSize = FormSize_init;
-                this.Size = FormSize_init;
-                this.MinimumSize = FormSize_init;
-            }
+            Resize();           
         }
 
         private void notifyIcon_osuEscape_MouseDoubleClick(object sender, MouseEventArgs e)
@@ -759,14 +753,31 @@ namespace osuEscape
             return principal.IsInRole(WindowsBuiltInRole.Administrator);
         }
 
-        private void MainTabResize()
+        private void Resize()
         {
-            // set the ui size for main tab
-            int unneededWidth = 45;
-            int unneededHeight = 130;
-            this.MinimumSize = new Size(this.Size.Width - unneededWidth, this.Size.Height - unneededHeight);
-            this.MaximumSize = new Size(this.Size.Width - unneededWidth, this.Size.Height - unneededHeight);
-            this.Size = new Size(this.Size.Width - unneededWidth, this.Size.Height - unneededHeight);
+            Size resize = new Size();
+
+            //refactor this later
+            if (materialTabControl_menu.SelectedTab == tabPage_main)
+            {
+                resize = mainFormSize;
+            }
+            else if (materialTabControl_menu.SelectedTab == tabPage_settings)
+            {
+                resize = settingsFormSize;
+
+            }
+            else if (materialTabControl_menu.SelectedTab == tabPage_uploadedScores)
+            {
+                resize = uploadedScoresFormSize;
+            }
+
+            //offset for tabControl panel
+            resize = new Size(resize.Width - 15, resize.Height + 70);
+
+            this.MaximumSize = resize;
+            this.Size = resize;
+            this.MinimumSize = resize;
         }
     }
 }

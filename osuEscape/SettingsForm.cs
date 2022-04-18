@@ -120,12 +120,12 @@ namespace osuEscape
             }
             else
             {
-                IncorrectAPITextOutput();
+                InvalidAPIResponse();
                 materialSwitch_autoDisconnect.Checked = false;
             }
         }
 
-        private static void IncorrectAPITextOutput()
+        private static void InvalidAPIResponse()
         {
             MainFunction.ShowMessageBox(
                     $"Internal server Error/ Incorrect API! {Environment.NewLine} " +
@@ -178,6 +178,7 @@ namespace osuEscape
             // verifying api key using one of the osu! api urls
             // using get_beatmaps as it requires the least parameter
 
+            // not specifying username or userid on purpose
             var url = $"https://osu.ppy.sh/api/get_user?k={materialTextBox_apiInput.Text}&u={materialTextBox_userId.Text}";
 
             var request = new HttpRequestMessage(HttpMethod.Get, url);
@@ -200,8 +201,13 @@ namespace osuEscape
             }
             else
             {
-                IncorrectAPITextOutput();                
+                InvalidAPIResponse();                
             }
+        }
+
+        private void materialTextBox_userId_Click(object sender, EventArgs e)
+        {
+
         }
     }
 }

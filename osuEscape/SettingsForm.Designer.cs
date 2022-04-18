@@ -302,7 +302,7 @@
             this.materialTextBox_userId.Font = new System.Drawing.Font("Microsoft Sans Serif", 16F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
             this.materialTextBox_userId.HideSelection = true;
             this.materialTextBox_userId.LeadingIcon = null;
-            this.materialTextBox_userId.Location = new System.Drawing.Point(264, 325);
+            this.materialTextBox_userId.Location = new System.Drawing.Point(262, 327);
             this.materialTextBox_userId.MaxLength = 255;
             this.materialTextBox_userId.MouseState = MaterialSkin.MouseState.OUT;
             this.materialTextBox_userId.Name = "materialTextBox_userId";
@@ -314,13 +314,14 @@
             this.materialTextBox_userId.SelectionLength = 0;
             this.materialTextBox_userId.SelectionStart = 0;
             this.materialTextBox_userId.ShortcutsEnabled = true;
-            this.materialTextBox_userId.Size = new System.Drawing.Size(128, 36);
+            this.materialTextBox_userId.Size = new System.Drawing.Size(150, 36);
             this.materialTextBox_userId.TabIndex = 49;
             this.materialTextBox_userId.TabStop = false;
             this.materialTextBox_userId.TextAlign = System.Windows.Forms.HorizontalAlignment.Left;
             this.materialTextBox_userId.TrailingIcon = null;
             this.materialTextBox_userId.UseSystemPasswordChar = true;
             this.materialTextBox_userId.UseTallSize = false;
+            this.materialTextBox_userId.Click += new System.EventHandler(this.materialTextBox_userId_Click);
             // 
             // materialButton_sniping
             // 
@@ -330,7 +331,7 @@
             this.materialButton_sniping.Depth = 0;
             this.materialButton_sniping.HighEmphasis = true;
             this.materialButton_sniping.Icon = null;
-            this.materialButton_sniping.Location = new System.Drawing.Point(408, 327);
+            this.materialButton_sniping.Location = new System.Drawing.Point(426, 329);
             this.materialButton_sniping.Margin = new System.Windows.Forms.Padding(4, 6, 4, 6);
             this.materialButton_sniping.MouseState = MaterialSkin.MouseState.HOVER;
             this.materialButton_sniping.Name = "materialButton_sniping";
@@ -349,7 +350,7 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(45)))), ((int)(((byte)(52)))), ((int)(((byte)(54)))));
-            this.ClientSize = new System.Drawing.Size(800, 450);
+            this.ClientSize = new System.Drawing.Size(499, 381);
             this.Controls.Add(this.materialButton_sniping);
             this.Controls.Add(this.materialTextBox_userId);
             this.Controls.Add(this.materialSwitch_sniping);
