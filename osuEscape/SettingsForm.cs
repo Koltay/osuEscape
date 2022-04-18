@@ -1,5 +1,7 @@
 ﻿using MaterialSkin;
 using Microsoft.Win32;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Net.Http;
 using System.Net.Http.Headers;
@@ -82,7 +84,7 @@ namespace osuEscape
         }
 
         private void materialButton_checkApi_Click(object sender, EventArgs e)
-       => VerifyAPIKeyAsync();
+       => Verify_APIKey_Async();
 
         private void materialCheckbox_isFullCombo_CheckedChanged(object sender, EventArgs e)
         {
@@ -94,7 +96,7 @@ namespace osuEscape
             Properties.Settings.Default.submitAcc = materialSlider_Accuracy.Value;
         }
 
-        private async void VerifyAPIKeyAsync()
+        private async void Verify_APIKey_Async()
         {
             // verifying api key using one of the osu! api urls
             // using get_beatmaps as it requires the least parameter
@@ -111,6 +113,7 @@ namespace osuEscape
 
             Properties.Settings.Default.isAPIKeyVerified = response.IsSuccessStatusCode;
             materialSwitch_autoDisconnect.Enabled = response.IsSuccessStatusCode;
+            materialSwitch_sniping.Enabled = response.IsSuccessStatusCode;
 
             if (response.IsSuccessStatusCode)
             {
@@ -120,12 +123,13 @@ namespace osuEscape
             }
             else
             {
-                InvalidAPIResponse();
+                Response_InvalidInput();
                 materialSwitch_autoDisconnect.Checked = false;
+                materialSwitch_sniping.Checked = false;
             }
         }
 
-        private static void InvalidAPIResponse()
+        private static void Response_InvalidInput()
         {
             MainFunction.ShowMessageBox(
                     $"Internal server Error/ Incorrect API! {Environment.NewLine} " +
@@ -170,10 +174,10 @@ namespace osuEscape
 
         private void materialButton_sniping_Click(object sender, EventArgs e)
         {
-            VerifyUsernameAsync();
+            Verify_Username_Async();
         }
 
-        private async void VerifyUsernameAsync()
+        private async void Verify_Username_Async()
         {
             // verifying api key using one of the osu! api urls
             // using get_beatmaps as it requires the least parameter
@@ -189,25 +193,40 @@ namespace osuEscape
 
             var response = await client.SendAsync(request, CancellationToken.None);
 
-            Properties.Settings.Default.isAPIKeyVerified = response.IsSuccessStatusCode;
-            materialSwitch_autoDisconnect.Enabled = response.IsSuccessStatusCode;
-
             if (response.IsSuccessStatusCode)
             {
                 // only success status code is needed
                 // response content is not needed
-                Properties.Settings.Default.userApiKey = materialTextBox_apiInput.Text;
 
+                var JsonString = await response.Content.ReadAsStringAsync();
+
+                JArray arr = (JArray)JsonConvert.DeserializeObject(JsonString);
+
+                bool found = false;
+
+                foreach (var item in arr)
+                {
+                    //MessageBox.Show(item["username"].ToString());
+                    //MessageBox.Show(item["user_id"].ToString());
+
+                    materialTextBox_userId.Text = item["username"].ToString();
+                }
+
+                Properties.Settings.Default.userApiKey = materialTextBox_userId.Text;
+                MainFunction.ShowMessageBox(
+                    $"Sniping User: {materialTextBox_userId.Text}"
+                    );
             }
             else
             {
-                InvalidAPIResponse();                
+                Response_InvalidInput();
             }
         }
 
-        private void materialTextBox_userId_Click(object sender, EventArgs e)
+        private void materialSwitch_sniping_CheckedChanged(object sender, EventArgs e)
         {
-
+            Properties.Settings.Default.isSniping = materialSwitch_sniping.Checked;
+            materialButton_sniping.Enabled = materialSwitch_sniping.Checked;
         }
     }
 }

@@ -292,6 +292,7 @@
             this.materialSwitch_sniping.TabStop = false;
             this.materialSwitch_sniping.Text = "Sniping Mode (API required)";
             this.materialSwitch_sniping.UseVisualStyleBackColor = true;
+            this.materialSwitch_sniping.CheckedChanged += new System.EventHandler(this.materialSwitch_sniping_CheckedChanged);
             // 
             // materialTextBox_userId
             // 
@@ -306,7 +307,7 @@
             this.materialTextBox_userId.MaxLength = 255;
             this.materialTextBox_userId.MouseState = MaterialSkin.MouseState.OUT;
             this.materialTextBox_userId.Name = "materialTextBox_userId";
-            this.materialTextBox_userId.PasswordChar = '●';
+            this.materialTextBox_userId.PasswordChar = '\0';
             this.materialTextBox_userId.PrefixSuffixText = null;
             this.materialTextBox_userId.ReadOnly = false;
             this.materialTextBox_userId.RightToLeft = System.Windows.Forms.RightToLeft.No;
@@ -319,9 +320,8 @@
             this.materialTextBox_userId.TabStop = false;
             this.materialTextBox_userId.TextAlign = System.Windows.Forms.HorizontalAlignment.Left;
             this.materialTextBox_userId.TrailingIcon = null;
-            this.materialTextBox_userId.UseSystemPasswordChar = true;
+            this.materialTextBox_userId.UseSystemPasswordChar = false;
             this.materialTextBox_userId.UseTallSize = false;
-            this.materialTextBox_userId.Click += new System.EventHandler(this.materialTextBox_userId_Click);
             // 
             // materialButton_sniping
             // 
@@ -329,6 +329,7 @@
             this.materialButton_sniping.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.materialButton_sniping.Density = MaterialSkin.Controls.MaterialButton.MaterialButtonDensity.Default;
             this.materialButton_sniping.Depth = 0;
+            this.materialButton_sniping.Enabled = false;
             this.materialButton_sniping.HighEmphasis = true;
             this.materialButton_sniping.Icon = null;
             this.materialButton_sniping.Location = new System.Drawing.Point(426, 329);

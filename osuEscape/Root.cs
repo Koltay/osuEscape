@@ -126,6 +126,8 @@ namespace osuEscape
 
         bool isOffsetFound = false;
 
+        bool isSnipedScoreFound = false;
+
 
         public Root(string osuWindowTitleHint)
         {
@@ -477,6 +479,26 @@ namespace osuEscape
                             }
                         }
 
+                        if (!isSnipedScoreFound)
+                        {
+                            try
+                            {
+                                await Task.Run(async () =>
+                                {
+                                    string beatmap_id = $"{baseAddresses.Beatmap.Id}";
+
+
+
+                                    isSnipedScoreFound = true;
+                                    Debug.WriteLine($"Sniped Score Found: {}");
+                                });
+                            }
+                            catch (Exception ex)
+                            {
+                                Debug.WriteLine(ex);
+                            }
+                        }
+
                         // Automatic Function #1: Auto Connection
 
                         // 1.   *** It has to be done on playing status for instant connection
@@ -778,6 +800,43 @@ namespace osuEscape
             this.MaximumSize = resize;
             this.Size = resize;
             this.MinimumSize = resize;
+        }
+
+        private static async Task<int> GetSnipedUserBeatmapScoreAsync(string userName, int beatmap_id, int mode)
+        {
+            var url = $"https://osu.ppy.sh/api/get_scores?k={Properties.Settings.Default.userApiKey}&u={userName}&b={beatmap_id}&m={mode}";
+
+
+            var request = new HttpRequestMessage(HttpMethod.Get, url);
+            request.Headers.Accept.Clear();
+            request.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer");
+            request.Content = new StringContent("{...}", Encoding.UTF8, "application/json");
+
+            var response = await client.SendAsync(request, CancellationToken.None);
+
+            if (response.IsSuccessStatusCode)
+            {
+                var JsonString = await response.Content.ReadAsStringAsync();
+
+                JArray arr = (JArray)JsonConvert.DeserializeObject(JsonString);
+
+                int score = 0;
+
+                // find the best score from the sniped user
+                foreach (var item in arr)
+                {
+                    score = Math.Max(Convert.ToInt32(item["score"].ToString()), score); 
+                }
+
+                return score;
+            }
+            else
+            {
+                IncorrectAPITextOutput();
+
+                return 0;
+            }
         }
     }
 }
