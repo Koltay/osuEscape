@@ -9,7 +9,7 @@ namespace osuEscape
     public partial class MainForm : Form
     {
         private bool isEditingHotkey = false;
-        private Root parent;
+        private readonly Root parent;
         private static readonly Dictionary<Keys, string> KeysToStringDictionary = new()
         {
             [Keys.A] = "A",
@@ -96,7 +96,9 @@ namespace osuEscape
             }
             else
             {
-                materialLabel_osuPath.Text = "osu! Path: " + Properties.Settings.Default.osuPath;
+                //materialLabel_osuPath.Text = "osu! Path: " + Properties.Settings.Default.osuPath;
+                materialLabel_osuPath.Text = Label_ShortenedPath();
+
                 Firewall.RuleSetUp(Properties.Settings.Default.osuLocation);
             }
 
@@ -149,7 +151,11 @@ namespace osuEscape
             {
                 Properties.Settings.Default.osuLocation = ofd.FileName;
                 Properties.Settings.Default.osuPath = String.Join("\\", ofd.FileName.Split('\\').Reverse().Skip(1).Reverse()) + "\\";
-                materialLabel_osuPath.Text = "osu! Path: " + Properties.Settings.Default.osuPath;
+
+                materialLabel_osuPath.Text = Label_ShortenedPath();
+
+
+
                 Firewall.RuleSetUp(Properties.Settings.Default.osuLocation);
             }
             else if (result == DialogResult.OK && !ofd.FileName.Contains("osu!.exe"))
@@ -240,5 +246,34 @@ namespace osuEscape
         }
 
         #endregion
+
+        private static string Label_ShortenedPath()
+        {
+            var shortPathStr = Properties.Settings.Default.osuPath;
+
+            
+            string[] pathArray = Properties.Settings.Default.osuPath.Split('\\');
+
+            if (Properties.Settings.Default.osuPath.Length > 25)
+            {                
+                // to do
+                shortPathStr = $"{Properties.Settings.Default.osuPath[..13]}...{Properties.Settings.Default.osuPath[^10..]}";
+            }
+            else if (pathArray.Length > 3)
+            {
+                List<string> pathList = new()
+                {
+                    pathArray[0],
+                    pathArray[1],
+                    pathArray[pathArray.Length - 1]
+                };
+                shortPathStr = string.Join("\\", pathList);
+            }
+            
+
+            Debug.WriteLine(shortPathStr);
+
+            return "osu! Path: " + shortPathStr;
+        }
     }
 }

@@ -111,17 +111,17 @@
             // 
             // materialLabel_osuPath
             // 
+            this.materialLabel_osuPath.AutoEllipsis = true;
             this.materialLabel_osuPath.AutoSize = true;
             this.materialLabel_osuPath.Depth = 0;
             this.materialLabel_osuPath.Font = new System.Drawing.Font("Roboto", 14F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
             this.materialLabel_osuPath.ForeColor = System.Drawing.SystemColors.ButtonHighlight;
             this.materialLabel_osuPath.Location = new System.Drawing.Point(13, 111);
-            this.materialLabel_osuPath.MaximumSize = new System.Drawing.Size(200, 0);
             this.materialLabel_osuPath.MouseState = MaterialSkin.MouseState.HOVER;
             this.materialLabel_osuPath.Name = "materialLabel_osuPath";
-            this.materialLabel_osuPath.Size = new System.Drawing.Size(72, 19);
-            this.materialLabel_osuPath.TabIndex = 34;
-            this.materialLabel_osuPath.Text = "osu! Path:";
+            this.materialLabel_osuPath.Size = new System.Drawing.Size(76, 19);
+            this.materialLabel_osuPath.TabIndex = 1;
+            this.materialLabel_osuPath.Text = "osu! Path: ";
             // 
             // materialSwitch_osuConnection
             // 

@@ -38,7 +38,7 @@ namespace osuEscape
 
         // osu! data reader
         private readonly string _osuWindowTitleHint;
-        private int _readDelay = 50;
+        private readonly int _readDelay = 50;
         private readonly StructuredOsuMemoryReader _sreader;
         private readonly CancellationTokenSource cts = new();
 
@@ -490,7 +490,7 @@ namespace osuEscape
 
 
                                     isSnipedScoreFound = true;
-                                    Debug.WriteLine($"Sniped Score Found: {}");
+                                    //Debug.WriteLine($"Sniped Score Found: {}");
                                 });
                             }
                             catch (Exception ex)
@@ -777,7 +777,7 @@ namespace osuEscape
 
         private void Resize()
         {
-            Size resize = new Size();
+            Size resize = new();
 
             //refactor this later
             if (materialTabControl_menu.SelectedTab == tabPage_main)
