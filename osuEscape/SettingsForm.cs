@@ -1,8 +1,11 @@
 ﻿using MaterialSkin;
+using MaterialSkin.Controls;
 using Microsoft.Win32;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
+using System.Diagnostics;
+using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
@@ -32,17 +35,17 @@ namespace osuEscape
         private void SettingsForm_Load(object sender, EventArgs e)
         {
             // switches
-            materialSwitch_runAtStartup.Checked = Properties.Settings.Default.isStartup;
-            materialSwitch_toggleWithSound.Checked = Properties.Settings.Default.isToggleSound;
-            materialSwitch_minimizeToSystemTray.Checked = Properties.Settings.Default.isSystemTray;
-            materialSwitch_topMost.Checked = Properties.Settings.Default.isTopMost;
-            materialSwitch_submitIfFC.Checked = Properties.Settings.Default.isSubmitIfFC;
-            materialSwitch_autoDisconnect.Checked = Properties.Settings.Default.isAutoDisconnect;
-            materialSwitch_autoDisconnect.Enabled = Properties.Settings.Default.isAPIKeyVerified;
+            materialSwitch_isStartup.Checked = Properties.Settings.Default.isStartup;
+            materialSwitch_isToggleSound.Checked = Properties.Settings.Default.isToggleSound;
+            materialSwitch_isSystemTray.Checked = Properties.Settings.Default.isSystemTray;
+            materialSwitch_isTopMost.Checked = Properties.Settings.Default.isTopMost;
+            materialSwitch_isSubmitIfFC.Checked = Properties.Settings.Default.isSubmitIfFC;
+            materialSwitch_isAutoDisconnect.Checked = Properties.Settings.Default.isAutoDisconnect;
+            materialSwitch_isAutoDisconnect.Enabled = Properties.Settings.Default.isAPIKeyVerified;
 
             materialTextBox_apiInput.Text = Properties.Settings.Default.userApiKey;
             materialSlider_Accuracy.Value = Properties.Settings.Default.submitAcc;
-            materialCheckbox_isFullCombo.Checked = Properties.Settings.Default.isCheckingFullCombo;
+            materialCheckbox_isCheckingFullCombo.Checked = Properties.Settings.Default.isCheckingFullCombo;
 
             APIRequiredCheckBoxesEnabled();
 
@@ -50,46 +53,50 @@ namespace osuEscape
 
             #region Tooltip setup
 
-            toolTips.SetToolTip(materialSwitch_autoDisconnect, "Enabling this option will automatically disconnect after the recent score is submitted.");
-            toolTips.SetToolTip(materialSwitch_toggleWithSound, "Enabling this option will toggle firewall with system notification sound.");
-            toolTips.SetToolTip(materialSwitch_topMost, "Enabling this option will overlap all the other application even if it is not focused.");
-            toolTips.SetToolTip(materialSwitch_runAtStartup, "Enabling this option will allow osu!Escape to run automatically when the system is booted.");
-            toolTips.SetToolTip(materialSwitch_minimizeToSystemTray, "Enabling this option will hide osu!Escape to taskbar when clicking the close button.");
-            toolTips.SetToolTip(materialSwitch_submitIfFC, "Enabling this option will automatically submit before jumping into result screen if the set score meets the requirement.");
+            toolTips.SetToolTip(materialSwitch_isAutoDisconnect, "Enabling this option will automatically disconnect after the recent score is submitted.");
+            toolTips.SetToolTip(materialSwitch_isToggleSound, "Enabling this option will toggle firewall with system notification sound.");
+            toolTips.SetToolTip(materialSwitch_isTopMost, "Enabling this option will overlap all the other application even if it is not focused.");
+            toolTips.SetToolTip(materialSwitch_isStartup, "Enabling this option will allow osu!Escape to run automatically when the system is booted.");
+            toolTips.SetToolTip(materialSwitch_isSystemTray, "Enabling this option will hide osu!Escape to taskbar when clicking the close button.");
+            toolTips.SetToolTip(materialSwitch_isSubmitIfFC, "Enabling this option will automatically submit before jumping into result screen if the set score meets the requirement.");
 
             #endregion
         }
+
+        /*
         private void materialmaterialSwitch_runAtStartup_CheckedChanged(object sender, EventArgs e)
         {
-            Properties.Settings.Default.isStartup = materialSwitch_runAtStartup.Checked;
+            Properties.Settings.Default.isStartup = materialSwitch_isStartup.Checked;
 
-            StartupSetUp(materialSwitch_runAtStartup.Checked);
+            StartupSetUp(materialSwitch_isStartup.Checked);
         }
 
         private void materialSwitch_toggleWithSound_CheckedChanged(object sender, EventArgs e)
-        => Properties.Settings.Default.isToggleSound = materialSwitch_toggleWithSound.Checked;
+        => Properties.Settings.Default.isToggleSound = materialSwitch_isToggleSound.Checked;
 
         private void materialSwitch_minimizeToSystemTray_CheckedChanged(object sender, EventArgs e)
-        => Properties.Settings.Default.isSystemTray = materialSwitch_minimizeToSystemTray.Checked;
+        => Properties.Settings.Default.isSystemTray = materialSwitch_isSystemTray.Checked;
 
-        private void materialSwitch_autoDisconnect_CheckedChanged(object sender, EventArgs e) => Properties.Settings.Default.isAutoDisconnect = materialSwitch_autoDisconnect.Checked;
+        private void materialSwitch_autoDisconnect_CheckedChanged(object sender, EventArgs e) 
+        => Properties.Settings.Default.isAutoDisconnect = materialSwitch_isAutoDisconnect.Checked;
 
         private void materialSwitch_submitIfFC_CheckedChanged(object sender, EventArgs e)
-        => Properties.Settings.Default.isSubmitIfFC = materialSwitch_submitIfFC.Checked;
+        => Properties.Settings.Default.isSubmitIfFC = materialSwitch_isSubmitIfFC.Checked;
 
         private void materialSwitch_topMost_CheckedChanged(object sender, EventArgs e)
         {
-            Properties.Settings.Default.isTopMost = materialSwitch_topMost.Checked;
-            this.TopMost = materialSwitch_topMost.Checked;
+            Properties.Settings.Default.isTopMost = materialSwitch_isTopMost.Checked;
+            this.TopMost = materialSwitch_isTopMost.Checked;
         }
+        private void materialCheckbox_isFullCombo_CheckedChanged(object sender, EventArgs e)
+        {
+            Properties.Settings.Default.isCheckingFullCombo = materialCheckbox_isCheckingFullCombo.Checked;
+        }
+        */
 
         private void materialButton_checkApi_Click(object sender, EventArgs e)
        => Verify_APIKey_Async();
 
-        private void materialCheckbox_isFullCombo_CheckedChanged(object sender, EventArgs e)
-        {
-            Properties.Settings.Default.isCheckingFullCombo = materialCheckbox_isFullCombo.Checked;
-        }
 
         private void materialSlider_Accuracy_onValueChanged(object sender, int newValue)
         {
@@ -112,8 +119,8 @@ namespace osuEscape
             var response = await client.SendAsync(request, CancellationToken.None);
 
             Properties.Settings.Default.isAPIKeyVerified = response.IsSuccessStatusCode;
-            materialSwitch_autoDisconnect.Enabled = response.IsSuccessStatusCode;
-            materialSwitch_sniping.Enabled = response.IsSuccessStatusCode;
+            materialSwitch_isAutoDisconnect.Enabled = response.IsSuccessStatusCode;
+            materialSwitch_isSnipeMode.Enabled = response.IsSuccessStatusCode;
 
             if (response.IsSuccessStatusCode)
             {
@@ -124,8 +131,8 @@ namespace osuEscape
             else
             {
                 Response_InvalidInput();
-                materialSwitch_autoDisconnect.Checked = false;
-                materialSwitch_sniping.Checked = false;
+                materialSwitch_isAutoDisconnect.Checked = false;
+                materialSwitch_isSnipeMode.Checked = false;
             }
         }
 
@@ -138,20 +145,20 @@ namespace osuEscape
         }
         private void APIRequiredCheckBoxesEnabled()
         {
-            if (materialSwitch_autoDisconnect.InvokeRequired)
+            if (materialSwitch_isAutoDisconnect.InvokeRequired)
             {
-                materialSwitch_autoDisconnect.Invoke(new MethodInvoker(delegate
+                materialSwitch_isAutoDisconnect.Invoke(new MethodInvoker(delegate
                 {
-                    materialSwitch_autoDisconnect.Enabled = Properties.Settings.Default.isAPIKeyVerified;
-                    if (!materialSwitch_autoDisconnect.Enabled)
-                        materialSwitch_autoDisconnect.Checked = false;
+                    materialSwitch_isAutoDisconnect.Enabled = Properties.Settings.Default.isAPIKeyVerified;
+                    if (!materialSwitch_isAutoDisconnect.Enabled)
+                        materialSwitch_isAutoDisconnect.Checked = false;
                 }));
             }
             else
             {
-                materialSwitch_autoDisconnect.Enabled = Properties.Settings.Default.isAPIKeyVerified;
-                if (!materialSwitch_autoDisconnect.Enabled)
-                    materialSwitch_autoDisconnect.Checked = false;
+                materialSwitch_isAutoDisconnect.Enabled = Properties.Settings.Default.isAPIKeyVerified;
+                if (!materialSwitch_isAutoDisconnect.Enabled)
+                    materialSwitch_isAutoDisconnect.Checked = false;
             }
         }
 
@@ -172,7 +179,7 @@ namespace osuEscape
             }
         }
 
-        private void materialButton_sniping_Click(object sender, EventArgs e)
+        private void materialButton_isSnipeMode_Click(object sender, EventArgs e)
         {
             Verify_Username_Async();
         }
@@ -225,8 +232,44 @@ namespace osuEscape
 
         private void materialSwitch_sniping_CheckedChanged(object sender, EventArgs e)
         {
-            Properties.Settings.Default.isSniping = materialSwitch_sniping.Checked;
-            materialButton_sniping.Enabled = materialSwitch_sniping.Checked;
+            Properties.Settings.Default.isSnipeMode = materialSwitch_isSnipeMode.Checked;
+
+            // material button for verification
+            materialButton_isSnipeMode.Enabled = materialSwitch_isSnipeMode.Checked;
+        }
+
+        private void materialSwitch_grouped_CheckedChanged(object sender, EventArgs e)
+        {
+            if (sender is MaterialSwitch mswitch)
+            {
+                // materialSwitch_[...]_CheckedChanged
+                string switchName = mswitch.Name[15..].Replace("_CheckedChanged", "");
+
+                Properties.Settings.Default[switchName] = ((MaterialSwitch)Controls[$"materialSwitch_{switchName}"]).Checked;
+
+                // special case for some properties which needs instant changes
+                switch (switchName)
+                {
+                    case "isStartUp":
+                        StartupSetUp(materialSwitch_isStartup.Checked);
+                        break;
+                    case "topMost":
+                        this.TopMost = materialSwitch_isTopMost.Checked;
+                        break;
+                    case "isSnipeMode":
+                        // button for username verification
+                        materialButton_isSnipeMode.Enabled = materialSwitch_isSnipeMode.Checked;
+                        break;
+                    default:
+                        break;
+                }
+            }
+            else if (sender is MaterialCheckbox checkbox)
+            {
+                // materialCheckBox_[...]_CheckedChanged
+                string checkBoxName = checkbox.Name[17..].Replace("_CheckedChanged", "");
+                Properties.Settings.Default[checkBoxName] = ((MaterialCheckbox)Controls[$"materialCheckBox_{checkBoxName}"]).Checked;
+            }
         }
     }
 }

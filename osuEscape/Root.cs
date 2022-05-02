@@ -479,23 +479,31 @@ namespace osuEscape
                             }
                         }
 
+
+                        // Snipe Mode
+                        // only read the user's score if the mode is enabled
                         if (!isSnipedScoreFound)
                         {
                             try
                             {
                                 await Task.Run(async () =>
                                 {
-                                    string beatmap_id = $"{baseAddresses.Beatmap.Id}";
+                                    string username = Properties.Settings.Default.snipedUser;
 
-
+                                    int snipedUserScore = await GetSnipedUserBeatmapScoreAsync  (Properties.Settings.Default.snipedUser,
+                                                                                                baseAddresses.Beatmap.Id,
+                                                                                                baseAddresses.GeneralData.GameMode);
 
                                     isSnipedScoreFound = true;
-                                    //Debug.WriteLine($"Sniped Score Found: {}");
+
+                                    Debug.WriteLine($"Sniped Score Found: {snipedUserScore}");
                                 });
                             }
                             catch (Exception ex)
                             {
                                 Debug.WriteLine(ex);
+
+                                Debug.WriteLine($"ERROR: Sniped Score Not Found: {ex.Message}");
                             }
                         }
 
@@ -748,13 +756,13 @@ namespace osuEscape
 
         private void FormClosing_RootForm(object sender, FormClosingEventArgs e)
         {
-            if (((MaterialSwitch)settingsForm.Controls["materialSwitch_minimizeToSystemTray"]).Checked && !isItemQuit)
+            if (((MaterialSwitch)settingsForm.Controls["materialSwitch_isSystemTray"]).Checked && !isItemQuit)
             {
                 // cancel form closing event
                 e.Cancel = true;
 
                 this.WindowState = FormWindowState.Minimized;
-                ToggleSystemTray(((MaterialSwitch)settingsForm.Controls["materialSwitch_minimizeToSystemTray"]).Checked);
+                ToggleSystemTray(((MaterialSwitch)settingsForm.Controls["materialSwitch_isSystemTray"]).Checked);
                 ContextMenuStripUpdate();
             }
 
@@ -775,7 +783,7 @@ namespace osuEscape
             return principal.IsInRole(WindowsBuiltInRole.Administrator);
         }
 
-        private void Resize()
+        private new void Resize()
         {
             Size resize = new();
 

@@ -254,12 +254,12 @@ namespace osuEscape.Properties {
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("False")]
-        public bool isSniping {
+        public bool isSnipeMode {
             get {
-                return ((bool)(this["isSniping"]));
+                return ((bool)(this["isSnipeMode"]));
             }
             set {
-                this["isSniping"] = value;
+                this["isSnipeMode"] = value;
             }
         }
         

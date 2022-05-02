@@ -29,42 +29,42 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            this.materialCheckbox_isFullCombo = new MaterialSkin.Controls.MaterialCheckbox();
+            this.materialCheckbox_isCheckingFullCombo = new MaterialSkin.Controls.MaterialCheckbox();
             this.materialLabel2 = new MaterialSkin.Controls.MaterialLabel();
             this.materialTextBox_apiInput = new MaterialSkin.Controls.MaterialTextBox2();
             this.materialButton_checkApi = new MaterialSkin.Controls.MaterialButton();
             this.materialLabel_apiNeeded = new MaterialSkin.Controls.MaterialLabel();
-            this.materialSwitch_autoDisconnect = new MaterialSkin.Controls.MaterialSwitch();
-            this.materialSwitch_submitIfFC = new MaterialSkin.Controls.MaterialSwitch();
-            this.materialSwitch_topMost = new MaterialSkin.Controls.MaterialSwitch();
-            this.materialSwitch_toggleWithSound = new MaterialSkin.Controls.MaterialSwitch();
-            this.materialSwitch_minimizeToSystemTray = new MaterialSkin.Controls.MaterialSwitch();
-            this.materialSwitch_runAtStartup = new MaterialSkin.Controls.MaterialSwitch();
+            this.materialSwitch_isAutoDisconnect = new MaterialSkin.Controls.MaterialSwitch();
+            this.materialSwitch_isSubmitIfFC = new MaterialSkin.Controls.MaterialSwitch();
+            this.materialSwitch_isTopMost = new MaterialSkin.Controls.MaterialSwitch();
+            this.materialSwitch_isToggleSound = new MaterialSkin.Controls.MaterialSwitch();
+            this.materialSwitch_isSystemTray = new MaterialSkin.Controls.MaterialSwitch();
+            this.materialSwitch_isStartup = new MaterialSkin.Controls.MaterialSwitch();
             this.materialLabel_focus = new MaterialSkin.Controls.MaterialLabel();
             this.materialSlider_Accuracy = new MaterialSkin.Controls.MaterialSlider();
             this.toolTips = new System.Windows.Forms.ToolTip(this.components);
-            this.materialSwitch_sniping = new MaterialSkin.Controls.MaterialSwitch();
+            this.materialSwitch_isSnipeMode = new MaterialSkin.Controls.MaterialSwitch();
             this.materialTextBox_userId = new MaterialSkin.Controls.MaterialTextBox2();
-            this.materialButton_sniping = new MaterialSkin.Controls.MaterialButton();
+            this.materialButton_isSnipeMode = new MaterialSkin.Controls.MaterialButton();
             this.SuspendLayout();
             // 
-            // materialCheckbox_isFullCombo
+            // materialCheckbox_isCheckingFullCombo
             // 
-            this.materialCheckbox_isFullCombo.AutoSize = true;
-            this.materialCheckbox_isFullCombo.Depth = 0;
-            this.materialCheckbox_isFullCombo.Location = new System.Drawing.Point(366, 92);
-            this.materialCheckbox_isFullCombo.Margin = new System.Windows.Forms.Padding(0);
-            this.materialCheckbox_isFullCombo.MouseLocation = new System.Drawing.Point(-1, -1);
-            this.materialCheckbox_isFullCombo.MouseState = MaterialSkin.MouseState.HOVER;
-            this.materialCheckbox_isFullCombo.Name = "materialCheckbox_isFullCombo";
-            this.materialCheckbox_isFullCombo.ReadOnly = false;
-            this.materialCheckbox_isFullCombo.Ripple = true;
-            this.materialCheckbox_isFullCombo.Size = new System.Drawing.Size(116, 37);
-            this.materialCheckbox_isFullCombo.TabIndex = 47;
-            this.materialCheckbox_isFullCombo.TabStop = false;
-            this.materialCheckbox_isFullCombo.Text = "Full Combo";
-            this.materialCheckbox_isFullCombo.UseVisualStyleBackColor = true;
-            this.materialCheckbox_isFullCombo.CheckedChanged += new System.EventHandler(this.materialCheckbox_isFullCombo_CheckedChanged);
+            this.materialCheckbox_isCheckingFullCombo.AutoSize = true;
+            this.materialCheckbox_isCheckingFullCombo.Depth = 0;
+            this.materialCheckbox_isCheckingFullCombo.Location = new System.Drawing.Point(366, 92);
+            this.materialCheckbox_isCheckingFullCombo.Margin = new System.Windows.Forms.Padding(0);
+            this.materialCheckbox_isCheckingFullCombo.MouseLocation = new System.Drawing.Point(-1, -1);
+            this.materialCheckbox_isCheckingFullCombo.MouseState = MaterialSkin.MouseState.HOVER;
+            this.materialCheckbox_isCheckingFullCombo.Name = "materialCheckbox_isCheckingFullCombo";
+            this.materialCheckbox_isCheckingFullCombo.ReadOnly = false;
+            this.materialCheckbox_isCheckingFullCombo.Ripple = true;
+            this.materialCheckbox_isCheckingFullCombo.Size = new System.Drawing.Size(116, 37);
+            this.materialCheckbox_isCheckingFullCombo.TabIndex = 47;
+            this.materialCheckbox_isCheckingFullCombo.TabStop = false;
+            this.materialCheckbox_isCheckingFullCombo.Text = "Full Combo";
+            this.materialCheckbox_isCheckingFullCombo.UseVisualStyleBackColor = true;
+            this.materialCheckbox_isCheckingFullCombo.CheckedChanged += new System.EventHandler(this.materialSwitch_grouped_CheckedChanged);
             // 
             // materialLabel2
             // 
@@ -144,107 +144,107 @@
             this.materialLabel_apiNeeded.TabIndex = 34;
             this.materialLabel_apiNeeded.Text = "API required option";
             // 
-            // materialSwitch_autoDisconnect
+            // materialSwitch_isAutoDisconnect
             // 
-            this.materialSwitch_autoDisconnect.AutoSize = true;
-            this.materialSwitch_autoDisconnect.Depth = 0;
-            this.materialSwitch_autoDisconnect.Enabled = false;
-            this.materialSwitch_autoDisconnect.Location = new System.Drawing.Point(1, 130);
-            this.materialSwitch_autoDisconnect.Margin = new System.Windows.Forms.Padding(0);
-            this.materialSwitch_autoDisconnect.MouseLocation = new System.Drawing.Point(-1, -1);
-            this.materialSwitch_autoDisconnect.MouseState = MaterialSkin.MouseState.HOVER;
-            this.materialSwitch_autoDisconnect.Name = "materialSwitch_autoDisconnect";
-            this.materialSwitch_autoDisconnect.Ripple = true;
-            this.materialSwitch_autoDisconnect.Size = new System.Drawing.Size(296, 37);
-            this.materialSwitch_autoDisconnect.TabIndex = 40;
-            this.materialSwitch_autoDisconnect.TabStop = false;
-            this.materialSwitch_autoDisconnect.Text = "Auto Disconnection (API required)";
-            this.materialSwitch_autoDisconnect.UseVisualStyleBackColor = true;
-            this.materialSwitch_autoDisconnect.CheckedChanged += new System.EventHandler(this.materialSwitch_autoDisconnect_CheckedChanged);
+            this.materialSwitch_isAutoDisconnect.AutoSize = true;
+            this.materialSwitch_isAutoDisconnect.Depth = 0;
+            this.materialSwitch_isAutoDisconnect.Enabled = false;
+            this.materialSwitch_isAutoDisconnect.Location = new System.Drawing.Point(1, 130);
+            this.materialSwitch_isAutoDisconnect.Margin = new System.Windows.Forms.Padding(0);
+            this.materialSwitch_isAutoDisconnect.MouseLocation = new System.Drawing.Point(-1, -1);
+            this.materialSwitch_isAutoDisconnect.MouseState = MaterialSkin.MouseState.HOVER;
+            this.materialSwitch_isAutoDisconnect.Name = "materialSwitch_isAutoDisconnect";
+            this.materialSwitch_isAutoDisconnect.Ripple = true;
+            this.materialSwitch_isAutoDisconnect.Size = new System.Drawing.Size(296, 37);
+            this.materialSwitch_isAutoDisconnect.TabIndex = 40;
+            this.materialSwitch_isAutoDisconnect.TabStop = false;
+            this.materialSwitch_isAutoDisconnect.Text = "Auto Disconnection (API required)";
+            this.materialSwitch_isAutoDisconnect.UseVisualStyleBackColor = true;
+            this.materialSwitch_isAutoDisconnect.CheckedChanged += new System.EventHandler(this.materialSwitch_grouped_CheckedChanged);
             // 
-            // materialSwitch_submitIfFC
+            // materialSwitch_isSubmitIfFC
             // 
-            this.materialSwitch_submitIfFC.AutoSize = true;
-            this.materialSwitch_submitIfFC.Depth = 0;
-            this.materialSwitch_submitIfFC.Location = new System.Drawing.Point(1, 90);
-            this.materialSwitch_submitIfFC.Margin = new System.Windows.Forms.Padding(0);
-            this.materialSwitch_submitIfFC.MouseLocation = new System.Drawing.Point(-1, -1);
-            this.materialSwitch_submitIfFC.MouseState = MaterialSkin.MouseState.HOVER;
-            this.materialSwitch_submitIfFC.Name = "materialSwitch_submitIfFC";
-            this.materialSwitch_submitIfFC.Ripple = true;
-            this.materialSwitch_submitIfFC.Size = new System.Drawing.Size(175, 37);
-            this.materialSwitch_submitIfFC.TabIndex = 39;
-            this.materialSwitch_submitIfFC.TabStop = false;
-            this.materialSwitch_submitIfFC.Text = "Auto Connection";
-            this.materialSwitch_submitIfFC.UseVisualStyleBackColor = true;
-            this.materialSwitch_submitIfFC.CheckedChanged += new System.EventHandler(this.materialSwitch_submitIfFC_CheckedChanged);
+            this.materialSwitch_isSubmitIfFC.AutoSize = true;
+            this.materialSwitch_isSubmitIfFC.Depth = 0;
+            this.materialSwitch_isSubmitIfFC.Location = new System.Drawing.Point(1, 90);
+            this.materialSwitch_isSubmitIfFC.Margin = new System.Windows.Forms.Padding(0);
+            this.materialSwitch_isSubmitIfFC.MouseLocation = new System.Drawing.Point(-1, -1);
+            this.materialSwitch_isSubmitIfFC.MouseState = MaterialSkin.MouseState.HOVER;
+            this.materialSwitch_isSubmitIfFC.Name = "materialSwitch_isSubmitIfFC";
+            this.materialSwitch_isSubmitIfFC.Ripple = true;
+            this.materialSwitch_isSubmitIfFC.Size = new System.Drawing.Size(175, 37);
+            this.materialSwitch_isSubmitIfFC.TabIndex = 39;
+            this.materialSwitch_isSubmitIfFC.TabStop = false;
+            this.materialSwitch_isSubmitIfFC.Text = "Auto Connection";
+            this.materialSwitch_isSubmitIfFC.UseVisualStyleBackColor = true;
+            this.materialSwitch_isSubmitIfFC.CheckedChanged += new System.EventHandler(this.materialSwitch_grouped_CheckedChanged);
             // 
-            // materialSwitch_topMost
+            // materialSwitch_isTopMost
             // 
-            this.materialSwitch_topMost.AutoSize = true;
-            this.materialSwitch_topMost.Depth = 0;
-            this.materialSwitch_topMost.Location = new System.Drawing.Point(1, 210);
-            this.materialSwitch_topMost.Margin = new System.Windows.Forms.Padding(0);
-            this.materialSwitch_topMost.MouseLocation = new System.Drawing.Point(-1, -1);
-            this.materialSwitch_topMost.MouseState = MaterialSkin.MouseState.HOVER;
-            this.materialSwitch_topMost.Name = "materialSwitch_topMost";
-            this.materialSwitch_topMost.Ripple = true;
-            this.materialSwitch_topMost.Size = new System.Drawing.Size(159, 37);
-            this.materialSwitch_topMost.TabIndex = 38;
-            this.materialSwitch_topMost.TabStop = false;
-            this.materialSwitch_topMost.Text = "Always at Top";
-            this.materialSwitch_topMost.UseVisualStyleBackColor = true;
-            this.materialSwitch_topMost.CheckedChanged += new System.EventHandler(this.materialSwitch_topMost_CheckedChanged);
+            this.materialSwitch_isTopMost.AutoSize = true;
+            this.materialSwitch_isTopMost.Depth = 0;
+            this.materialSwitch_isTopMost.Location = new System.Drawing.Point(1, 210);
+            this.materialSwitch_isTopMost.Margin = new System.Windows.Forms.Padding(0);
+            this.materialSwitch_isTopMost.MouseLocation = new System.Drawing.Point(-1, -1);
+            this.materialSwitch_isTopMost.MouseState = MaterialSkin.MouseState.HOVER;
+            this.materialSwitch_isTopMost.Name = "materialSwitch_isTopMost";
+            this.materialSwitch_isTopMost.Ripple = true;
+            this.materialSwitch_isTopMost.Size = new System.Drawing.Size(159, 37);
+            this.materialSwitch_isTopMost.TabIndex = 38;
+            this.materialSwitch_isTopMost.TabStop = false;
+            this.materialSwitch_isTopMost.Text = "Always at Top";
+            this.materialSwitch_isTopMost.UseVisualStyleBackColor = true;
+            this.materialSwitch_isTopMost.CheckedChanged += new System.EventHandler(this.materialSwitch_grouped_CheckedChanged);
             // 
-            // materialSwitch_toggleWithSound
+            // materialSwitch_isToggleSound
             // 
-            this.materialSwitch_toggleWithSound.AutoSize = true;
-            this.materialSwitch_toggleWithSound.Depth = 0;
-            this.materialSwitch_toggleWithSound.Location = new System.Drawing.Point(1, 170);
-            this.materialSwitch_toggleWithSound.Margin = new System.Windows.Forms.Padding(0);
-            this.materialSwitch_toggleWithSound.MouseLocation = new System.Drawing.Point(-1, -1);
-            this.materialSwitch_toggleWithSound.MouseState = MaterialSkin.MouseState.HOVER;
-            this.materialSwitch_toggleWithSound.Name = "materialSwitch_toggleWithSound";
-            this.materialSwitch_toggleWithSound.Ripple = true;
-            this.materialSwitch_toggleWithSound.Size = new System.Drawing.Size(191, 37);
-            this.materialSwitch_toggleWithSound.TabIndex = 37;
-            this.materialSwitch_toggleWithSound.TabStop = false;
-            this.materialSwitch_toggleWithSound.Text = "Toggle with Sound";
-            this.materialSwitch_toggleWithSound.UseVisualStyleBackColor = true;
-            this.materialSwitch_toggleWithSound.CheckedChanged += new System.EventHandler(this.materialSwitch_toggleWithSound_CheckedChanged);
+            this.materialSwitch_isToggleSound.AutoSize = true;
+            this.materialSwitch_isToggleSound.Depth = 0;
+            this.materialSwitch_isToggleSound.Location = new System.Drawing.Point(1, 170);
+            this.materialSwitch_isToggleSound.Margin = new System.Windows.Forms.Padding(0);
+            this.materialSwitch_isToggleSound.MouseLocation = new System.Drawing.Point(-1, -1);
+            this.materialSwitch_isToggleSound.MouseState = MaterialSkin.MouseState.HOVER;
+            this.materialSwitch_isToggleSound.Name = "materialSwitch_isToggleSound";
+            this.materialSwitch_isToggleSound.Ripple = true;
+            this.materialSwitch_isToggleSound.Size = new System.Drawing.Size(191, 37);
+            this.materialSwitch_isToggleSound.TabIndex = 37;
+            this.materialSwitch_isToggleSound.TabStop = false;
+            this.materialSwitch_isToggleSound.Text = "Toggle with Sound";
+            this.materialSwitch_isToggleSound.UseVisualStyleBackColor = true;
+            this.materialSwitch_isToggleSound.CheckedChanged += new System.EventHandler(this.materialSwitch_grouped_CheckedChanged);
             // 
-            // materialSwitch_minimizeToSystemTray
+            // materialSwitch_isSystemTray
             // 
-            this.materialSwitch_minimizeToSystemTray.AutoSize = true;
-            this.materialSwitch_minimizeToSystemTray.Depth = 0;
-            this.materialSwitch_minimizeToSystemTray.Location = new System.Drawing.Point(1, 290);
-            this.materialSwitch_minimizeToSystemTray.Margin = new System.Windows.Forms.Padding(0);
-            this.materialSwitch_minimizeToSystemTray.MouseLocation = new System.Drawing.Point(-1, -1);
-            this.materialSwitch_minimizeToSystemTray.MouseState = MaterialSkin.MouseState.HOVER;
-            this.materialSwitch_minimizeToSystemTray.Name = "materialSwitch_minimizeToSystemTray";
-            this.materialSwitch_minimizeToSystemTray.Ripple = true;
-            this.materialSwitch_minimizeToSystemTray.Size = new System.Drawing.Size(234, 37);
-            this.materialSwitch_minimizeToSystemTray.TabIndex = 35;
-            this.materialSwitch_minimizeToSystemTray.TabStop = false;
-            this.materialSwitch_minimizeToSystemTray.Text = "Minimize to System Tray";
-            this.materialSwitch_minimizeToSystemTray.UseVisualStyleBackColor = true;
-            this.materialSwitch_minimizeToSystemTray.CheckedChanged += new System.EventHandler(this.materialSwitch_minimizeToSystemTray_CheckedChanged);
+            this.materialSwitch_isSystemTray.AutoSize = true;
+            this.materialSwitch_isSystemTray.Depth = 0;
+            this.materialSwitch_isSystemTray.Location = new System.Drawing.Point(1, 290);
+            this.materialSwitch_isSystemTray.Margin = new System.Windows.Forms.Padding(0);
+            this.materialSwitch_isSystemTray.MouseLocation = new System.Drawing.Point(-1, -1);
+            this.materialSwitch_isSystemTray.MouseState = MaterialSkin.MouseState.HOVER;
+            this.materialSwitch_isSystemTray.Name = "materialSwitch_isSystemTray";
+            this.materialSwitch_isSystemTray.Ripple = true;
+            this.materialSwitch_isSystemTray.Size = new System.Drawing.Size(234, 37);
+            this.materialSwitch_isSystemTray.TabIndex = 35;
+            this.materialSwitch_isSystemTray.TabStop = false;
+            this.materialSwitch_isSystemTray.Text = "Minimize to System Tray";
+            this.materialSwitch_isSystemTray.UseVisualStyleBackColor = true;
+            this.materialSwitch_isSystemTray.CheckedChanged += new System.EventHandler(this.materialSwitch_grouped_CheckedChanged);
             // 
-            // materialSwitch_runAtStartup
+            // materialSwitch_isStartup
             // 
-            this.materialSwitch_runAtStartup.AutoSize = true;
-            this.materialSwitch_runAtStartup.Depth = 0;
-            this.materialSwitch_runAtStartup.Location = new System.Drawing.Point(1, 250);
-            this.materialSwitch_runAtStartup.Margin = new System.Windows.Forms.Padding(0);
-            this.materialSwitch_runAtStartup.MouseLocation = new System.Drawing.Point(-1, -1);
-            this.materialSwitch_runAtStartup.MouseState = MaterialSkin.MouseState.HOVER;
-            this.materialSwitch_runAtStartup.Name = "materialSwitch_runAtStartup";
-            this.materialSwitch_runAtStartup.Ripple = true;
-            this.materialSwitch_runAtStartup.Size = new System.Drawing.Size(160, 37);
-            this.materialSwitch_runAtStartup.TabIndex = 36;
-            this.materialSwitch_runAtStartup.TabStop = false;
-            this.materialSwitch_runAtStartup.Text = "Run at Startup";
-            this.materialSwitch_runAtStartup.UseVisualStyleBackColor = true;
+            this.materialSwitch_isStartup.AutoSize = true;
+            this.materialSwitch_isStartup.Depth = 0;
+            this.materialSwitch_isStartup.Location = new System.Drawing.Point(1, 250);
+            this.materialSwitch_isStartup.Margin = new System.Windows.Forms.Padding(0);
+            this.materialSwitch_isStartup.MouseLocation = new System.Drawing.Point(-1, -1);
+            this.materialSwitch_isStartup.MouseState = MaterialSkin.MouseState.HOVER;
+            this.materialSwitch_isStartup.Name = "materialSwitch_isStartup";
+            this.materialSwitch_isStartup.Ripple = true;
+            this.materialSwitch_isStartup.Size = new System.Drawing.Size(160, 37);
+            this.materialSwitch_isStartup.TabIndex = 36;
+            this.materialSwitch_isStartup.TabStop = false;
+            this.materialSwitch_isStartup.Text = "Run at Startup";
+            this.materialSwitch_isStartup.UseVisualStyleBackColor = true;
             // 
             // materialLabel_focus
             // 
@@ -277,22 +277,22 @@
             this.materialSlider_Accuracy.ValueSuffix = "%";
             this.materialSlider_Accuracy.onValueChanged += new MaterialSkin.Controls.MaterialSlider.ValueChanged(this.materialSlider_Accuracy_onValueChanged);
             // 
-            // materialSwitch_sniping
+            // materialSwitch_isSnipeMode
             // 
-            this.materialSwitch_sniping.AutoSize = true;
-            this.materialSwitch_sniping.Depth = 0;
-            this.materialSwitch_sniping.Location = new System.Drawing.Point(1, 327);
-            this.materialSwitch_sniping.Margin = new System.Windows.Forms.Padding(0);
-            this.materialSwitch_sniping.MouseLocation = new System.Drawing.Point(-1, -1);
-            this.materialSwitch_sniping.MouseState = MaterialSkin.MouseState.HOVER;
-            this.materialSwitch_sniping.Name = "materialSwitch_sniping";
-            this.materialSwitch_sniping.Ripple = true;
-            this.materialSwitch_sniping.Size = new System.Drawing.Size(256, 37);
-            this.materialSwitch_sniping.TabIndex = 48;
-            this.materialSwitch_sniping.TabStop = false;
-            this.materialSwitch_sniping.Text = "Sniping Mode (API required)";
-            this.materialSwitch_sniping.UseVisualStyleBackColor = true;
-            this.materialSwitch_sniping.CheckedChanged += new System.EventHandler(this.materialSwitch_sniping_CheckedChanged);
+            this.materialSwitch_isSnipeMode.AutoSize = true;
+            this.materialSwitch_isSnipeMode.Depth = 0;
+            this.materialSwitch_isSnipeMode.Location = new System.Drawing.Point(1, 327);
+            this.materialSwitch_isSnipeMode.Margin = new System.Windows.Forms.Padding(0);
+            this.materialSwitch_isSnipeMode.MouseLocation = new System.Drawing.Point(-1, -1);
+            this.materialSwitch_isSnipeMode.MouseState = MaterialSkin.MouseState.HOVER;
+            this.materialSwitch_isSnipeMode.Name = "materialSwitch_isSnipeMode";
+            this.materialSwitch_isSnipeMode.Ripple = true;
+            this.materialSwitch_isSnipeMode.Size = new System.Drawing.Size(256, 37);
+            this.materialSwitch_isSnipeMode.TabIndex = 48;
+            this.materialSwitch_isSnipeMode.TabStop = false;
+            this.materialSwitch_isSnipeMode.Text = "Sniping Mode (API required)";
+            this.materialSwitch_isSnipeMode.UseVisualStyleBackColor = true;
+            this.materialSwitch_isSnipeMode.CheckedChanged += new System.EventHandler(this.materialSwitch_grouped_CheckedChanged);
             // 
             // materialTextBox_userId
             // 
@@ -323,28 +323,28 @@
             this.materialTextBox_userId.UseSystemPasswordChar = false;
             this.materialTextBox_userId.UseTallSize = false;
             // 
-            // materialButton_sniping
+            // materialButton_isSnipeMode
             // 
-            this.materialButton_sniping.AutoSize = false;
-            this.materialButton_sniping.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.materialButton_sniping.Density = MaterialSkin.Controls.MaterialButton.MaterialButtonDensity.Default;
-            this.materialButton_sniping.Depth = 0;
-            this.materialButton_sniping.Enabled = false;
-            this.materialButton_sniping.HighEmphasis = true;
-            this.materialButton_sniping.Icon = null;
-            this.materialButton_sniping.Location = new System.Drawing.Point(426, 329);
-            this.materialButton_sniping.Margin = new System.Windows.Forms.Padding(4, 6, 4, 6);
-            this.materialButton_sniping.MouseState = MaterialSkin.MouseState.HOVER;
-            this.materialButton_sniping.Name = "materialButton_sniping";
-            this.materialButton_sniping.NoAccentTextColor = System.Drawing.Color.Empty;
-            this.materialButton_sniping.Size = new System.Drawing.Size(56, 34);
-            this.materialButton_sniping.TabIndex = 50;
-            this.materialButton_sniping.TabStop = false;
-            this.materialButton_sniping.Text = "Check";
-            this.materialButton_sniping.Type = MaterialSkin.Controls.MaterialButton.MaterialButtonType.Contained;
-            this.materialButton_sniping.UseAccentColor = true;
-            this.materialButton_sniping.UseVisualStyleBackColor = true;
-            this.materialButton_sniping.Click += new System.EventHandler(this.materialButton_sniping_Click);
+            this.materialButton_isSnipeMode.AutoSize = false;
+            this.materialButton_isSnipeMode.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.materialButton_isSnipeMode.Density = MaterialSkin.Controls.MaterialButton.MaterialButtonDensity.Default;
+            this.materialButton_isSnipeMode.Depth = 0;
+            this.materialButton_isSnipeMode.Enabled = false;
+            this.materialButton_isSnipeMode.HighEmphasis = true;
+            this.materialButton_isSnipeMode.Icon = null;
+            this.materialButton_isSnipeMode.Location = new System.Drawing.Point(426, 329);
+            this.materialButton_isSnipeMode.Margin = new System.Windows.Forms.Padding(4, 6, 4, 6);
+            this.materialButton_isSnipeMode.MouseState = MaterialSkin.MouseState.HOVER;
+            this.materialButton_isSnipeMode.Name = "materialButton_isSnipeMode";
+            this.materialButton_isSnipeMode.NoAccentTextColor = System.Drawing.Color.Empty;
+            this.materialButton_isSnipeMode.Size = new System.Drawing.Size(56, 34);
+            this.materialButton_isSnipeMode.TabIndex = 50;
+            this.materialButton_isSnipeMode.TabStop = false;
+            this.materialButton_isSnipeMode.Text = "Check";
+            this.materialButton_isSnipeMode.Type = MaterialSkin.Controls.MaterialButton.MaterialButtonType.Contained;
+            this.materialButton_isSnipeMode.UseAccentColor = true;
+            this.materialButton_isSnipeMode.UseVisualStyleBackColor = true;
+            this.materialButton_isSnipeMode.Click += new System.EventHandler(this.materialButton_isSnipeMode_Click);
             // 
             // SettingsForm
             // 
@@ -352,24 +352,24 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(45)))), ((int)(((byte)(52)))), ((int)(((byte)(54)))));
             this.ClientSize = new System.Drawing.Size(499, 381);
-            this.Controls.Add(this.materialButton_sniping);
+            this.Controls.Add(this.materialButton_isSnipeMode);
             this.Controls.Add(this.materialTextBox_userId);
-            this.Controls.Add(this.materialSwitch_sniping);
-            this.Controls.Add(this.materialCheckbox_isFullCombo);
+            this.Controls.Add(this.materialSwitch_isSnipeMode);
+            this.Controls.Add(this.materialCheckbox_isCheckingFullCombo);
             this.Controls.Add(this.materialLabel2);
             this.Controls.Add(this.materialTextBox_apiInput);
             this.Controls.Add(this.materialButton_checkApi);
             this.Controls.Add(this.materialLabel_apiNeeded);
-            this.Controls.Add(this.materialSwitch_autoDisconnect);
-            this.Controls.Add(this.materialSwitch_submitIfFC);
-            this.Controls.Add(this.materialSwitch_topMost);
-            this.Controls.Add(this.materialSwitch_toggleWithSound);
-            this.Controls.Add(this.materialSwitch_minimizeToSystemTray);
-            this.Controls.Add(this.materialSwitch_runAtStartup);
+            this.Controls.Add(this.materialSwitch_isAutoDisconnect);
+            this.Controls.Add(this.materialSwitch_isSubmitIfFC);
+            this.Controls.Add(this.materialSwitch_isTopMost);
+            this.Controls.Add(this.materialSwitch_isToggleSound);
+            this.Controls.Add(this.materialSwitch_isSystemTray);
+            this.Controls.Add(this.materialSwitch_isStartup);
             this.Controls.Add(this.materialLabel_focus);
             this.Controls.Add(this.materialSlider_Accuracy);
             this.Name = "SettingsForm";
-            this.Text = "Form1";
+            this.Text = "SettingsForm";
             this.Load += new System.EventHandler(this.SettingsForm_Load);
             this.ResumeLayout(false);
             this.PerformLayout();
@@ -378,22 +378,22 @@
 
         #endregion
 
-        private MaterialSkin.Controls.MaterialCheckbox materialCheckbox_isFullCombo;
+        private MaterialSkin.Controls.MaterialCheckbox materialCheckbox_isCheckingFullCombo;
         private MaterialSkin.Controls.MaterialLabel materialLabel2;
         private MaterialSkin.Controls.MaterialTextBox2 materialTextBox_apiInput;
         private MaterialSkin.Controls.MaterialButton materialButton_checkApi;
         private MaterialSkin.Controls.MaterialLabel materialLabel_apiNeeded;
-        private MaterialSkin.Controls.MaterialSwitch materialSwitch_autoDisconnect;
-        private MaterialSkin.Controls.MaterialSwitch materialSwitch_submitIfFC;
-        private MaterialSkin.Controls.MaterialSwitch materialSwitch_topMost;
-        private MaterialSkin.Controls.MaterialSwitch materialSwitch_toggleWithSound;
-        private MaterialSkin.Controls.MaterialSwitch materialSwitch_minimizeToSystemTray;
-        private MaterialSkin.Controls.MaterialSwitch materialSwitch_runAtStartup;
+        private MaterialSkin.Controls.MaterialSwitch materialSwitch_isAutoDisconnect;
+        private MaterialSkin.Controls.MaterialSwitch materialSwitch_isSubmitIfFC;
+        private MaterialSkin.Controls.MaterialSwitch materialSwitch_isTopMost;
+        private MaterialSkin.Controls.MaterialSwitch materialSwitch_isToggleSound;
+        private MaterialSkin.Controls.MaterialSwitch materialSwitch_isSystemTray;
+        private MaterialSkin.Controls.MaterialSwitch materialSwitch_isStartup;
         private MaterialSkin.Controls.MaterialLabel materialLabel_focus;
         private MaterialSkin.Controls.MaterialSlider materialSlider_Accuracy;
         private System.Windows.Forms.ToolTip toolTips;
-        private MaterialSkin.Controls.MaterialSwitch materialSwitch_sniping;
+        private MaterialSkin.Controls.MaterialSwitch materialSwitch_isSnipeMode;
         private MaterialSkin.Controls.MaterialTextBox2 materialTextBox_userId;
-        private MaterialSkin.Controls.MaterialButton materialButton_sniping;
+        private MaterialSkin.Controls.MaterialButton materialButton_isSnipeMode;
     }
 }
