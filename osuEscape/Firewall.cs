@@ -78,7 +78,7 @@ namespace osuEscape
 
                 foreach (INetFwRule rule in fwPolicy2.Rules)
                 {
-                    if (rule.Name.IndexOf(RuleName) != -1)
+                    if (rule.Name.Contains(RuleName, StringComparison.CurrentCulture))
                     {
                         // Now add the rule
                         INetFwPolicy2 firewallPolicy = (INetFwPolicy2)Activator.CreateInstance(Type.GetTypeFromProgID("HNetCfg.FwPolicy2"));
@@ -89,7 +89,7 @@ namespace osuEscape
             }
             catch (Exception ex)
             {
-                Console.WriteLine("Error: Cannot delete the rule(s) from firewall");
+                Console.WriteLine($@"Error: Cannot delete the rule(s) from firewall: {ex.Message}");
             }
         }
 

@@ -16,6 +16,7 @@ using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Reflection;
+using System.Security.Policy;
 using System.Security.Principal;
 using System.Text;
 using System.Threading;
@@ -28,9 +29,10 @@ namespace osuEscape
 
     public partial class Root : MaterialForm
     {
-        public MainForm mainForm;
-        public SettingsForm settingsForm;
-        public UploadedScoresForm uploadedScoresForm;
+        private const string VersionControlAddress = "https://pastebin.com/5hDSctE0";
+        private readonly MainForm _mainForm;
+        private readonly SettingsForm _settingsForm;
+        private readonly UploadedScoresForm _uploadedScoresForm;
 
         private Size mainFormSize;
         private Size settingsFormSize;
@@ -117,29 +119,35 @@ namespace osuEscape
 
         // startup
         private static readonly string StartupKey = "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run";
-        private static readonly string StartupValue = System.Reflection.Assembly.GetExecutingAssembly().GetName().Name;
+        private static readonly string StartupValue = Assembly.GetExecutingAssembly().GetName().Name;
 
         private bool isItemQuit = false;
 
         private bool isSetScore = false;
         private string previousSubmittedBeatmapMd5 = string.Empty;
 
-        bool isOffsetFound = false;
+        private bool isOffsetFound = false;
 
-        bool isSnipedScoreFound = false;
+        private bool isSnipedScoreFound = false;
+
+        //encapsulation starts here
+        public MainForm MainForm => _mainForm;
+        public SettingsForm SettingsForm => _settingsForm;
+        public UploadedScoresForm UploadedScoresForm => _uploadedScoresForm;
+
 
 
         public Root(string osuWindowTitleHint)
         {
 
             _osuWindowTitleHint = osuWindowTitleHint;
-            this.mainForm = new MainForm(this);
-            this.settingsForm = new SettingsForm();
-            this.uploadedScoresForm = new UploadedScoresForm();
+            _mainForm = new MainForm(this);
+            _settingsForm = new SettingsForm();
+            _uploadedScoresForm = new UploadedScoresForm();
 
-            mainFormSize = mainForm.Size;
-            settingsFormSize = settingsForm.Size;
-            uploadedScoresFormSize = uploadedScoresForm.Size;
+            mainFormSize = _mainForm.Size;
+            settingsFormSize = _settingsForm.Size;
+            uploadedScoresFormSize = _uploadedScoresForm.Size;
 
             // Initialize material skin manager
             FormStyleManager.AddFormToManage(this);
@@ -150,13 +158,13 @@ namespace osuEscape
 
             // for ui resizing
             // design editor pixels height offset (50px)
-            this.Size = new Size(this.Size.Width, this.Size.Height);
+            Size = new Size(Size.Width, Size.Height);
 
             // avoid opening osu!Escape twice
             if (Process.GetProcessesByName("osuEscape").Length > 1)
             {
                 notifyIcon_osuEscape.Visible = false;
-                this.Close();
+                Close();
             }
 
             // hotkey
@@ -214,36 +222,42 @@ namespace osuEscape
             return form;
         }
 
-        private void Root_Load(object sender, EventArgs e)
+        private async void Root_Load(object sender, EventArgs e)
         {
             materialTabControl_menu.TabPages[0].Controls.Clear();
             materialTabControl_menu.TabPages[1].Controls.Clear();
             materialTabControl_menu.TabPages[2].Controls.Clear();
-            materialTabControl_menu.TabPages[0].Controls.Add(ConvertFormToTabPage(mainForm));
-            materialTabControl_menu.TabPages[1].Controls.Add(ConvertFormToTabPage(settingsForm));
-            materialTabControl_menu.TabPages[2].Controls.Add(ConvertFormToTabPage(uploadedScoresForm));
+            materialTabControl_menu.TabPages[0].Controls.Add(ConvertFormToTabPage(_mainForm));
+            materialTabControl_menu.TabPages[1].Controls.Add(ConvertFormToTabPage(_settingsForm));
+            materialTabControl_menu.TabPages[2].Controls.Add(ConvertFormToTabPage(_uploadedScoresForm));
 
             // check if osu!Escape is already opened 
-            if (Process.GetProcessesByName(this.Name).Length > 1)
-                this.Close();
+            if (Process.GetProcessesByName(Name).Length > 1)
+                Close();
 
             // check administrator privileges
             if (!IsAdministrator())
             {
                 MessageBox.Show("Please open osu!Escape with administrator privileges for toggling firewall permission.");
-                this.Close();
+                Close();
             }
 
             osuDataReaderAsync();
 
             // open the app at the previous position (location on window) 
-            this.Location = Properties.Settings.Default.appPosition;
+            Location = Properties.Settings.Default.appPosition;
 
             #region Check for Update
-            WebClient webClient = new();
-            if (!webClient.DownloadString("https://pastebin.com/5hDSctE0").Contains(Assembly.GetExecutingAssembly().GetName().Version.ToString()))
+            HttpClient httpClient = new();
+            // Compare versions instead of string comparison
+            Version expectedVersion = new(await httpClient.GetStringAsync(VersionControlAddress));
+            Version currentVersion = Assembly.GetExecutingAssembly().GetName().Version;
+
+            // Compare versions instead of string comparison
+            if (currentVersion < expectedVersion)
             {
-                if (MessageBox.Show("This version is outdated! Please download the latest version at GitHub's release page.",
+                if (MessageBox.Show($"This version is outdated! Please download the latest version at GitHub's release page. {Environment.NewLine}" +
+                    $"Current Version: {currentVersion}; Expected Version: {expectedVersion}",
                     "osu!Escape",
                     MessageBoxButtons.YesNo,
                     MessageBoxIcon.Question) == DialogResult.Yes)
@@ -383,7 +397,7 @@ namespace osuEscape
                                         }
 
                                         // slider
-                                        if (File.ReadLines(beatmapFile).Last().Contains("|") && beatmapMode == '0')
+                                        if (File.ReadLines(beatmapFile).Last().Contains('|') && beatmapMode == '0')
                                         {
                                             // [7] is the slider pixel length of slider (syntax above)
                                             decimal sliderPixelLength = Convert.ToDecimal(File.ReadLines(beatmapFile).Last().Split(",")[7]);
@@ -416,7 +430,7 @@ namespace osuEscape
                                             // difficulty session to find slider multiplier
                                             for (int i = difficultySessionIndex + 1; i < beatmapFileLines.Length; i++)
                                             {
-                                                if (!beatmapFileLines[i].Contains(":"))
+                                                if (!beatmapFileLines[i].Contains(':'))
                                                     break;
 
                                                 if (File.ReadAllLines(beatmapFile)[i].Contains("SliderMultiplier:"))
@@ -431,7 +445,7 @@ namespace osuEscape
                                             for (int i = timingPointSessionIndex + 1; i < beatmapFileLines.Length; i++)
                                             {
                                                 // check the corresponding timing point
-                                                if (!beatmapFileLines[i].Contains(","))
+                                                if (!beatmapFileLines[i].Contains(','))
                                                     break;
 
                                                 // only find the timing point before the last note
@@ -537,9 +551,9 @@ namespace osuEscape
                             Firewall.Toggle();
                             isSetScore = true;
 
-                            mainForm.Controls["materialLabel_submissionStatus"].BeginInvoke((MethodInvoker)delegate
+                            _mainForm.Controls["materialLabel_submissionStatus"].BeginInvoke((MethodInvoker)delegate
                             {
-                                mainForm.materialLabel_SubmissionStatus_TextChanged("Uploading recent score...");
+                                _mainForm.materialLabel_SubmissionStatus_TextChanged("Uploading recent score...");
                             });
 
                             Debug.WriteLine("Submission: uploading recent score.");
@@ -586,13 +600,13 @@ namespace osuEscape
                                 isSetScore = false;
 
                                 // uploaded scores tab page update
-                                uploadedScoresForm.UpdateScores(baseAddresses);
+                                _uploadedScoresForm.UpdateScores(baseAddresses);
 
                                 // submission status update
-                                mainForm.Controls["materialLabel_submissionStatus"].BeginInvoke((MethodInvoker)delegate
+                                _mainForm.Controls["materialLabel_submissionStatus"].BeginInvoke((MethodInvoker)delegate
                                 {
                                     string text = isRecentSetScoreUploaded ? "Uploaded recent score." : "";
-                                    mainForm.materialLabel_SubmissionStatus_TextChanged(text);
+                                    _mainForm.materialLabel_SubmissionStatus_TextChanged(text);
                                 });
 
                                 Debug.WriteLine("Submission: Uploaded recent score.");
@@ -657,7 +671,7 @@ namespace osuEscape
         #region System Tray
         private void ToggleSystemTray(bool enabled)
         {
-            this.ShowInTaskbar = !enabled;
+            ShowInTaskbar = !enabled;
         }
 
         #endregion
@@ -680,7 +694,7 @@ namespace osuEscape
         private void Item_quit_Click(object sender, EventArgs e)
         {
             isItemQuit = true;
-            this.Close();
+            Close();
         }
 
         #endregion
@@ -740,7 +754,7 @@ namespace osuEscape
 
         private void notifyIcon_osuEscape_MouseDoubleClick(object sender, MouseEventArgs e)
         {
-            this.WindowState = FormWindowState.Normal;
+            WindowState = FormWindowState.Normal;
             ToggleSystemTray(false);
         }
 
@@ -750,26 +764,28 @@ namespace osuEscape
             Properties.Settings.Default.isAllowConnection = !Properties.Settings.Default.isAllowConnection;
             Firewall.Toggle();
 
-            ((MaterialSwitch)mainForm.Controls["materialSwitch_osuConnection"]).Checked = !Properties.Settings.Default.isAllowConnection;
+            ((MaterialSwitch)_mainForm.Controls["materialSwitch_osuConnection"]).Checked = !Properties.Settings.Default.isAllowConnection;
         }
 
 
         private void FormClosing_RootForm(object sender, FormClosingEventArgs e)
         {
-            if (((MaterialSwitch)settingsForm.Controls["materialSwitch_isSystemTray"]).Checked && !isItemQuit)
+            if (((MaterialSwitch)_settingsForm.Controls["materialSwitch_isSystemTray"]).Checked && !isItemQuit)
             {
                 // cancel form closing event
                 e.Cancel = true;
 
-                this.WindowState = FormWindowState.Minimized;
-                ToggleSystemTray(((MaterialSwitch)settingsForm.Controls["materialSwitch_isSystemTray"]).Checked);
+                WindowState = FormWindowState.Minimized;
+                ToggleSystemTray(((MaterialSwitch)_settingsForm.Controls["materialSwitch_isSystemTray"]).Checked);
                 ContextMenuStripUpdate();
             }
 
 
             // save the last position of the application
-            if (this.WindowState != FormWindowState.Minimized)
-                Properties.Settings.Default.appPosition = this.Location;
+            if (WindowState != FormWindowState.Minimized)
+            {
+                Properties.Settings.Default.appPosition = Location;
+            }
 
             Properties.Settings.Default.Save();
 
@@ -787,27 +803,25 @@ namespace osuEscape
         {
             Size resize = new();
 
-            //refactor this later
-            if (materialTabControl_menu.SelectedTab == tabPage_main)
+            switch (materialTabControl_menu.SelectedTab)
             {
-                resize = mainFormSize;
-            }
-            else if (materialTabControl_menu.SelectedTab == tabPage_settings)
-            {
-                resize = settingsFormSize;
-
-            }
-            else if (materialTabControl_menu.SelectedTab == tabPage_uploadedScores)
-            {
-                resize = uploadedScoresFormSize;
+                case TabPage tabPage when tabPage == tabPage_main:
+                    resize = mainFormSize;
+                    break;
+                case TabPage tabPage when tabPage == tabPage_settings:
+                    resize = settingsFormSize;
+                    break;
+                case TabPage tabPage when tabPage == tabPage_uploadedScores:
+                    resize = uploadedScoresFormSize;
+                    break;                   
             }
 
             //offset for tabControl panel
             resize = new Size(resize.Width - 15, resize.Height + 70);
 
-            this.MaximumSize = resize;
-            this.Size = resize;
-            this.MinimumSize = resize;
+            MaximumSize = resize;
+            Size = resize;
+            MinimumSize = resize;
         }
 
         private static async Task<int> GetSnipedUserBeatmapScoreAsync(string userName, int beatmap_id, int mode)
@@ -845,6 +859,34 @@ namespace osuEscape
 
                 return 0;
             }
+        }
+
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                // Ensure the StructuredOsuMemoryReader is not null before disposing
+                _sreader?.Dispose();
+
+                // Cancel any ongoing operations before disposing the CancellationTokenSource
+                if (cts != null)
+                {
+                    cts.Cancel();
+                    cts.Dispose();
+                }
+
+                // Dispose of forms if they have not already been disposed
+                _mainForm?.Dispose();
+                _settingsForm?.Dispose();
+                _uploadedScoresForm?.Dispose();
+
+                // Dispose of the keyboard hook and HttpClient
+                keyboardHook?.Dispose();
+                client?.Dispose();
+            }
+
+            // Call the base class Dispose method
+            base.Dispose(disposing);
         }
     }
 }

@@ -209,8 +209,6 @@ namespace osuEscape
 
                 JArray arr = (JArray)JsonConvert.DeserializeObject(JsonString);
 
-                bool found = false;
-
                 foreach (var item in arr)
                 {
                     //MessageBox.Show(item["username"].ToString());

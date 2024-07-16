@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Windows.Forms;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 
 namespace osuEscape
 {
@@ -10,76 +11,36 @@ namespace osuEscape
     {
         private bool isEditingHotkey = false;
         private readonly Root parent;
-        private static readonly Dictionary<Keys, string> KeysToStringDictionary = new()
-        {
-            [Keys.A] = "A",
-            [Keys.B] = "B",
-            [Keys.C] = "C",
-            [Keys.D] = "D",
-            [Keys.E] = "E",
-            [Keys.F] = "F",
-            [Keys.G] = "G",
-            [Keys.H] = "H",
-            [Keys.I] = "I",
-            [Keys.J] = "J",
-            [Keys.K] = "K",
-            [Keys.L] = "L",
-            [Keys.M] = "M",
-            [Keys.N] = "N",
-            [Keys.O] = "O",
-            [Keys.P] = "P",
-            [Keys.Q] = "Q",
-            [Keys.R] = "R",
-            [Keys.S] = "S",
-            [Keys.T] = "T",
-            [Keys.U] = "U",
-            [Keys.V] = "V",
-            [Keys.W] = "W",
-            [Keys.X] = "X",
-            [Keys.Y] = "Y",
-            [Keys.Z] = "Z",
-            [Keys.D1] = "1",
-            [Keys.D2] = "2",
-            [Keys.D3] = "3",
-            [Keys.D4] = "4",
-            [Keys.D5] = "5",
-            [Keys.D6] = "6",
-            [Keys.D7] = "7",
-            [Keys.D8] = "8",
-            [Keys.D9] = "9",
-            [Keys.D0] = "0",
-            [Keys.F1] = "F1",
-            [Keys.F2] = "F2",
-            [Keys.F3] = "F3",
-            [Keys.F4] = "F4",
-            [Keys.F5] = "F5",
-            [Keys.F6] = "F6",
-            [Keys.F7] = "F7",
-            [Keys.F8] = "F8",
-            [Keys.F9] = "F9",
-            [Keys.F10] = "F10",
-            [Keys.F11] = "F11",
-            [Keys.F12] = "F12",
-            [Keys.OemMinus] = "-",
-            [Keys.Oemplus] = "=",
-            [Keys.OemOpenBrackets] = "[",
-            [Keys.OemCloseBrackets] = "]",
-            [Keys.OemPipe] = @"\",
-            [Keys.OemSemicolon] = ";",
-            [Keys.OemQuotes] = "'",
-            [Keys.Oemtilde] = "`",
-            [Keys.Oemcomma] = ",",
-            [Keys.OemPeriod] = ".",
-            [Keys.OemQuestion] = "/"
-        };
+        private readonly MainViewModel _viewModel;
+
+        private readonly FormManager _formManager;
+        private readonly KeyboardManager _keyboardManager;
+        private readonly ScoreUploader _scoreUploader;
+        private readonly StartupManager _startupManager;
+
         public MainForm(Root parent)
         {
             InitializeComponent();
             this.parent = parent;
+
+            _formManager = new FormManager();
+            _keyboardManager = new KeyboardManager();
+            _scoreUploader = new ScoreUploader();
+            _startupManager = new StartupManager();
+            
+            // Bind a TextBox to a ViewModel property
+            //textBox1.DataBindings.Add("Text", _viewModel, nameof(_viewModel.SomeProperty), false, DataSourceUpdateMode.OnPropertyChanged);
         }
 
         private void MainForm_Load(object sender, EventArgs e)
         {
+            if (!OperatingSystem.IsWindows())
+            {
+                MessageBox.Show("This application is only supported on Windows.", "Unsupported OS", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                this.Close();
+                return;
+            }
+
             materialSwitch_osuConnection.Checked = !Properties.Settings.Default.isAllowConnection;
             materialSlider_refreshRate.Value = Properties.Settings.Default.refreshRate;
 
@@ -220,7 +181,7 @@ namespace osuEscape
                     isEditingHotkey = false;
                     TextBox_GlobalHotkey_Update();
                 }
-                else if (KeysToStringDictionary.ContainsKey(e.KeyCode))
+                else if (_keyboardManager.KeysToStringDictionary.ContainsKey(e.KeyCode))
                 {
                     isEditingHotkey = false;
                     parent.keyboardHook.Dispose();
@@ -230,13 +191,13 @@ namespace osuEscape
                     Properties.Settings.Default.ModifierKeys += e.Alt ? 1 : 0;
                     Properties.Settings.Default.ModifierKeys += e.Control ? 2 : 0;
                     Properties.Settings.Default.ModifierKeys += e.Shift ? 4 : 0;
-                    Properties.Settings.Default.GlobalHotKey = KeysToStringDictionary[e.KeyCode];
+                    Properties.Settings.Default.GlobalHotKey = _keyboardManager.KeysToStringDictionary[e.KeyCode];
 
                     // ui
                     TextBox_GlobalHotkey_Update();
 
                     parent.keyboardHook.RegisterHotKey((ModifierKeys)Properties.Settings.Default.ModifierKeys,
-                                        KeysToStringDictionary.FirstOrDefault(x => x.Value == Properties.Settings.Default.GlobalHotKey).Key);
+                                        _keyboardManager.KeysToStringDictionary.FirstOrDefault(x => x.Value == Properties.Settings.Default.GlobalHotKey).Key);
 
                     System.Media.SystemSounds.Asterisk.Play();
 
@@ -251,11 +212,11 @@ namespace osuEscape
         {
             var shortPathStr = Properties.Settings.Default.osuPath;
 
-            
+
             string[] pathArray = Properties.Settings.Default.osuPath.Split('\\');
 
             if (Properties.Settings.Default.osuPath.Length > 25)
-            {                
+            {
                 // to do
                 shortPathStr = $"{Properties.Settings.Default.osuPath[..13]}...{Properties.Settings.Default.osuPath[^10..]}";
             }
@@ -265,15 +226,20 @@ namespace osuEscape
                 {
                     pathArray[0],
                     pathArray[1],
-                    pathArray[pathArray.Length - 1]
+                    pathArray[^1]
                 };
                 shortPathStr = string.Join("\\", pathList);
             }
-            
+
 
             Debug.WriteLine(shortPathStr);
 
             return "osu! Path: " + shortPathStr;
+        }
+
+        private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            _keyboardManager.KeyboardHook.Dispose();
         }
     }
 }
