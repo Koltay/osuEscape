@@ -6,6 +6,7 @@ namespace osuEscape
 {
     internal static class NativeMethods
     {
+        // Importing user32.dll methods for registering and unregistering hotkeys
         [DllImport("user32.dll")]
         internal static extern bool RegisterHotKey(IntPtr hWnd, int id, uint fsModifiers, uint vk);
 
@@ -17,7 +18,7 @@ namespace osuEscape
     {
         private class Window : NativeWindow, IDisposable
         {
-            private static readonly int WM_HOTKEY = 0x0312;
+            private const int WM_HOTKEY = 0x0312; // Hotkey message identifier
 
             public Window()
             {
@@ -28,11 +29,14 @@ namespace osuEscape
             {
                 base.WndProc(ref m);
 
+                // Check if the message is a hotkey message
                 if (m.Msg == WM_HOTKEY)
                 {
+                    // Extract key and modifier from the message parameters
                     Keys key = (Keys)(((int)m.LParam >> 16) & 0xFFFF);
                     ModifierKeys modifier = (ModifierKeys)((int)m.LParam & 0xFFFF);
 
+                    // Raise the KeyPressed event
                     KeyPressed?.Invoke(this, new KeyPressedEventArgs(modifier, key));
                 }
             }
@@ -50,16 +54,15 @@ namespace osuEscape
 
         public KeyboardHook()
         {
-            _window.KeyPressed += delegate (object sender, KeyPressedEventArgs args)
-            {
-                KeyPressed?.Invoke(this, args);
-            };
+            // Subscribe to the KeyPressed event of the inner window
+            _window.KeyPressed += (sender, args) => KeyPressed?.Invoke(this, args);
         }
 
         public void RegisterHotKey(ModifierKeys modifier, Keys key)
         {
             _currentId++;
 
+            // Register the hotkey and throw an exception if it fails
             if (!NativeMethods.RegisterHotKey(_window.Handle, _currentId, (uint)modifier, (uint)key))
                 throw new InvalidOperationException("Couldn’t register the hot key.");
         }
@@ -68,35 +71,26 @@ namespace osuEscape
 
         public void Dispose()
         {
+            // Unregister all registered hotkeys
             for (int i = _currentId; i > 0; i--)
             {
                 NativeMethods.UnregisterHotKey(_window.Handle, i);
             }
 
-            // dispose the inner native window.
+            // Dispose the inner native window
             _window.Dispose();
         }
     }
 
     public class KeyPressedEventArgs : EventArgs
     {
-        private readonly ModifierKeys _modifier;
-        private readonly Keys _key;
+        public ModifierKeys Modifier { get; }
+        public Keys Key { get; }
 
         internal KeyPressedEventArgs(ModifierKeys modifier, Keys key)
         {
-            _modifier = modifier;
-            _key = key;
-        }
-
-        public ModifierKeys Modifier
-        {
-            get { return _modifier; }
-        }
-
-        public Keys Key
-        {
-            get { return _key; }
+            Modifier = modifier;
+            Key = key;
         }
     }
 

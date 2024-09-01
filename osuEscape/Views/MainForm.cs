@@ -44,22 +44,20 @@ namespace osuEscape
             materialSwitch_osuConnection.Checked = !Properties.Settings.Default.isAllowConnection;
             materialSlider_refreshRate.Value = Properties.Settings.Default.refreshRate;
 
-            // get osu! directory from running process
-            Properties.Settings.Default.osuLocation = Process.GetProcessesByName("osu!").Length == 0
+            // Get osu! directory from running process
+            var osuProcess = Process.GetProcessesByName("osu!").FirstOrDefault();
+            Properties.Settings.Default.osuLocation = osuProcess == null
                                                     ? Properties.Settings.Default.osuLocation
-                                                    : Process.GetProcessesByName("osu!").FirstOrDefault().MainModule.FileName;
+                                                    : osuProcess.MainModule.FileName;
 
-            // let user manually find the osu directory if it's still finding
-            if (Properties.Settings.Default.osuLocation == string.Empty)
+            // Let user manually find the osu directory if it's still not found
+            if (string.IsNullOrEmpty(Properties.Settings.Default.osuLocation))
             {
-                // if the app is first opened and there is no existing osu! process
                 OpenFileDialog_FindOsuLocation();
             }
             else
             {
-                //materialLabel_osuPath.Text = "osu! Path: " + Properties.Settings.Default.osuPath;
                 materialLabel_osuPath.Text = Label_ShortenedPath();
-
                 Firewall.RuleSetUp(Properties.Settings.Default.osuLocation);
             }
 
@@ -77,6 +75,7 @@ namespace osuEscape
             materialButton_findOsuLocation.UseAccentColor = true;
             OpenFileDialog_FindOsuLocation();
         }
+
         public void materialButton_changeToggleHotkey_Click(object sender, EventArgs e)
         {
             isEditingHotkey = !isEditingHotkey;
@@ -89,7 +88,7 @@ namespace osuEscape
             }
             else
             {
-                // click again to cancel edit
+                // Click again to cancel edit
                 materialButton_changeToggleHotkey.UseAccentColor = false;
                 materialLabel_globalToggleHotkey.Text = Properties.Settings.Default.GHKText;
             }
@@ -97,7 +96,7 @@ namespace osuEscape
 
         public void OpenFileDialog_FindOsuLocation()
         {
-            OpenFileDialog ofd = new()
+            using OpenFileDialog ofd = new()
             {
                 Filter = "osu!.exe |*.EXE",
                 InitialDirectory = ""
@@ -111,56 +110,36 @@ namespace osuEscape
             if (result == DialogResult.OK && ofd.FileName.Contains("osu!.exe"))
             {
                 Properties.Settings.Default.osuLocation = ofd.FileName;
-                Properties.Settings.Default.osuPath = String.Join("\\", ofd.FileName.Split('\\').Reverse().Skip(1).Reverse()) + "\\";
+                Properties.Settings.Default.osuPath = string.Join("\\", ofd.FileName.Split('\\').Reverse().Skip(1).Reverse()) + "\\";
 
                 materialLabel_osuPath.Text = Label_ShortenedPath();
-
-
-
                 Firewall.RuleSetUp(Properties.Settings.Default.osuLocation);
             }
             else if (result == DialogResult.OK && !ofd.FileName.Contains("osu!.exe"))
             {
-                // run again until user finds osu.exe or user cancelled the action
+                // Run again until user finds osu.exe or user cancels the action
                 OpenFileDialog_FindOsuLocation();
             }
             materialButton_findOsuLocation.UseAccentColor = false;
         }
+
         public void materialLabel_SubmissionStatus_TextChanged(string str)
         {
             materialLabel_submissionStatus.Text = "Submission Status: " + str;
         }
+
         private void materialSlider_refreshRate_onValueChanged(object sender, int newValue)
         {
-            materialSlider_refreshRate.Value = materialSlider_refreshRate.Value < 50
-                                                ? 50
-                                                : materialSlider_refreshRate.Value;
+            materialSlider_refreshRate.Value = Math.Max(materialSlider_refreshRate.Value, 50);
             Properties.Settings.Default.refreshRate = materialSlider_refreshRate.Value;
         }
 
         private void TextBox_GlobalHotkey_Update()
         {
             int modifierKeys = Properties.Settings.Default.ModifierKeys;
-            bool isCtrl = false;
-            bool isAlt = false;
-            bool isShift = false;
-
-            if (modifierKeys >= 4)
-            {
-                isShift = true;
-                modifierKeys -= 4;
-            }
-
-            if (modifierKeys >= 2)
-            {
-                isCtrl = true;
-                modifierKeys -= 2;
-            }
-
-            if (modifierKeys == 1)
-            {
-                isAlt = true;
-            }
+            bool isCtrl = (modifierKeys & 2) == 2;
+            bool isAlt = (modifierKeys & 1) == 1;
+            bool isShift = (modifierKeys & 4) == 4;
 
             materialLabel_globalToggleHotkey.Text = "Global Toggle Hotkey: ";
             materialLabel_globalToggleHotkey.Text += isCtrl ? "Ctrl + " : "";
@@ -175,7 +154,7 @@ namespace osuEscape
         {
             if (isEditingHotkey)
             {
-                // cancel changes
+                // Cancel changes
                 if (e.KeyCode == Keys.Escape)
                 {
                     isEditingHotkey = false;
@@ -186,14 +165,11 @@ namespace osuEscape
                     isEditingHotkey = false;
                     parent.keyboardHook.Dispose();
 
-                    // user settings
-                    Properties.Settings.Default.ModifierKeys = 0;
-                    Properties.Settings.Default.ModifierKeys += e.Alt ? 1 : 0;
-                    Properties.Settings.Default.ModifierKeys += e.Control ? 2 : 0;
-                    Properties.Settings.Default.ModifierKeys += e.Shift ? 4 : 0;
+                    // User settings
+                    Properties.Settings.Default.ModifierKeys = (e.Alt ? 1 : 0) + (e.Control ? 2 : 0) + (e.Shift ? 4 : 0);
                     Properties.Settings.Default.GlobalHotKey = _keyboardManager.KeysToStringDictionary[e.KeyCode];
 
-                    // ui
+                    // UI
                     TextBox_GlobalHotkey_Update();
 
                     parent.keyboardHook.RegisterHotKey((ModifierKeys)Properties.Settings.Default.ModifierKeys,
@@ -211,13 +187,10 @@ namespace osuEscape
         private static string Label_ShortenedPath()
         {
             var shortPathStr = Properties.Settings.Default.osuPath;
-
-
             string[] pathArray = Properties.Settings.Default.osuPath.Split('\\');
 
             if (Properties.Settings.Default.osuPath.Length > 25)
             {
-                // to do
                 shortPathStr = $"{Properties.Settings.Default.osuPath[..13]}...{Properties.Settings.Default.osuPath[^10..]}";
             }
             else if (pathArray.Length > 3)
@@ -230,7 +203,6 @@ namespace osuEscape
                 };
                 shortPathStr = string.Join("\\", pathList);
             }
-
 
             Debug.WriteLine(shortPathStr);
 

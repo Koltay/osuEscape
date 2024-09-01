@@ -10,15 +10,20 @@ namespace osuEscape
             InitializeComponent();
         }
 
+        // Method to update the scores in the ListView
         public void UpdateScores(OsuBaseAddresses baseAddresses)
         {
-            this.Invoke(new MethodInvoker(delegate ()
+            // Use Invoke to ensure the code runs on the UI thread
+            this.Invoke(new MethodInvoker(() =>
             {
+                // Create a new ListViewItem with the map string
                 ListViewItem item = new(baseAddresses.Beatmap.MapString);
+                
+                // Add subitems for score and accuracy
                 item.SubItems.Add(baseAddresses.Player.Score.ToString());
                 item.SubItems.Add(baseAddresses.Player.Accuracy.ToString("0.00"));
-                // rank icon TBD
-                // pp TBD
+                
+                // Add the item to the ListView
                 materialListView_uploadedScores.Items.Add(item);
             }));
         }

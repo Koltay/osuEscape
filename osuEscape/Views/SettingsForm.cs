@@ -34,7 +34,21 @@ namespace osuEscape
 
         private void SettingsForm_Load(object sender, EventArgs e)
         {
-            // switches
+            // Initialize switches with saved settings
+            InitializeSwitches();
+
+            // Set API required checkboxes enabled state
+            APIRequiredCheckBoxesEnabled();
+
+            // Set focus to a label
+            materialLabel_focus.Focus();
+
+            // Setup tooltips
+            SetupTooltips();
+        }
+
+        private void InitializeSwitches()
+        {
             materialSwitch_isStartup.Checked = Properties.Settings.Default.isStartup;
             materialSwitch_isToggleSound.Checked = Properties.Settings.Default.isToggleSound;
             materialSwitch_isSystemTray.Checked = Properties.Settings.Default.isSystemTray;
@@ -46,57 +60,22 @@ namespace osuEscape
             materialTextBox_apiInput.Text = Properties.Settings.Default.userApiKey;
             materialSlider_Accuracy.Value = Properties.Settings.Default.submitAcc;
             materialCheckbox_isCheckingFullCombo.Checked = Properties.Settings.Default.isCheckingFullCombo;
+        }
 
-            APIRequiredCheckBoxesEnabled();
-
-            materialLabel_focus.Focus();
-
-            #region Tooltip setup
-
+        private void SetupTooltips()
+        {
             toolTips.SetToolTip(materialSwitch_isAutoDisconnect, "Enabling this option will automatically disconnect after the recent score is submitted.");
             toolTips.SetToolTip(materialSwitch_isToggleSound, "Enabling this option will toggle firewall with system notification sound.");
             toolTips.SetToolTip(materialSwitch_isTopMost, "Enabling this option will overlap all the other application even if it is not focused.");
             toolTips.SetToolTip(materialSwitch_isStartup, "Enabling this option will allow osu!Escape to run automatically when the system is booted.");
             toolTips.SetToolTip(materialSwitch_isSystemTray, "Enabling this option will hide osu!Escape to taskbar when clicking the close button.");
             toolTips.SetToolTip(materialSwitch_isSubmitIfFC, "Enabling this option will automatically submit before jumping into result screen if the set score meets the requirement.");
-
-            #endregion
         }
-
-        /*
-        private void materialmaterialSwitch_runAtStartup_CheckedChanged(object sender, EventArgs e)
-        {
-            Properties.Settings.Default.isStartup = materialSwitch_isStartup.Checked;
-
-            StartupSetUp(materialSwitch_isStartup.Checked);
-        }
-
-        private void materialSwitch_toggleWithSound_CheckedChanged(object sender, EventArgs e)
-        => Properties.Settings.Default.isToggleSound = materialSwitch_isToggleSound.Checked;
-
-        private void materialSwitch_minimizeToSystemTray_CheckedChanged(object sender, EventArgs e)
-        => Properties.Settings.Default.isSystemTray = materialSwitch_isSystemTray.Checked;
-
-        private void materialSwitch_autoDisconnect_CheckedChanged(object sender, EventArgs e) 
-        => Properties.Settings.Default.isAutoDisconnect = materialSwitch_isAutoDisconnect.Checked;
-
-        private void materialSwitch_submitIfFC_CheckedChanged(object sender, EventArgs e)
-        => Properties.Settings.Default.isSubmitIfFC = materialSwitch_isSubmitIfFC.Checked;
-
-        private void materialSwitch_topMost_CheckedChanged(object sender, EventArgs e)
-        {
-            Properties.Settings.Default.isTopMost = materialSwitch_isTopMost.Checked;
-            this.TopMost = materialSwitch_isTopMost.Checked;
-        }
-        private void materialCheckbox_isFullCombo_CheckedChanged(object sender, EventArgs e)
-        {
-            Properties.Settings.Default.isCheckingFullCombo = materialCheckbox_isCheckingFullCombo.Checked;
-        }
-        */
 
         private void materialButton_checkApi_Click(object sender, EventArgs e)
-       => Verify_APIKey_Async();
-
+        {
+            Verify_APIKey_Async();
+        }
 
         private void materialSlider_Accuracy_onValueChanged(object sender, int newValue)
         {
@@ -105,9 +84,7 @@ namespace osuEscape
 
         private async void Verify_APIKey_Async()
         {
-            // verifying api key using one of the osu! api urls
-            // using get_beatmaps as it requires the least parameter
-
+            // Verifying API key using one of the osu! API URLs
             var url = $"https://osu.ppy.sh/api/get_beatmaps?k={materialTextBox_apiInput.Text}&b=100&m=0";
 
             var request = new HttpRequestMessage(HttpMethod.Get, url);
@@ -124,8 +101,7 @@ namespace osuEscape
 
             if (response.IsSuccessStatusCode)
             {
-                // only success status code is needed
-                // response content is not needed
+                // Save the API key if verification is successful
                 Properties.Settings.Default.userApiKey = materialTextBox_apiInput.Text;
             }
             else
@@ -139,10 +115,11 @@ namespace osuEscape
         private static void Response_InvalidInput()
         {
             MainFunction.ShowMessageBox(
-                    $"Internal server Error/ Incorrect API! {Environment.NewLine} " +
-                    $"Please check if your API key/ Sniping username is correct. {Environment.NewLine}"
-                    );
+                $"Internal server Error/ Incorrect API! {Environment.NewLine} " +
+                $"Please check if your API key/ Sniping username is correct. {Environment.NewLine}"
+            );
         }
+
         private void APIRequiredCheckBoxesEnabled()
         {
             if (materialSwitch_isAutoDisconnect.InvokeRequired)
@@ -166,12 +143,11 @@ namespace osuEscape
         {
             try
             {
-                RegistryKey key = Registry.CurrentUser.OpenSubKey(StartupKey, true);
+                using RegistryKey key = Registry.CurrentUser.OpenSubKey(StartupKey, true);
                 if (enabled)
                     key.SetValue(StartupValue, $"{Application.ExecutablePath}");
                 else
                     key.DeleteValue(StartupValue, false);
-                key.Close();
             }
             catch (Exception ex)
             {
@@ -186,10 +162,7 @@ namespace osuEscape
 
         private async void Verify_Username_Async()
         {
-            // verifying api key using one of the osu! api urls
-            // using get_beatmaps as it requires the least parameter
-
-            // not specifying username or userid on purpose
+            // Verifying username using osu! API
             var url = $"https://osu.ppy.sh/api/get_user?k={materialTextBox_apiInput.Text}&u={materialTextBox_userId.Text}";
 
             var request = new HttpRequestMessage(HttpMethod.Get, url);
@@ -202,25 +175,16 @@ namespace osuEscape
 
             if (response.IsSuccessStatusCode)
             {
-                // only success status code is needed
-                // response content is not needed
-
-                var JsonString = await response.Content.ReadAsStringAsync();
-
-                JArray arr = (JArray)JsonConvert.DeserializeObject(JsonString);
+                var jsonString = await response.Content.ReadAsStringAsync();
+                JArray arr = (JArray)JsonConvert.DeserializeObject(jsonString);
 
                 foreach (var item in arr)
                 {
-                    //MessageBox.Show(item["username"].ToString());
-                    //MessageBox.Show(item["user_id"].ToString());
-
                     materialTextBox_userId.Text = item["username"].ToString();
                 }
 
                 Properties.Settings.Default.userApiKey = materialTextBox_userId.Text;
-                MainFunction.ShowMessageBox(
-                    $"Sniping User: {materialTextBox_userId.Text}"
-                    );
+                MainFunction.ShowMessageBox($"Sniping User: {materialTextBox_userId.Text}");
             }
             else
             {
@@ -231,8 +195,6 @@ namespace osuEscape
         private void materialSwitch_sniping_CheckedChanged(object sender, EventArgs e)
         {
             Properties.Settings.Default.isSnipeMode = materialSwitch_isSnipeMode.Checked;
-
-            // material button for verification
             materialButton_isSnipeMode.Enabled = materialSwitch_isSnipeMode.Checked;
         }
 
@@ -240,12 +202,11 @@ namespace osuEscape
         {
             if (sender is MaterialSwitch mswitch)
             {
-                // materialSwitch_[...]_CheckedChanged
+                // Handle MaterialSwitch changes
                 string switchName = mswitch.Name[15..].Replace("_CheckedChanged", "");
-
                 Properties.Settings.Default[switchName] = ((MaterialSwitch)Controls[$"materialSwitch_{switchName}"]).Checked;
 
-                // special case for some properties which needs instant changes
+                // Special case for some properties which need instant changes
                 switch (switchName)
                 {
                     case "isStartUp":
@@ -255,16 +216,13 @@ namespace osuEscape
                         this.TopMost = materialSwitch_isTopMost.Checked;
                         break;
                     case "isSnipeMode":
-                        // button for username verification
                         materialButton_isSnipeMode.Enabled = materialSwitch_isSnipeMode.Checked;
-                        break;
-                    default:
                         break;
                 }
             }
             else if (sender is MaterialCheckbox checkbox)
             {
-                // materialCheckBox_[...]_CheckedChanged
+                // Handle MaterialCheckbox changes
                 string checkBoxName = checkbox.Name[17..].Replace("_CheckedChanged", "");
                 Properties.Settings.Default[checkBoxName] = ((MaterialCheckbox)Controls[$"materialCheckBox_{checkBoxName}"]).Checked;
             }

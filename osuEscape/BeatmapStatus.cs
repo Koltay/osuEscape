@@ -5,7 +5,6 @@ namespace osuEscape
     [Flags]
     public enum BeatmapStatus
     {
-        // some status missing
         Qualified = 0,
         NotSubmitted = 1,
         Pending = 2,

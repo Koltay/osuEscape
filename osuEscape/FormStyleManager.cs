@@ -6,45 +6,44 @@ namespace osuEscape
 {
     class FormStyleManager
     {
-        public static MaterialSkinManager materialSkinManager;
-        public static void AddFormToManage(MaterialForm f)
+        // Singleton instance of MaterialSkinManager
+        private static readonly MaterialSkinManager materialSkinManager = MaterialSkinManager.Instance;
+
+        // Method to add a form to be managed by MaterialSkinManager
+        public static void AddFormToManage(MaterialForm form)
         {
-            materialSkinManager = MaterialSkinManager.Instance;
             materialSkinManager.EnforceBackcolorOnAllComponents = false;
-            materialSkinManager.AddFormToManage(f);
+            materialSkinManager.AddFormToManage(form);
             materialSkinManager.Theme = MaterialSkinManager.Themes.DARK;
         }
 
-        public static void ColorSchemeUpdate(MaterialForm mf)
+        // Method to update the color scheme of the MaterialSkinManager
+        public static void ColorSchemeUpdate(MaterialForm form)
         {
-            mf.Invoke(new MethodInvoker(delegate ()
+            form.Invoke(new MethodInvoker(() =>
             {
-                materialSkinManager.ColorScheme = Properties.Settings.Default.isAllowConnection ?
-                new ColorScheme(
-                       Primary.Grey800,
-                       Primary.Grey900,
-                       Primary.Grey500,
-                       Accent.Green700,
-                       TextShade.WHITE)
-                :
-                new ColorScheme(
-                       Primary.Grey800,
-                       Primary.Grey900,
-                       Primary.Grey500,
-                       Accent.Red400,
-                       TextShade.WHITE);
-
+                materialSkinManager.ColorScheme = Properties.Settings.Default.isAllowConnection
+                    ? new ColorScheme(
+                        Primary.Grey800,
+                        Primary.Grey900,
+                        Primary.Grey500,
+                        Accent.Green700,
+                        TextShade.WHITE)
+                    : new ColorScheme(
+                        Primary.Grey800,
+                        Primary.Grey900,
+                        Primary.Grey500,
+                        Accent.Red400,
+                        TextShade.WHITE);
             }));
         }
 
+        // Method to refresh all open forms
         public static void Refresh()
         {
             foreach (Form form in Application.OpenForms)
             {
-                form.Invoke(new MethodInvoker(delegate ()
-                {
-                    form.Refresh();
-                }));
+                form.Invoke(new MethodInvoker(form.Refresh));
             }
         }
     }
