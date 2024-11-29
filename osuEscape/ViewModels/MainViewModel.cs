@@ -1,3 +1,4 @@
+using osuEscape.Models;
 using System.ComponentModel;
 using System.Windows.Forms;
 using System.Windows.Input;

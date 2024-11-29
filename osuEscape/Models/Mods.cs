@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace osuEscape
+namespace osuEscape.Models
 {
     [Flags]
     public enum Mods

@@ -2,7 +2,7 @@
 using osuEscape;
 using System;
 
-namespace osuEscape
+namespace osuEscape.Models
 {
     public class FormManager
     {
@@ -17,6 +17,10 @@ namespace osuEscape
             _mainForm = mainForm ?? throw new ArgumentNullException(nameof(mainForm));
             _settingsForm = settingsForm ?? throw new ArgumentNullException(nameof(settingsForm));
             _uploadedScoresForm = uploadedScoresForm ?? throw new ArgumentNullException(nameof(uploadedScoresForm));
+        }
+
+        public FormManager() {
+
         }
 
         // Public properties to access the form instances

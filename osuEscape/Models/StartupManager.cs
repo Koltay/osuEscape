@@ -1,7 +1,7 @@
 ﻿using System.Reflection;
 
-namespace osuEscape
-{ 
+namespace osuEscape.Models
+{
     public class StartupManager
     {
         private readonly string _startupKey = "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run";

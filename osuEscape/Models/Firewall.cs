@@ -5,7 +5,7 @@ using System.Diagnostics;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace osuEscape
+namespace osuEscape.Models
 {
     public class Firewall
     {
@@ -34,42 +34,23 @@ namespace osuEscape
         }
 
         // Method to toggle firewall settings and update UI
-        public static void ToggleFirewallSettings()
+        public static async Task ToggleFirewallSettingsAsync()
         {
-            if (string.IsNullOrEmpty(Properties.Settings.Default.osuLocation))
+            await Task.Run(() =>
             {
-                MainFunction.ShowMessageBox("ERROR: Invalid Location!");
-                return;
-            }
+                if (string.IsNullOrEmpty(Properties.Settings.Default.osuLocation))
+                {
+                    MainFunction.ShowMessageBox("ERROR: Invalid Location!");
+                    return;
+                }
 
-            AllowConnection(Properties.Settings.Default.isAllowConnection);
-            Audio.ToggleSound(Properties.Settings.Default.isToggleSound);
+                AllowConnection(Properties.Settings.Default.isAllowConnection);
+                Audio.ToggleSound(Properties.Settings.Default.isToggleSound);
 
-            var mainForm = (MaterialForm)Application.OpenForms[0];
-            ((Root)mainForm).ContextMenuStripUpdate();
-            FormStyleManager.ColorSchemeUpdate(mainForm);
-            FormStyleManager.Refresh();
-        }
-
-        // Method to set up firewall rules asynchronously
-        public static async Task RuleSetUp(string filename)
-        {
-            await Task.Run(async () =>
-            {
-                // Remove existing "osu block" rules
-                RemoveFirewallRules("osu block");
-
-                await Task.Delay(500);
-
-                // Create a new "osu block" rule
-                CreateFirewallRule("osu block", filename);
-
-                await Task.Delay(500);
-
-                Debug.WriteLine("Connection status: " + Properties.Settings.Default.isAllowConnection);
-
-                // Toggle firewall settings and update UI
-                ToggleFirewallSettings();
+                var mainForm = (MaterialForm)Application.OpenForms[0];
+                ((Root)mainForm).ContextMenuStripUpdate();
+                FormStyleManager.ColorSchemeUpdate(mainForm);
+                FormStyleManager.Refresh();
             });
         }
 
@@ -100,6 +81,26 @@ namespace osuEscape
         public static void CreateFirewallRule(string RuleName, string filename)
         {
             ExecuteCommandLine(@$"advfirewall firewall add rule name=""{RuleName}"" dir=out action=block program=""{filename}""");
+        }
+        public static async Task SetUpFirewallRulesAsync(string filename)
+        {
+            await Task.Run(async () =>
+            {
+                // Remove existing "osu block" rules
+                RemoveFirewallRules("osu block");
+
+                await Task.Delay(500);
+
+                // Create a new "osu block" rule
+                CreateFirewallRule("osu block", filename);
+
+                await Task.Delay(500);
+
+                Debug.WriteLine("Connection status: " + Properties.Settings.Default.isAllowConnection);
+
+                // Toggle firewall settings and update UI
+                await ToggleFirewallSettingsAsync();
+            });
         }
     }
 }

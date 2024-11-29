@@ -1,10 +1,11 @@
 ﻿using osuEscape;
+using System;
 using System.Collections.Generic;
 using System.Windows.Forms;
 
-namespace osuEscape
+namespace osuEscape.Models
 {
-    public class KeyboardManager : System.IDisposable
+    public class KeyboardManager : IDisposable
     {
         public readonly KeyboardHook KeyboardHook = new();
 
@@ -72,9 +73,20 @@ namespace osuEscape
         };
         public Dictionary<Keys, string> KeysToStringDictionary => _keysToStringDictionary;
 
+        protected virtual void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                // Dispose managed resources here.
+                KeyboardHook?.Dispose();
+            }
+            // Dispose unmanaged resources here.
+        }
+
         public void Dispose()
         {
-            throw new System.NotImplementedException();
+            Dispose(true);
+            GC.SuppressFinalize(this);
         }
     }
 }

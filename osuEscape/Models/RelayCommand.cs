@@ -1,7 +1,7 @@
 using System.Windows.Input;
 using System;
 
-namespace osuEscape
+namespace osuEscape.Models
 {
     public class RelayCommand : ICommand
     {

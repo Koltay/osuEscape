@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Windows.Forms;
+using osuEscape.Models;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 
 namespace osuEscape
@@ -32,7 +33,7 @@ namespace osuEscape
             //textBox1.DataBindings.Add("Text", _viewModel, nameof(_viewModel.SomeProperty), false, DataSourceUpdateMode.OnPropertyChanged);
         }
 
-        private void MainForm_Load(object sender, EventArgs e)
+        private async void MainForm_Load(object sender, EventArgs e)
         {
             if (!OperatingSystem.IsWindows())
             {
@@ -58,16 +59,16 @@ namespace osuEscape
             else
             {
                 materialLabel_osuPath.Text = Label_ShortenedPath();
-                Firewall.RuleSetUp(Properties.Settings.Default.osuLocation);
+                await Firewall.SetUpFirewallRulesAsync(Properties.Settings.Default.osuLocation);
             }
 
             TextBox_GlobalHotkey_Update();
         }
 
-        public void materialSwitch_osuConnection_CheckedChanged(object sender, EventArgs e)
+        public async void materialSwitch_osuConnection_CheckedChanged(object sender, EventArgs e)
         {
             Properties.Settings.Default.isAllowConnection = !materialSwitch_osuConnection.Checked;
-            Firewall.Toggle();
+            await Firewall.SetUpFirewallRulesAsync(Properties.Settings.Default.osuLocation);
         }
 
         public void materialButton_findOsuLocation_Click(object sender, EventArgs e)
@@ -94,7 +95,7 @@ namespace osuEscape
             }
         }
 
-        public void OpenFileDialog_FindOsuLocation()
+        public async void OpenFileDialog_FindOsuLocation()
         {
             using OpenFileDialog ofd = new()
             {
@@ -113,7 +114,7 @@ namespace osuEscape
                 Properties.Settings.Default.osuPath = string.Join("\\", ofd.FileName.Split('\\').Reverse().Skip(1).Reverse()) + "\\";
 
                 materialLabel_osuPath.Text = Label_ShortenedPath();
-                Firewall.RuleSetUp(Properties.Settings.Default.osuLocation);
+                await Firewall.SetUpFirewallRulesAsync(Properties.Settings.Default.osuLocation);
             }
             else if (result == DialogResult.OK && !ofd.FileName.Contains("osu!.exe"))
             {
@@ -212,6 +213,15 @@ namespace osuEscape
         private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
         {
             _keyboardManager.KeyboardHook.Dispose();
+        }
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                _keyboardManager?.Dispose();
+                components?.Dispose();
+            }
+            base.Dispose(disposing);
         }
     }
 }

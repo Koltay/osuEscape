@@ -22,6 +22,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using osuEscape.Models;
 
 namespace osuEscape
 {
@@ -235,10 +236,23 @@ namespace osuEscape
             // Open the app at the previous position (location on window) 
             Location = Properties.Settings.Default.appPosition;
 
+            /*
             #region Check for Update
             HttpClient httpClient = new();
             // Compare versions instead of string comparison
-            Version expectedVersion = new(await httpClient.GetStringAsync(VersionControlAddress));
+            string versionString = await httpClient.GetStringAsync(VersionControlAddress);
+
+            // Verify the version string format
+            if (System.Version.TryParse(versionString, out Version expectedVersion))
+            {
+                // Use the parsed version
+            }
+            else
+            {
+                // Handle the invalid version string format
+                throw new ArgumentException("Version string portion was too short or too long.");
+            }
+
             Version currentVersion = Assembly.GetExecutingAssembly().GetName().Version;
 
             // Compare versions instead of string comparison
@@ -254,6 +268,7 @@ namespace osuEscape
                 }
             }
             #endregion
+            */
         }
 
         #endregion
@@ -524,7 +539,7 @@ namespace osuEscape
                             )
                         {
                             Properties.Settings.Default.isAllowConnection = true;
-                            Firewall.Toggle();
+                            Firewall.ToggleFirewallSettingsAsync();
                             isSetScore = true;
 
                             _mainForm.Controls["materialLabel_submissionStatus"].BeginInvoke((MethodInvoker)delegate
@@ -570,7 +585,7 @@ namespace osuEscape
                                 isRecentSetScoreUploaded = true;
 
                                 Properties.Settings.Default.isAllowConnection = false;
-                                Firewall.Toggle();
+                                Firewall.ToggleFirewallSettingsAsync();
 
                                 isSetScore = false;
 
@@ -724,11 +739,11 @@ namespace osuEscape
             ToggleSystemTray(false);
         }
 
-        private void KeyboardHook_OnKeyPressed(object sender, KeyPressedEventArgs e)
+        private async void KeyboardHook_OnKeyPressed(object sender, KeyPressedEventArgs e)
         {
             // Toggle Connection status on properties settings and update switch status 
             Properties.Settings.Default.isAllowConnection = !Properties.Settings.Default.isAllowConnection;
-            Firewall.Toggle();
+            await Firewall.ToggleFirewallSettingsAsync();
 
             ((MaterialSwitch)_mainForm.Controls["materialSwitch_osuConnection"]).Checked = !Properties.Settings.Default.isAllowConnection;
         }
@@ -829,7 +844,10 @@ namespace osuEscape
             if (disposing)
             {
                 // Ensure the StructuredOsuMemoryReader is not null before disposing
-                _sreader?.Dispose();
+                if (_sreader != null)
+                {
+                    _sreader.Dispose();
+                }
 
                 // Cancel any ongoing operations before disposing the CancellationTokenSource
                 if (cts != null)
