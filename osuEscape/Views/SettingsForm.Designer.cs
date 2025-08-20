@@ -287,10 +287,10 @@
             materialSwitch_isSnipeMode.MouseState = MaterialSkin.MouseState.HOVER;
             materialSwitch_isSnipeMode.Name = "materialSwitch_isSnipeMode";
             materialSwitch_isSnipeMode.Ripple = true;
-            materialSwitch_isSnipeMode.Size = new System.Drawing.Size(256, 37);
+            materialSwitch_isSnipeMode.Size = new System.Drawing.Size(252, 37);
             materialSwitch_isSnipeMode.TabIndex = 48;
             materialSwitch_isSnipeMode.TabStop = false;
-            materialSwitch_isSnipeMode.Text = "Sniping Mode (API required)";
+            materialSwitch_isSnipeMode.Text = "Snipe User ID (API required)";
             materialSwitch_isSnipeMode.UseVisualStyleBackColor = true;
             materialSwitch_isSnipeMode.CheckedChanged += materialSwitch_grouped_CheckedChanged;
             // 

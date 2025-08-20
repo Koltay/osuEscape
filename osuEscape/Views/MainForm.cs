@@ -128,9 +128,9 @@ namespace osuEscape
             materialButton_findOsuLocation.UseAccentColor = false;
         }
 
-        public void materialLabel_SubmissionStatus_TextChanged(string str)
+        public void materialLabel_SubmissionStatus_TextChanged(string statusText)
         {
-            materialLabel_submissionStatus.Text = "Submission Status: " + str;
+            materialLabel_submissionStatus.Text = "Submission Status: " + statusText;
         }
 
         private void materialSlider_refreshRate_onValueChanged(object sender, int newValue)

@@ -47,14 +47,15 @@
             materialSlider_refreshRate.Location = new System.Drawing.Point(340, 153);
             materialSlider_refreshRate.MouseState = MaterialSkin.MouseState.HOVER;
             materialSlider_refreshRate.Name = "materialSlider_refreshRate";
-            materialSlider_refreshRate.RangeMax = 1000;
-            materialSlider_refreshRate.RangeMin = 50;
+            materialSlider_refreshRate.RangeMax = 10000;
+            materialSlider_refreshRate.RangeMin = 500;
             materialSlider_refreshRate.Size = new System.Drawing.Size(146, 40);
             materialSlider_refreshRate.TabIndex = 39;
             materialSlider_refreshRate.TabStop = false;
             materialSlider_refreshRate.Text = "";
             materialSlider_refreshRate.UseAccentColor = true;
-            materialSlider_refreshRate.ValueMax = 1000;
+            materialSlider_refreshRate.Value = 500;
+            materialSlider_refreshRate.ValueMax = 10000;
             materialSlider_refreshRate.ValueSuffix = "ms";
             materialSlider_refreshRate.onValueChanged += materialSlider_refreshRate_onValueChanged;
             // 

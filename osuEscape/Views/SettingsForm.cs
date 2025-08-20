@@ -57,6 +57,7 @@ namespace osuEscape
             materialSwitch_isSubmitIfFC.Checked = Properties.Settings.Default.isSubmitIfFC;
             materialSwitch_isAutoDisconnect.Checked = Properties.Settings.Default.isAutoDisconnect;
             materialSwitch_isAutoDisconnect.Enabled = Properties.Settings.Default.isAPIKeyVerified;
+            materialSwitch_isSnipeMode.Enabled = Properties.Settings.Default.isAPIKeyVerified;
 
             materialTextBox_apiInput.Text = Properties.Settings.Default.userApiKey;
             materialSlider_Accuracy.Value = Properties.Settings.Default.submitAcc;
@@ -185,7 +186,7 @@ namespace osuEscape
                 }
 
                 Properties.Settings.Default.userApiKey = materialTextBox_userId.Text;
-                MainFunction.ShowMessageBox($"Sniping User: {materialTextBox_userId.Text}", "Username Verification");
+                MainFunction.ShowMessageBox($"Sniping User: {materialTextBox_userId.Text}", "Username Verification", MessageBoxIcon.Information);
             }
             else
             {
