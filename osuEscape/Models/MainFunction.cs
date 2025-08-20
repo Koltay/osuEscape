@@ -1,22 +1,15 @@
 ﻿using System.Windows.Forms;
 
-namespace osuEscape
-{
-    class MainFunction
-    {
-        public static void ShowMessageBox(string message)
-        {
-            Audio.ToggleSound(Properties.Settings.Default.isToggleSound);
+namespace osuEscape.Models;
 
-            MessageBox.Show(message);
-        }
-        public static void Invoke_FormRefresh()
-        {
-            /*this.Invoke(new MethodInvoker(delegate ()
-            {
-                //Access your controls
-                this.Refresh();
-            }));*/
-        }
+public static class MainFunction
+{
+    public static DialogResult ShowMessageBox(string message, string caption = "Error", MessageBoxIcon icon = MessageBoxIcon.Error, MessageBoxButtons buttons = MessageBoxButtons.OK)
+    {
+        Audio.ToggleSound(Properties.Settings.Default.isToggleSound);
+        return MessageBox.Show(message, caption, buttons, icon);
+    }
+    public static void InvokeFormRefresh()
+    {
     }
 }

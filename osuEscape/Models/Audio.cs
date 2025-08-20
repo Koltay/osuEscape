@@ -1,6 +1,6 @@
 ﻿namespace osuEscape
 {
-    class Audio
+    public static class Audio
     {
         // Method to toggle sound based on the enabled flag
         public static void ToggleSound(bool enabled)

@@ -77,10 +77,8 @@ namespace osuEscape.Models
         {
             if (disposing)
             {
-                // Dispose managed resources here.
                 KeyboardHook?.Dispose();
             }
-            // Dispose unmanaged resources here.
         }
 
         public void Dispose()

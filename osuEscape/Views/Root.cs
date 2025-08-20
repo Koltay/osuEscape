@@ -23,30 +23,30 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using osuEscape.Models;
+using Math = System.Math;
+using System.Text.Json;
 
 namespace osuEscape
 {
     public partial class Root : MaterialForm
     {
-        private const string VersionControlAddress = "https://pastebin.com/5hDSctE0";
         private readonly MainForm _mainForm;
         private readonly SettingsForm _settingsForm;
         private readonly UploadedScoresForm _uploadedScoresForm;
 
-        private Size mainFormSize;
-        private Size settingsFormSize;
-        private Size uploadedScoresFormSize;
+        private Size _mainFormSize;
+        private Size _settingsFormSize;
+        private Size _uploadedScoresFormSize;
 
         // osu! data reader
         private readonly string _osuWindowTitleHint;
         private readonly int _readDelay = 50;
-        private readonly StructuredOsuMemoryReader _sreader;
-        private readonly CancellationTokenSource cts = new();
+        private readonly StructuredOsuMemoryReader _osuMemoryReader;
+        private readonly CancellationTokenSource _osuMemoryReaderCancellationTokenSource = new();
 
         // Hotkey
-        // Keyboard hook for multiple keys
-        public readonly KeyboardHook keyboardHook = new();
-        private static readonly Dictionary<Keys, string> KeysToStringDictionary = new()
+        public readonly KeyboardHook KeyboardHook = new();
+        private static readonly Dictionary<Keys, string> _keysToStringDictionary = new()
         {
             [Keys.A] = "A",
             [Keys.B] = "B",
@@ -110,21 +110,21 @@ namespace osuEscape
         };
 
         // score upload
-        private static readonly HttpClient client = new();
-        private static int beatmapLastNoteOffset = Int32.MinValue;
+        private static readonly HttpClient _httpClient = new();
+        private static int _beatmapLastNoteOffset = int.MinValue;
 
         // material skin ui
-        public readonly MaterialSkinManager materialSkinManager;
+        public readonly MaterialSkinManager MaterialSkinManager;
 
         // startup
-        private static readonly string StartupKey = "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run";
-        private static readonly string StartupValue = Assembly.GetExecutingAssembly().GetName().Name;
+        private static readonly string _startupKey = "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run";
+        private static readonly string _startupValue = Assembly.GetExecutingAssembly().GetName().Name;
 
-        private bool isItemQuit = false;
-        private bool isSetScore = false;
-        private string previousSubmittedBeatmapMd5 = string.Empty;
-        private bool isOffsetFound = false;
-        private bool isSnipedScoreFound = false;
+        private bool _isItemQuit = false;
+        private bool _isSetScore = false;
+        private string _previousSubmittedBeatmapMd5 = string.Empty;
+        private bool _isOffsetFound = false;
+        private bool _isSnipedScoreFound = false;
 
         // Encapsulation starts here
         public MainForm MainForm => _mainForm;
@@ -138,16 +138,16 @@ namespace osuEscape
             _settingsForm = new SettingsForm();
             _uploadedScoresForm = new UploadedScoresForm();
 
-            mainFormSize = _mainForm.Size;
-            settingsFormSize = _settingsForm.Size;
-            uploadedScoresFormSize = _uploadedScoresForm.Size;
+            _mainFormSize = _mainForm.Size;
+            _settingsFormSize = _settingsForm.Size;
+            _uploadedScoresFormSize = _uploadedScoresForm.Size;
 
             // Initialize material skin manager
             FormStyleManager.AddFormToManage(this);
 
             InitializeComponent();
 
-            _sreader = StructuredOsuMemoryReader.Instance.GetInstanceForWindowTitleHint(osuWindowTitleHint);
+            _osuMemoryReader = StructuredOsuMemoryReader.GetInstance(new("osu!", osuWindowTitleHint));
 
             // For UI resizing
             // Design editor pixels height offset (50px)
@@ -161,9 +161,9 @@ namespace osuEscape
             }
 
             // Hotkey
-            keyboardHook.KeyPressed += new EventHandler<KeyPressedEventArgs>(KeyboardHook_OnKeyPressed);
-            keyboardHook.RegisterHotKey((ModifierKeys)Properties.Settings.Default.ModifierKeys,
-                                        KeysToStringDictionary.FirstOrDefault(x => x.Value == Properties.Settings.Default.GlobalHotKey).Key);
+            KeyboardHook.KeyPressed += new EventHandler<KeyPressedEventArgs>(KeyboardHook_OnKeyPressed);
+            KeyboardHook.RegisterHotKey((ModifierKeys)Properties.Settings.Default.ModifierKeys,
+                                        _keysToStringDictionary.FirstOrDefault(x => x.Value == Properties.Settings.Default.GlobalHotKey).Key);
 
             // UI 
             Resize();
@@ -175,7 +175,7 @@ namespace osuEscape
 
         private T ReadProperty<T>(object readObj, string propName, T defaultValue = default) where T : struct
         {
-            if (_sreader.TryReadProperty(readObj, propName, out var readResult))
+            if (_osuMemoryReader.TryReadProperty(readObj, propName, out var readResult))
                 return (T)readResult;
 
             return defaultValue;
@@ -183,7 +183,7 @@ namespace osuEscape
 
         private T ReadClassProperty<T>(object readObj, string propName, T defaultValue = default) where T : class
         {
-            if (_sreader.TryReadProperty(readObj, propName, out var readResult))
+            if (_osuMemoryReader.TryReadProperty(readObj, propName, out var readResult))
                 return (T)readResult;
 
             return defaultValue;
@@ -227,48 +227,59 @@ namespace osuEscape
             // Check administrator privileges
             if (!IsAdministrator())
             {
-                MessageBox.Show("Please open osu!Escape with administrator privileges for toggling firewall permission.");
+                MainFunction.ShowMessageBox("Please open osu!Escape with administrator privileges for toggling firewall permission.");
                 Close();
             }
 
-            osuDataReaderAsync();
+            await Task.Run(() => osuDataReaderAsync());
 
             // Open the app at the previous position (location on window) 
             Location = Properties.Settings.Default.appPosition;
 
-            /*
-            #region Check for Update
-            HttpClient httpClient = new();
-            // Compare versions instead of string comparison
-            string versionString = await httpClient.GetStringAsync(VersionControlAddress);
+            // Modern version check using GitHub Releases
+            await CheckForUpdateAsync();
+        }
 
-            // Verify the version string format
-            if (System.Version.TryParse(versionString, out Version expectedVersion))
-            {
-                // Use the parsed version
-            }
-            else
-            {
-                // Handle the invalid version string format
-                throw new ArgumentException("Version string portion was too short or too long.");
-            }
+        private async Task CheckForUpdateAsync()
+        {
+            const string githubApiUrl = "https://api.github.com/repos/Koltay/osuEscape/releases/latest";
+            using var client = new HttpClient();
+            client.DefaultRequestHeaders.UserAgent.Add(new ProductInfoHeaderValue("osuEscape", "1.0"));
 
-            Version currentVersion = Assembly.GetExecutingAssembly().GetName().Version;
-
-            // Compare versions instead of string comparison
-            if (currentVersion < expectedVersion)
+            try
             {
-                if (MessageBox.Show($"This version is outdated! Please download the latest version at GitHub's release page. {Environment.NewLine}" +
-                    $"Current Version: {currentVersion}; Expected Version: {expectedVersion}",
-                    "osu!Escape",
-                    MessageBoxButtons.YesNo,
-                    MessageBoxIcon.Question) == DialogResult.Yes)
+                var response = await client.GetAsync(githubApiUrl);
+                if (!response.IsSuccessStatusCode) return;
+
+                var json = await response.Content.ReadAsStringAsync();
+                using var doc = JsonDocument.Parse(json);
+                if (doc.RootElement.TryGetProperty("tag_name", out var tag))
                 {
-                    _ = Process.Start(new ProcessStartInfo("https://github.com/Koltay/osuEscape/releases/") { UseShellExecute = true });
+                    var latestVersionStr = tag.GetString()?.TrimStart('v');
+                    if (Version.TryParse(latestVersionStr, out var latestVersion))
+                    {
+                        var currentVersion = Assembly.GetExecutingAssembly().GetName().Version;
+                        if (currentVersion != null && currentVersion < latestVersion)
+                        {
+                            DialogResult result = MainFunction.ShowMessageBox(
+                                $"A new version of osu!Escape is available!\nCurrent: {currentVersion}\nLatest: {latestVersion}\n\nDo you want to visit the download page?",
+                                "Update Available",
+                                MessageBoxIcon.Information,
+                                MessageBoxButtons.YesNo);
+
+                            if (result == DialogResult.Yes)
+                            {
+                                // Open the latest release page
+                                Process.Start(new ProcessStartInfo("https://github.com/Koltay/osuEscape/releases/latest") { UseShellExecute = true });
+                            }
+                        }
+                    }
                 }
             }
-            #endregion
-            */
+            catch
+            {
+                // Optionally log or ignore errors
+            }
         }
 
         #endregion
@@ -280,25 +291,38 @@ namespace osuEscape
         private async void osuDataReaderAsync()
         {
             if (!string.IsNullOrEmpty(_osuWindowTitleHint)) Text += $": {_osuWindowTitleHint}";
-            Text += " " + Assembly.GetExecutingAssembly().GetName().Version.ToString();
+
+            if (InvokeRequired)
+            {
+                Invoke((MethodInvoker)(() => Text += " " + Assembly.GetExecutingAssembly().GetName().Version.ToString()));
+            }
+            else
+            {
+                Text += " " + Assembly.GetExecutingAssembly().GetName().Version.ToString();
+            }
 
             await Task.Run(async () =>
             {
                 Stopwatch stopwatch;
                 double readTimeMs;
-                _sreader.WithTimes = true;
+                _osuMemoryReader.WithTimes = true;
                 var readUsingProperty = false;
                 var baseAddresses = new OsuBaseAddresses();
 
                 while (true)
                 {
-                    if (cts.IsCancellationRequested)
+                    if (_osuMemoryReaderCancellationTokenSource.IsCancellationRequested)
                         return;
 
-                    if (!_sreader.CanRead)
+                    if (!_osuMemoryReader.CanRead)
                     {
+                        Debug.WriteLine("osuMemoryReader: Not receiving data from osu! client.");
                         await Task.Delay(_readDelay);
                         continue;
+                    }
+                    else
+                    {
+                        Debug.WriteLine("osuMemoryReader: Receiving data from osu! client.");
                     }
 
                     stopwatch = Stopwatch.StartNew();
@@ -324,14 +348,14 @@ namespace osuEscape
                     }
                     else
                     {
-                        _sreader.TryRead(baseAddresses.Beatmap);
-                        _sreader.TryRead(baseAddresses.Skin);
-                        _sreader.TryRead(baseAddresses.GeneralData);
+                        _osuMemoryReader.TryRead(baseAddresses.Beatmap);
+                        _osuMemoryReader.TryRead(baseAddresses.Skin);
+                        _osuMemoryReader.TryRead(baseAddresses.GeneralData);
                     }
 
                     if (baseAddresses.GeneralData.OsuStatus == OsuMemoryStatus.SongSelect)
                     {
-                        _sreader.TryRead(baseAddresses.SongSelectionScores);
+                        _osuMemoryReader.TryRead(baseAddresses.SongSelectionScores);
                     }
                     else
                     {
@@ -340,23 +364,23 @@ namespace osuEscape
 
                     if (baseAddresses.GeneralData.OsuStatus == OsuMemoryStatus.ResultsScreen)
                     {
-                        _sreader.TryRead(baseAddresses.ResultsScreen);
+                        _osuMemoryReader.TryRead(baseAddresses.ResultsScreen);
                     }
 
                     if (baseAddresses.GeneralData.OsuStatus == OsuMemoryStatus.Playing)
                     {
-                        _sreader.TryRead(baseAddresses.Player);
-                        _sreader.TryRead(baseAddresses.LeaderBoard);
-                        _sreader.TryRead(baseAddresses.KeyOverlay);
+                        _osuMemoryReader.TryRead(baseAddresses.Player);
+                        _osuMemoryReader.TryRead(baseAddresses.LeaderBoard);
+                        _osuMemoryReader.TryRead(baseAddresses.KeyOverlay);
 
                         if (readUsingProperty)
                         {
-                            _sreader.TryReadProperty(baseAddresses.Player, nameof(Player.Mods), out var dummyResult);
+                            _osuMemoryReader.TryReadProperty(baseAddresses.Player, nameof(Player.Mods), out var dummyResult);
                         }
 
                         // Beatmap Offset
                         // Only read the audio offset if it is not the previous beatmap
-                        if (!isOffsetFound)
+                        if (!_isOffsetFound)
                         {
                             try
                             {
@@ -366,15 +390,15 @@ namespace osuEscape
 
                                     await Task.Run(() =>
                                     {
-                                        beatmapLastNoteOffset = 0;
+                                        _beatmapLastNoteOffset = 0;
 
                                         foreach (string str in File.ReadLines(beatmapFile).Last().Split(","))
                                         {
-                                            if (Int32.TryParse(str, out var value))
-                                                beatmapLastNoteOffset = Math.Max(beatmapLastNoteOffset, value);
+                                            if (int.TryParse(str, out var value))
+                                                _beatmapLastNoteOffset = Math.Max(_beatmapLastNoteOffset, value);
                                         }
 
-                                        Debug.WriteLine($"Beatmap last note offset before adding slider value: {beatmapLastNoteOffset}");
+                                        Debug.WriteLine($"Beatmap last note offset before adding slider value: {_beatmapLastNoteOffset}");
                                         // Special case: slider (and reverse slider)
                                         // Hit object syntax: x,y,time,type,hitSound,curveType|curvePoints,slides,length,edgeSounds,edgeSets,hitSample
                                         // Old: 0,2 and 6 mean slider in type
@@ -445,7 +469,7 @@ namespace osuEscape
                                                     break;
 
                                                 // Only find the timing point before the last note
-                                                if (Convert.ToInt32(File.ReadAllLines(beatmapFile)[i].Split(",")[0]) <= beatmapLastNoteOffset)
+                                                if (Convert.ToInt32(File.ReadAllLines(beatmapFile)[i].Split(",")[0]) <= _beatmapLastNoteOffset)
                                                 {
                                                     beatLength = Convert.ToDecimal(File.ReadAllLines(beatmapFile)[i].Split(",")[1]);
 
@@ -467,7 +491,7 @@ namespace osuEscape
                                                 sliderVelocity = -100 / beatLength;
 
                                             sliderLengthOffset = (int)Math.Abs(Math.Round(600 * sliderPixelLength / (BPM * sliderMultiplier * sliderVelocity)));
-                                            beatmapLastNoteOffset += (sliderLengthOffset * revSliderRepeatCount);
+                                            _beatmapLastNoteOffset += (sliderLengthOffset * revSliderRepeatCount);
 
                                             Debug.WriteLine($"Beatmap id: {baseAddresses.Beatmap.Id}");
                                             Debug.WriteLine($"Beatmap name: {baseAddresses.Beatmap.MapString}");
@@ -478,9 +502,9 @@ namespace osuEscape
                                             Debug.WriteLine("Beatmap slider repeat count:" + revSliderRepeatCount);
                                         }
                                     });
-                                    isOffsetFound = true;
+                                    _isOffsetFound = true;
                                     Debug.WriteLine("Offset Found!");
-                                    Debug.WriteLine("Beatmap last note offset: " + beatmapLastNoteOffset);
+                                    Debug.WriteLine("Beatmap last note offset: " + _beatmapLastNoteOffset);
                                 });
                             }
                             catch (Exception ex)
@@ -491,19 +515,17 @@ namespace osuEscape
 
                         // Snipe Mode
                         // Only read the user's score if the mode is enabled
-                        if (!isSnipedScoreFound)
+                        if (!_isSnipedScoreFound)
                         {
                             try
                             {
                                 await Task.Run(async () =>
                                 {
-                                    string username = Properties.Settings.Default.snipedUser;
-
                                     int snipedUserScore = await GetSnipedUserBeatmapScoreAsync(Properties.Settings.Default.snipedUser,
                                                                                                 baseAddresses.Beatmap.Id,
                                                                                                 baseAddresses.GeneralData.GameMode);
 
-                                    isSnipedScoreFound = true;
+                                    _isSnipedScoreFound = true;
 
                                     Debug.WriteLine($"Sniped Score Found: {snipedUserScore}");
                                 });
@@ -526,21 +548,21 @@ namespace osuEscape
                         // 6.   Verify Md5 to avoid false auto connection on same beatmap set
 
                         if (Properties.Settings.Default.isSubmitIfFC &&
-                            baseAddresses.GeneralData.AudioTime >= beatmapLastNoteOffset &&
-                            baseAddresses.GeneralData.AudioTime >= 12000 && // Shortest map in ranked 
-                            baseAddresses.Player.MaxCombo >= 1 && // Least combo required
-                            isOffsetFound &&
+                            baseAddresses.GeneralData.AudioTime >= _beatmapLastNoteOffset &&
+                            baseAddresses.GeneralData.AudioTime >= 12000 &&
+                            baseAddresses.Player.MaxCombo >= 1 &&
+                            _isOffsetFound &&
                             baseAddresses.Player.HitMiss == 0 &&
                             (!Properties.Settings.Default.isCheckingFullCombo || baseAddresses.Player.Combo == baseAddresses.Player.MaxCombo) &&
                             baseAddresses.Player.Accuracy >= Properties.Settings.Default.submitAcc &&
                             !Properties.Settings.Default.isAllowConnection &&
-                            previousSubmittedBeatmapMd5 != baseAddresses.Beatmap.Md5 &&
+                            _previousSubmittedBeatmapMd5 != baseAddresses.Beatmap.Md5 &&
                             isSubmittableBeatmapStatus()
                             )
                         {
                             Properties.Settings.Default.isAllowConnection = true;
-                            Firewall.ToggleFirewallSettingsAsync();
-                            isSetScore = true;
+                            await Firewall.ToggleFirewallSettingsAsync();
+                            _isSetScore = true;
 
                             _mainForm.Controls["materialLabel_submissionStatus"].BeginInvoke((MethodInvoker)delegate
                             {
@@ -553,16 +575,16 @@ namespace osuEscape
                     else
                     {
                         baseAddresses.LeaderBoard.Players.Clear();
-                        isOffsetFound = false;
+                        _isOffsetFound = false;
                     }
 
                     // Automatic Function #2: Auto Disconnection
-                    if (isSetScore &&
+                    if (_isSetScore &&
                         Properties.Settings.Default.isAutoDisconnect &&
                         Properties.Settings.Default.isAllowConnection &&
                         isSubmittableBeatmapStatus())
                     {
-                        previousSubmittedBeatmapMd5 = baseAddresses.Beatmap.Md5;
+                        _previousSubmittedBeatmapMd5 = baseAddresses.Beatmap.Md5;
 
                         // Submission frequency test
                         await Task.Delay(50);
@@ -585,9 +607,9 @@ namespace osuEscape
                                 isRecentSetScoreUploaded = true;
 
                                 Properties.Settings.Default.isAllowConnection = false;
-                                Firewall.ToggleFirewallSettingsAsync();
+                                await Firewall.ToggleFirewallSettingsAsync();
 
-                                isSetScore = false;
+                                _isSetScore = false;
 
                                 // Uploaded scores tab page update
                                 _uploadedScoresForm.UpdateScores(baseAddresses);
@@ -625,10 +647,10 @@ namespace osuEscape
                     stopwatch.Stop();
                     readTimeMs = stopwatch.ElapsedTicks / (double)TimeSpan.TicksPerMillisecond;
 
-                    _sreader.ReadTimes.Clear();
+                    _osuMemoryReader.ReadTimes.Clear();
                     await Task.Delay(_readDelay);
                 }
-            }, cts.Token);
+            }, _osuMemoryReaderCancellationTokenSource.Token);
         }
 
         #endregion 
@@ -642,11 +664,11 @@ namespace osuEscape
         {
             try
             {
-                using RegistryKey key = Registry.CurrentUser.OpenSubKey(StartupKey, true);
+                using RegistryKey key = Registry.CurrentUser.OpenSubKey(_startupKey, true);
                 if (enabled)
-                    key.SetValue(StartupValue, $"{Application.ExecutablePath}");
+                    key.SetValue(_startupValue, $"{Application.ExecutablePath}");
                 else
-                    key.DeleteValue(StartupValue, false);
+                    key.DeleteValue(_startupValue, false);
             }
             catch (Exception ex)
             {
@@ -680,7 +702,7 @@ namespace osuEscape
         }
         private void Item_quit_Click(object sender, EventArgs e)
         {
-            isItemQuit = true;
+            _isItemQuit = true;
             Close();
         }
 
@@ -703,7 +725,7 @@ namespace osuEscape
             request.Headers.Authorization = new AuthenticationHeaderValue("Bearer");
             request.Content = new StringContent("{...}", Encoding.UTF8, "application/json");
 
-            var response = await client.SendAsync(request, CancellationToken.None);
+            var response = await _httpClient.SendAsync(request, CancellationToken.None);
 
             if (response.IsSuccessStatusCode)
             {
@@ -716,16 +738,11 @@ namespace osuEscape
                 return null;
             }
         }
-        #endregion
-
-        #region API Required Options
-
         private static void IncorrectAPITextOutput()
         {
             MainFunction.ShowMessageBox(
-                    $"Internal server Error/ Incorrect API! {Environment.NewLine} " +
-                    $"Please check if your API key is correct.")
-                    ;
+                $"Internal server Error/ Incorrect API!{Environment.NewLine}Please check if your API key is correct."
+            );
         }
         #endregion
         private void materialTabControl_menu_Selected(object sender, TabControlEventArgs e)
@@ -750,7 +767,7 @@ namespace osuEscape
 
         private void FormClosing_RootForm(object sender, FormClosingEventArgs e)
         {
-            if (((MaterialSwitch)_settingsForm.Controls["materialSwitch_isSystemTray"]).Checked && !isItemQuit)
+            if (((MaterialSwitch)_settingsForm.Controls["materialSwitch_isSystemTray"]).Checked && !_isItemQuit)
             {
                 // Cancel form closing event
                 e.Cancel = true;
@@ -784,13 +801,13 @@ namespace osuEscape
             switch (materialTabControl_menu.SelectedTab)
             {
                 case TabPage tabPage when tabPage == tabPage_main:
-                    resize = mainFormSize;
+                    resize = _mainFormSize;
                     break;
                 case TabPage tabPage when tabPage == tabPage_settings:
-                    resize = settingsFormSize;
+                    resize = _settingsFormSize;
                     break;
                 case TabPage tabPage when tabPage == tabPage_uploadedScores:
-                    resize = uploadedScoresFormSize;
+                    resize = _uploadedScoresFormSize;
                     break;                   
             }
 
@@ -813,7 +830,7 @@ namespace osuEscape
             request.Headers.Authorization = new AuthenticationHeaderValue("Bearer");
             request.Content = new StringContent("{...}", Encoding.UTF8, "application/json");
 
-            var response = await client.SendAsync(request, CancellationToken.None);
+            var response = await _httpClient.SendAsync(request, CancellationToken.None);
 
             if (response.IsSuccessStatusCode)
             {
@@ -843,17 +860,13 @@ namespace osuEscape
         {
             if (disposing)
             {
-                // Ensure the StructuredOsuMemoryReader is not null before disposing
-                if (_sreader != null)
-                {
-                    _sreader.Dispose();
-                }
+                _osuMemoryReader.BaseAddresses.Clear();
 
                 // Cancel any ongoing operations before disposing the CancellationTokenSource
-                if (cts != null)
+                if (_osuMemoryReaderCancellationTokenSource != null)
                 {
-                    cts.Cancel();
-                    cts.Dispose();
+                    _osuMemoryReaderCancellationTokenSource.Cancel();
+                    _osuMemoryReaderCancellationTokenSource.Dispose();
                 }
 
                 // Dispose of forms if they have not already been disposed
@@ -862,8 +875,8 @@ namespace osuEscape
                 _uploadedScoresForm?.Dispose();
 
                 // Dispose of the keyboard hook and HttpClient
-                keyboardHook?.Dispose();
-                client?.Dispose();
+                KeyboardHook?.Dispose();
+                _httpClient?.Dispose();
             }
 
             // Call the base class Dispose method

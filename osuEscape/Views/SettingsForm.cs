@@ -3,6 +3,7 @@ using MaterialSkin.Controls;
 using Microsoft.Win32;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using osuEscape.Models;
 using System;
 using System.Diagnostics;
 using System.Linq;
@@ -184,7 +185,7 @@ namespace osuEscape
                 }
 
                 Properties.Settings.Default.userApiKey = materialTextBox_userId.Text;
-                MainFunction.ShowMessageBox($"Sniping User: {materialTextBox_userId.Text}");
+                MainFunction.ShowMessageBox($"Sniping User: {materialTextBox_userId.Text}", "Username Verification");
             }
             else
             {

@@ -19,9 +19,7 @@ namespace osuEscape.Models
             _uploadedScoresForm = uploadedScoresForm ?? throw new ArgumentNullException(nameof(uploadedScoresForm));
         }
 
-        public FormManager() {
-
-        }
+        public FormManager() { }
 
         // Public properties to access the form instances
         public MainForm MainForm => _mainForm;

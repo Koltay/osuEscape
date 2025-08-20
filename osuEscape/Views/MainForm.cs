@@ -10,8 +10,8 @@ namespace osuEscape
 {
     public partial class MainForm : Form
     {
-        private bool isEditingHotkey = false;
-        private readonly Root parent;
+        private bool _isEditingHotkey = false;
+        private readonly Root _parent;
         private readonly MainViewModel _viewModel;
 
         private readonly FormManager _formManager;
@@ -22,7 +22,7 @@ namespace osuEscape
         public MainForm(Root parent)
         {
             InitializeComponent();
-            this.parent = parent;
+            _parent = parent;
 
             _formManager = new FormManager();
             _keyboardManager = new KeyboardManager();
@@ -79,9 +79,9 @@ namespace osuEscape
 
         public void materialButton_changeToggleHotkey_Click(object sender, EventArgs e)
         {
-            isEditingHotkey = !isEditingHotkey;
+            _isEditingHotkey = !_isEditingHotkey;
 
-            if (isEditingHotkey)
+            if (_isEditingHotkey)
             {
                 materialButton_changeToggleHotkey.UseAccentColor = true;
                 Properties.Settings.Default.GHKText = materialLabel_globalToggleHotkey.Text;
@@ -153,18 +153,18 @@ namespace osuEscape
 
         private void MainForm_KeyDown(object sender, KeyEventArgs e)
         {
-            if (isEditingHotkey)
+            if (_isEditingHotkey)
             {
                 // Cancel changes
                 if (e.KeyCode == Keys.Escape)
                 {
-                    isEditingHotkey = false;
+                    _isEditingHotkey = false;
                     TextBox_GlobalHotkey_Update();
                 }
                 else if (_keyboardManager.KeysToStringDictionary.ContainsKey(e.KeyCode))
                 {
-                    isEditingHotkey = false;
-                    parent.keyboardHook.Dispose();
+                    _isEditingHotkey = false;
+                    _parent.KeyboardHook.Dispose();
 
                     // User settings
                     Properties.Settings.Default.ModifierKeys = (e.Alt ? 1 : 0) + (e.Control ? 2 : 0) + (e.Shift ? 4 : 0);
@@ -173,7 +173,7 @@ namespace osuEscape
                     // UI
                     TextBox_GlobalHotkey_Update();
 
-                    parent.keyboardHook.RegisterHotKey((ModifierKeys)Properties.Settings.Default.ModifierKeys,
+                    _parent.KeyboardHook.RegisterHotKey((ModifierKeys)Properties.Settings.Default.ModifierKeys,
                                         _keyboardManager.KeysToStringDictionary.FirstOrDefault(x => x.Value == Properties.Settings.Default.GlobalHotKey).Key);
 
                     System.Media.SystemSounds.Asterisk.Play();
@@ -218,6 +218,7 @@ namespace osuEscape
         {
             if (disposing)
             {
+                _scoreUploader?.Dispose();
                 _keyboardManager?.Dispose();
                 components?.Dispose();
             }
