@@ -1,9 +1,10 @@
-﻿using System;
+﻿using MaterialSkin.Controls;
+using osuEscape.Models;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Windows.Forms;
-using osuEscape.Models;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 
 namespace osuEscape
@@ -68,7 +69,10 @@ namespace osuEscape
         public async void materialSwitch_osuConnection_CheckedChanged(object sender, EventArgs e)
         {
             Properties.Settings.Default.isAllowConnection = !materialSwitch_osuConnection.Checked;
-            await Firewall.SetUpFirewallRulesAsync(Properties.Settings.Default.osuLocation);
+            _parent.ContextMenuStripUpdate();
+            FormStyleManager.ColorSchemeUpdate(_parent);
+            FormStyleManager.Refresh();
+            await Firewall.ToggleFirewallSettingsAsync();
         }
 
         public void materialButton_findOsuLocation_Click(object sender, EventArgs e)

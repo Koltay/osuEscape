@@ -43,14 +43,9 @@ namespace osuEscape.Models
                     MainFunction.ShowMessageBox("ERROR: Invalid Location!");
                     return;
                 }
-
                 AllowConnection(Properties.Settings.Default.isAllowConnection);
                 Audio.ToggleSound(Properties.Settings.Default.isToggleSound);
-
-                var mainForm = (MaterialForm)Application.OpenForms[0];
-                ((Root)mainForm).ContextMenuStripUpdate();
-                FormStyleManager.ColorSchemeUpdate(mainForm);
-                FormStyleManager.Refresh();
+                Debug.WriteLine("Toggle Firewall; Connection status: " + Properties.Settings.Default.isAllowConnection);
             });
         }
 
@@ -96,10 +91,10 @@ namespace osuEscape.Models
 
                 await Task.Delay(500);
 
-                Debug.WriteLine("Connection status: " + Properties.Settings.Default.isAllowConnection);
+                Debug.WriteLine("Setup Firewall; Connection status: " + Properties.Settings.Default.isAllowConnection);
 
-                // Toggle firewall settings and update UI
-                await ToggleFirewallSettingsAsync();
+                // Reference MainForm's osu connection switch and toggle its checked status
+                MainFunction.ToggleOsuConnectionSwitch();
             });
         }
     }

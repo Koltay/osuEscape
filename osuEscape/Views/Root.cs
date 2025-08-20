@@ -316,13 +316,13 @@ namespace osuEscape
 
                     if (!_osuMemoryReader.CanRead)
                     {
-                        Debug.WriteLine("osuMemoryReader: Not receiving data from osu! client.");
+                        //Debug.WriteLine("osuMemoryReader: Not receiving data from osu! client.");
                         await Task.Delay(_readDelay);
                         continue;
                     }
                     else
                     {
-                        Debug.WriteLine("osuMemoryReader: Receiving data from osu! client.");
+                        //Debug.WriteLine("osuMemoryReader: Receiving data from osu! client.");
                     }
 
                     stopwatch = Stopwatch.StartNew();
@@ -541,7 +541,7 @@ namespace osuEscape
                         // 1.   *** It has to be done on playing status for instant connection
                         //      otherwise, connection checking on result screen would cause about 30 seconds or more
                         // 2.   Use beatmap's last HitObject's offset to determine if the map ended
-                        // 3.   Determine if it meets the requirement (acc, fc)
+                        // 3.   Determine if it meets the requirement (for instance, accuracy, full combo)
                         //      "FC": 0 misscount / dropped some sliderends / sliderbreak at start
                         // 4.   Submit if it meets the requirement, and it has to be not a replay and the map has a leaderboard (qualifed/ ranked/ loved)
                         // 5.   Disable the block rule to connect to the server
@@ -560,8 +560,7 @@ namespace osuEscape
                             isSubmittableBeatmapStatus()
                             )
                         {
-                            Properties.Settings.Default.isAllowConnection = true;
-                            await Firewall.ToggleFirewallSettingsAsync();
+                            MainFunction.ToggleOsuConnectionSwitch();
                             _isSetScore = true;
 
                             _mainForm.Controls["materialLabel_submissionStatus"].BeginInvoke((MethodInvoker)delegate
@@ -606,8 +605,7 @@ namespace osuEscape
                             {
                                 isRecentSetScoreUploaded = true;
 
-                                Properties.Settings.Default.isAllowConnection = false;
-                                await Firewall.ToggleFirewallSettingsAsync();
+                                MainFunction.ToggleOsuConnectionSwitch();
 
                                 _isSetScore = false;
 
@@ -758,11 +756,7 @@ namespace osuEscape
 
         private async void KeyboardHook_OnKeyPressed(object sender, KeyPressedEventArgs e)
         {
-            // Toggle Connection status on properties settings and update switch status 
-            Properties.Settings.Default.isAllowConnection = !Properties.Settings.Default.isAllowConnection;
-            await Firewall.ToggleFirewallSettingsAsync();
-
-            ((MaterialSwitch)_mainForm.Controls["materialSwitch_osuConnection"]).Checked = !Properties.Settings.Default.isAllowConnection;
+            ((MaterialSwitch)_mainForm.Controls["materialSwitch_osuConnection"]).Checked = !((MaterialSwitch)_mainForm.Controls["materialSwitch_osuConnection"]).Checked;
         }
 
         private void FormClosing_RootForm(object sender, FormClosingEventArgs e)
