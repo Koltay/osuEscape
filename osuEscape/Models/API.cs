@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Net.Http;
+using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -14,10 +15,10 @@ namespace osuEscape.Models
         // develop a oauth application
         // reference: https://osu.ppy.sh/docs/index.html#authentication
         // first we need user to login on the website and authorize our application
-        // respone: authorization code                                                  <-- Current progress
+        // respone: authorization code                                                  
         // then we can use the authorization code to get access token and refresh token
-        // respone: access token, refresh token, expires in xxx
-        // we can use the access token to get user data and upload score
+        // respone: access token, refresh token, expires in xxx 
+        // we can use the access token to get user data and upload score <-- Current progress (The very next day)
 
         private string REDIRECT_URI = "http://localhost:10010/"; // Same as website redirect_uri
         public API() { }
@@ -52,22 +53,27 @@ namespace osuEscape.Models
                     var output = codeResponse.OutputStream;
                     output.Write(buffer, 0, buffer.Length);
                     output.Close();
+                    listener.Stop();
                 }
 
-                // Exchange the authorization code for an access token
+                // use the authorization code to get access token and refresh token
                 HttpClient client = new System.Net.Http.HttpClient();
+                client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Accept", "application/json");
+                client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Content-Type", "application/x-www-form-urlencoded");
+                Debug.WriteLine("client_secret: " + Properties.Settings.Default.client_secret);
+                Debug.WriteLine("code: " + code);
                 var values = new Dictionary<string, string>
-                    {
-                        { "client_id", "43679" },
-                        { "client_secret", Properties.Settings.Default.client_secret },
-                        { "code", code },
-                        { "grant_type", "authorization_code" },
-                        { "redirect_uri", REDIRECT_URI }
-                    };
+                {
+                    { "client_id", "43679" },
+                    { "client_secret", Properties.Settings.Default.client_secret },
+                    { "code", code },
+                    { "grant_type", "authorization_code" }
+                };
                 var content = new FormUrlEncodedContent(values);
-                var accessResponse = await client.PostAsync("https://osu.ppy.sh/oauth/token", content);
-                var accessResponseString = await accessResponse.Content.ReadAsStringAsync();
-                Debug.WriteLine("Access Token Response: " + accessResponseString); //Temporarily print the response to console
+                var AccessResponse = await client.PostAsync("https://osu.ppy.sh/oauth/token", content);
+                var responseMessage = await AccessResponse.Content.ReadAsStringAsync();
+                Debug.WriteLine("Access Token Response: " + responseMessage);
+
             });
         }
     }
