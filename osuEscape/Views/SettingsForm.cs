@@ -76,7 +76,9 @@ namespace osuEscape
 
         private void materialButton_checkApi_Click(object sender, EventArgs e)
         {
-            Verify_APIKey_Async();
+            //Verify_APIKey_Async();
+            API api = new();
+            api.authorize();
         }
 
         private void materialSlider_Accuracy_onValueChanged(object sender, int newValue)
