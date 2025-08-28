@@ -1,7 +1,8 @@
-﻿using System;
+﻿using osuEscape.Properties;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -20,7 +21,7 @@ namespace osuEscape.Models
 
         private string REDIRECT_URI = "http://localhost:10010/"; // Same as website redirect_uri
         public API() { }
-        public void authorize()
+        public void getAccessCode()
         {
             // open a web browser to let user login and authorize our application
             System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo
@@ -29,29 +30,44 @@ namespace osuEscape.Models
                 UseShellExecute = true
             });
 
-            // we need to get the code from the url, then we can use the code to get access token and refresh token
-            Task.Run(() =>
+            Task.Run(async () =>
             {
+                var code = string.Empty;
                 using (var listener = new System.Net.HttpListener())
                 {
                     listener.Prefixes.Add(REDIRECT_URI);
                     listener.Start();
                     var context = listener.GetContext();
                     var request = context.Request;
-                    var response = context.Response;
-                    var code = request.QueryString["code"];
+                    var codeResponse = context.Response;
+                    code = request.QueryString["code"];
                     //dump all the stuff
                     if (!string.IsNullOrEmpty(code))
                     {
                         Debug.WriteLine("Authorization code: " + code); //Temporarily print the code to console
                     }
-                    var responseString = "<html><body>You can close this window now.</body></html>";
-                    var buffer = System.Text.Encoding.UTF8.GetBytes(responseString);
-                    response.ContentLength64 = buffer.Length;
-                    var output = response.OutputStream;
+                    var codeResponseString = "<html><body>You can close this window now.</body></html>";
+                    var buffer = System.Text.Encoding.UTF8.GetBytes(codeResponseString);
+                    codeResponse.ContentLength64 = buffer.Length;
+                    var output = codeResponse.OutputStream;
                     output.Write(buffer, 0, buffer.Length);
                     output.Close();
                 }
+
+                // Exchange the authorization code for an access token
+                HttpClient client = new System.Net.Http.HttpClient();
+                var values = new Dictionary<string, string>
+                    {
+                        { "client_id", "43679" },
+                        { "client_secret", Properties.Settings.Default.client_secret },
+                        { "code", code },
+                        { "grant_type", "authorization_code" },
+                        { "redirect_uri", REDIRECT_URI }
+                    };
+                var content = new FormUrlEncodedContent(values);
+                var accessResponse = await client.PostAsync("https://osu.ppy.sh/oauth/token", content);
+                var accessResponseString = await accessResponse.Content.ReadAsStringAsync();
+                Debug.WriteLine("Access Token Response: " + accessResponseString); //Temporarily print the response to console
             });
         }
     }

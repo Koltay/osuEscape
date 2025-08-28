@@ -78,7 +78,7 @@ namespace osuEscape
         {
             //Verify_APIKey_Async();
             API api = new();
-            api.authorize();
+            api.getAccessCode();
         }
 
         private void materialSlider_Accuracy_onValueChanged(object sender, int newValue)
