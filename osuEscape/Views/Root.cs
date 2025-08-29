@@ -525,9 +525,15 @@ namespace osuEscape
                                                                                                 baseAddresses.Beatmap.Id,
                                                                                                 baseAddresses.GeneralData.GameMode);
 
+                                    // using new api
+                                    int snipedUserScoreV2 = await GetSnipedUserBestBeatmapScoreAsyncV2(Properties.Settings.Default.snipedUser,
+                                                                                                baseAddresses.Beatmap.Id,
+                                                                                                baseAddresses.GeneralData.GameMode);
+
                                     _isSnipedScoreFound = true;
 
                                     Debug.WriteLine($"Sniped Score Found: {snipedUserScore}");
+                                    Debug.WriteLine($"New Method - Sniped Score Found: {snipedUserScore}");
                                 });
                             }
                             catch (Exception ex)
@@ -712,7 +718,39 @@ namespace osuEscape
 
         #endregion
 
-        #region GET Method from osu! api   
+        #region GET Method from osu! api
+
+        // to replace old api method by using oauth2
+        //! not debug yet
+        private static async Task<JArray> GetUserRecentScoreAsyncV2(string userName, int mode, int recentScoreLimits)
+        {
+            // convert mode int to string
+            var modeString = mode switch
+            {
+                0 => "osu",
+                1 => "taiko",
+                2 => "catch",
+                3 => "mania",
+                _ => "osu"
+            };
+            var url = $"https://osu.ppy.sh/api/v2/users/{userName}/scores/recent?legacy=0&include_fails=0&mode={mode}&limit={recentScoreLimits}&offset=1";
+            var request = new HttpRequestMessage(HttpMethod.Get, url);
+            request.Headers.Accept.Clear();
+            request.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", Properties.Settings.Default.access_token);
+            request.Content = new StringContent("{...}", Encoding.UTF8, "application/json");
+            var response = await _httpClient.SendAsync(request, CancellationToken.None);
+            if (response.IsSuccessStatusCode)
+            {
+                var JsonString = await response.Content.ReadAsStringAsync();
+                return (JArray)JsonConvert.DeserializeObject(JsonString);
+            }
+            else
+            {
+                IncorrectAPITextOutput();
+                return null;
+            }
+        }
         private static async Task<JArray> GetUserRecentScoreAsync(string userName, int mode, int recentScoreLimits)
         {
             var url = $"https://osu.ppy.sh/api/get_user_recent?k={Properties.Settings.Default.userApiKey}&u={userName}&m={mode}&limit={recentScoreLimits}";
@@ -811,6 +849,48 @@ namespace osuEscape
             MaximumSize = resize;
             Size = resize;
             MinimumSize = resize;
+        }
+
+        // to replace old api method by using oauth2
+        //! not debug yet
+        private static async Task<int> GetSnipedUserBestBeatmapScoreAsyncV2(string userName, int beatmap_id, int mode)
+        {
+            // convert mode int to string
+            var modeString = mode switch
+            {
+                0 => "osu",
+                1 => "taiko",
+                2 => "catch",
+                3 => "mania",
+                _ => "osu"
+            };
+            var url = $"https://osu.ppy.sh/api/v2/users/{userName}/scores/best?legacy=0&mode={mode}&limit=100&offset=1";
+            var request = new HttpRequestMessage(HttpMethod.Get, url);
+            request.Headers.Accept.Clear();
+            request.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", Properties.Settings.Default.access_token);
+            request.Content = new StringContent("{...}", Encoding.UTF8, "application/json");
+            var response = await _httpClient.SendAsync(request, CancellationToken.None);
+            if (response.IsSuccessStatusCode)
+            {
+                var JsonString = await response.Content.ReadAsStringAsync();
+                JArray arr = (JArray)JsonConvert.DeserializeObject(JsonString);
+                int score = 0;
+                // find the best score from the sniped user
+                foreach (var item in arr)
+                {
+                    if (Convert.ToInt32(item["beatmap"]["id"].ToString()) == beatmap_id)
+                    {
+                        score = Math.Max(Convert.ToInt32(item["score"].ToString()), score);
+                    }
+                }
+                return score;
+            }
+            else
+            {
+                IncorrectAPITextOutput();
+                return 0;
+            }
         }
 
         private static async Task<int> GetSnipedUserBeatmapScoreAsync(string userName, int beatmap_id, int mode)

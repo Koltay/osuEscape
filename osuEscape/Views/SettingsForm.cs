@@ -74,11 +74,18 @@ namespace osuEscape
             toolTips.SetToolTip(materialSwitch_isSubmitIfFC, "Enabling this option will automatically submit before jumping into result screen if the set score meets the requirement.");
         }
 
-        private void materialButton_checkApi_Click(object sender, EventArgs e)
+        async private void materialButton_checkApi_Click(object sender, EventArgs e)
         {
+            Debug.WriteLine("Method called: materialButton_checkApi_Click");
             //Verify_APIKey_Async();
             API api = new();
-            api.getAccessCode();
+            var result = await api.tryLogin();
+            Debug.WriteLine("Login result: " + result);
+            // update settings based on the result
+            if (result == 1)
+            {
+                setUIAvailability();
+            }
         }
 
         private void materialSlider_Accuracy_onValueChanged(object sender, int newValue)
@@ -86,6 +93,11 @@ namespace osuEscape
             Properties.Settings.Default.submitAcc = materialSlider_Accuracy.Value;
         }
 
+        private async void setUIAvailability()
+        {
+            materialSwitch_isAutoDisconnect.Enabled = Properties.Settings.Default.isAPIKeyVerified;
+            materialSwitch_isSnipeMode.Enabled = Properties.Settings.Default.isAPIKeyVerified;
+        }
         private async void Verify_APIKey_Async()
         {
             // Verifying API key using one of the osu! API URLs
@@ -161,9 +173,28 @@ namespace osuEscape
 
         private void materialButton_isSnipeMode_Click(object sender, EventArgs e)
         {
-            Verify_Username_Async();
+            //Verify_Username_Async();
+            Verify_Username_AsyncV2();
         }
 
+        async private void Verify_Username_AsyncV2()
+        {
+            var userInfo = await API.getUserInfoByUserName(materialTextBox_userId.Text);
+            if (userInfo.TryGetProperty("error", out var error))
+            {
+                MainFunction.ShowMessageBox($"Internal server Error/ Incorrect Username! {Environment.NewLine} ");
+                return;
+            }
+
+            int userId = userInfo.GetProperty("id").GetInt32();
+            string username = userInfo.GetProperty("username").GetString() ?? "";
+            // i dont know you want userid or username instead, so do it on username right now :C
+
+            Properties.Settings.Default.snipedUser = username;
+            MainFunction.ShowMessageBox($"Sniping User: {username}", "Username Verification", MessageBoxIcon.Information);
+        }
+
+        //* deprecated
         private async void Verify_Username_Async()
         {
             // Verifying username using osu! API

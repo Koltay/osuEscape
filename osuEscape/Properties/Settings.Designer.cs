@@ -286,5 +286,40 @@ namespace osuEscape.Properties {
                 this["client_secret"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string access_token {
+            get {
+                return ((string)(this["access_token"]));
+            }
+            set {
+                this["access_token"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string refresh_token {
+            get {
+                return ((string)(this["refresh_token"]));
+            }
+            set {
+                this["refresh_token"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        public global::System.DateTime expires_in {
+            get {
+                return ((global::System.DateTime)(this["expires_in"]));
+            }
+            set {
+                this["expires_in"] = value;
+            }
+        }
     }
 }
