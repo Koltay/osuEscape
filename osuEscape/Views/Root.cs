@@ -868,7 +868,7 @@ namespace osuEscape
             var request = new HttpRequestMessage(HttpMethod.Get, url);
             request.Headers.Accept.Clear();
             request.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", Properties.Settings.Default.access_token);
+            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer ", Properties.Settings.Default.access_token);
             request.Content = new StringContent("{...}", Encoding.UTF8, "application/json");
             var response = await _httpClient.SendAsync(request, CancellationToken.None);
             if (response.IsSuccessStatusCode)
