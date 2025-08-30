@@ -182,12 +182,12 @@ namespace osuEscape.Properties {
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("False")]
-        public bool isAPIKeyVerified {
+        public bool isOAuthVerified {
             get {
-                return ((bool)(this["isAPIKeyVerified"]));
+                return ((bool)(this["isOAuthVerified"]));
             }
             set {
-                this["isAPIKeyVerified"] = value;
+                this["isOAuthVerified"] = value;
             }
         }
         

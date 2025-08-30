@@ -117,7 +117,7 @@ namespace osuEscape
         public readonly MaterialSkinManager MaterialSkinManager;
 
         // startup
-        private static readonly string _startupKey = "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run";
+        private static readonly string _startupKey = @"SOFTWARE\Microsoft\Windows\CurrentVersion\Run";
         private static readonly string _startupValue = Assembly.GetExecutingAssembly().GetName().Name;
 
         private bool _isItemQuit = false;

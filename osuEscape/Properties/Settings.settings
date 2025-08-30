@@ -41,7 +41,7 @@
     <Setting Name="osuPath" Type="System.String" Scope="User">
       <Value Profile="(Default)" />
     </Setting>
-    <Setting Name="isAPIKeyVerified" Type="System.Boolean" Scope="User">
+    <Setting Name="isOAuthVerified" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">False</Value>
     </Setting>
     <Setting Name="GlobalHotKey" Type="System.String" Scope="User">
