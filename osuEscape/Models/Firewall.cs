@@ -2,6 +2,7 @@
 using NetFwTypeLib;
 using System;
 using System.Diagnostics;
+using System.IO;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
@@ -10,15 +11,15 @@ namespace osuEscape.Models
     public class Firewall
     {
         // Method to allow or block connection based on the isAllow flag
-        private static void AllowConnection(bool isAllow)
+        private static Task AllowConnectionAsync(bool isAllow)
         {
-            ExecuteCommandLine(@$"advfirewall firewall set rule name=""osu block"" new enable={(isAllow ? "no" : "yes")}");
+            return ExecuteCommandLineAsync(@$"advfirewall firewall set rule name=""osu block"" new enable={(isAllow ? "no" : "yes")}");
         }
 
         // Method to execute a command line instruction
-        private static void ExecuteCommandLine(string line)
+        private static async Task ExecuteCommandLineAsync(string line)
         {
-            Process cmd = new()
+            using Process cmd = new()
             {
                 StartInfo = new ProcessStartInfo
                 {
@@ -30,23 +31,32 @@ namespace osuEscape.Models
                     WindowStyle = ProcessWindowStyle.Hidden
                 }
             };
-            cmd.Start();
+
+            if (!cmd.Start())
+            {
+                throw new InvalidOperationException("Failed to start netsh.");
+            }
+
+            await cmd.WaitForExitAsync().ConfigureAwait(false);
+
+            if (cmd.ExitCode != 0)
+            {
+                throw new InvalidOperationException($"Firewall command failed with exit code {cmd.ExitCode}.");
+            }
         }
 
         // Method to toggle firewall settings and update UI
         public static async Task ToggleFirewallSettingsAsync()
         {
-            await Task.Run(() =>
+            if (string.IsNullOrEmpty(Properties.Settings.Default.osuLocation))
             {
-                if (string.IsNullOrEmpty(Properties.Settings.Default.osuLocation))
-                {
-                    MainFunction.ShowMessageBox("ERROR: Invalid Location!");
-                    return;
-                }
-                AllowConnection(Properties.Settings.Default.isAllowConnection);
-                Audio.ToggleSound(Properties.Settings.Default.isToggleSound);
-                Debug.WriteLine("Toggle Firewall; Connection status: " + Properties.Settings.Default.isAllowConnection);
-            });
+                MainFunction.ShowMessageBox("ERROR: Invalid Location!");
+                return;
+            }
+
+            await AllowConnectionAsync(Properties.Settings.Default.isAllowConnection).ConfigureAwait(false);
+            Audio.ToggleSound(Properties.Settings.Default.isToggleSound);
+            Debug.WriteLine("Toggle Firewall; Connection status: " + Properties.Settings.Default.isAllowConnection);
         }
 
         // Method to remove firewall rules by name
@@ -75,27 +85,22 @@ namespace osuEscape.Models
         // Method to create a new firewall rule
         public static void CreateFirewallRule(string RuleName, string filename)
         {
-            ExecuteCommandLine(@$"advfirewall firewall add rule name=""{RuleName}"" dir=out action=block program=""{filename}""");
+            ExecuteCommandLineAsync(@$"advfirewall firewall add rule name=""{RuleName}"" dir=out action=block program=""{filename}""").GetAwaiter().GetResult();
         }
         public static async Task SetUpFirewallRulesAsync(string filename)
         {
-            await Task.Run(async () =>
+            if (string.IsNullOrWhiteSpace(filename) || !File.Exists(filename))
             {
-                // Remove existing "osu block" rules
-                RemoveFirewallRules("osu block");
+                throw new FileNotFoundException("Could not locate osu!.exe.", filename);
+            }
 
-                await Task.Delay(500);
+            RemoveFirewallRules("osu block");
+            await ExecuteCommandLineAsync(@$"advfirewall firewall add rule name=""osu block"" dir=out action=block program=""{filename}""").ConfigureAwait(false);
 
-                // Create a new "osu block" rule
-                CreateFirewallRule("osu block", filename);
+            Debug.WriteLine("Setup Firewall; Connection status: " + Properties.Settings.Default.isAllowConnection);
 
-                await Task.Delay(500);
-
-                Debug.WriteLine("Setup Firewall; Connection status: " + Properties.Settings.Default.isAllowConnection);
-
-                // Reference MainForm's osu connection switch and toggle its checked status
-                MainFunction.ToggleOsuConnectionSwitch();
-            });
+            // Reference MainForm's osu connection switch and toggle its checked status
+            MainFunction.ToggleOsuConnectionSwitch();
         }
     }
 }

@@ -162,9 +162,5 @@
         private MaterialSkin.Controls.MaterialTabSelector materialTabSelector;
         private System.Windows.Forms.ToolTip toolTips;
         private System.Windows.Forms.TabPage tabPage_uploadedScores;
-        private MaterialSkin.Controls.MaterialListView materialListView_uploadedScores;
-        private System.Windows.Forms.ColumnHeader Beatmap;
-        private System.Windows.Forms.ColumnHeader Score;
-        private System.Windows.Forms.ColumnHeader Accuracy;
     }
 }

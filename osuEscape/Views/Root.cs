@@ -130,6 +130,13 @@ namespace osuEscape
         public MainForm MainForm => _mainForm;
         public SettingsForm SettingsForm => _settingsForm;
         public UploadedScoresForm UploadedScoresForm => _uploadedScoresForm;
+        internal static HttpClient SharedHttpClient => _httpClient;
+
+        static Root()
+        {
+            _httpClient.Timeout = TimeSpan.FromSeconds(10);
+            _httpClient.DefaultRequestHeaders.UserAgent.ParseAdd("osuEscape/1.4.0");
+        }
 
         public Root(string osuWindowTitleHint)
         {
@@ -153,17 +160,12 @@ namespace osuEscape
             // Design editor pixels height offset (50px)
             Size = new Size(Size.Width, Size.Height);
 
-            // Avoid opening osu!Escape twice
-            if (Process.GetProcessesByName("osuEscape").Length > 1)
-            {
-                notifyIcon_osuEscape.Visible = false;
-                Close();
-            }
-
             // Hotkey
             KeyboardHook.KeyPressed += new EventHandler<KeyPressedEventArgs>(KeyboardHook_OnKeyPressed);
             KeyboardHook.RegisterHotKey((ModifierKeys)Properties.Settings.Default.ModifierKeys,
                                         _keysToStringDictionary.FirstOrDefault(x => x.Value == Properties.Settings.Default.GlobalHotKey).Key);
+            quitToolStripMenuItem.Click += Item_quit_Click;
+            ContextMenuStripUpdate();
 
             // UI 
             Resize();
@@ -213,42 +215,47 @@ namespace osuEscape
 
         private async void Root_Load(object sender, EventArgs e)
         {
-            materialTabControl_menu.TabPages[0].Controls.Clear();
-            materialTabControl_menu.TabPages[1].Controls.Clear();
-            materialTabControl_menu.TabPages[2].Controls.Clear();
-            materialTabControl_menu.TabPages[0].Controls.Add(ConvertFormToTabPage(_mainForm));
-            materialTabControl_menu.TabPages[1].Controls.Add(ConvertFormToTabPage(_settingsForm));
-            materialTabControl_menu.TabPages[2].Controls.Add(ConvertFormToTabPage(_uploadedScoresForm));
-
-            // Check if osu!Escape is already opened 
-            if (Process.GetProcessesByName(Name).Length > 1)
-                Close();
-
-            // Check administrator privileges
-            if (!IsAdministrator())
+            try
             {
-                MainFunction.ShowMessageBox("Please open osu!Escape with administrator privileges for toggling firewall permission.");
+                materialTabControl_menu.TabPages[0].Controls.Clear();
+                materialTabControl_menu.TabPages[1].Controls.Clear();
+                materialTabControl_menu.TabPages[2].Controls.Clear();
+                materialTabControl_menu.TabPages[0].Controls.Add(ConvertFormToTabPage(_mainForm));
+                materialTabControl_menu.TabPages[1].Controls.Add(ConvertFormToTabPage(_settingsForm));
+                materialTabControl_menu.TabPages[2].Controls.Add(ConvertFormToTabPage(_uploadedScoresForm));
+
+                if (!IsAdministrator())
+                {
+                    MainFunction.ShowMessageBox("Please open osu!Escape with administrator privileges for toggling firewall permission.");
+                    Close();
+                    return;
+                }
+
+                _ = RunOsuDataReaderAsync(_osuMemoryReaderCancellationTokenSource.Token);
+
+                // Open the app at the previous position (location on window) 
+                Location = Properties.Settings.Default.appPosition;
+
+                // Modern version check using GitHub Releases
+                await CheckForUpdateAsync();
+            }
+            catch (Exception ex)
+            {
+                MainFunction.ShowMessageBox(ex.Message);
                 Close();
             }
-
-            await Task.Run(() => osuDataReaderAsync());
-
-            // Open the app at the previous position (location on window) 
-            Location = Properties.Settings.Default.appPosition;
-
-            // Modern version check using GitHub Releases
-            await CheckForUpdateAsync();
         }
 
         private async Task CheckForUpdateAsync()
         {
             const string githubApiUrl = "https://api.github.com/repos/Koltay/osuEscape/releases/latest";
-            using var client = new HttpClient();
-            client.DefaultRequestHeaders.UserAgent.Add(new ProductInfoHeaderValue("osuEscape", "1.0"));
 
             try
             {
-                var response = await client.GetAsync(githubApiUrl);
+                using var request = new HttpRequestMessage(HttpMethod.Get, githubApiUrl);
+                request.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/vnd.github+json"));
+
+                using var response = await _httpClient.SendAsync(request, _osuMemoryReaderCancellationTokenSource.Token);
                 if (!response.IsSuccessStatusCode) return;
 
                 var json = await response.Content.ReadAsStringAsync();
@@ -288,20 +295,22 @@ namespace osuEscape
 
         #region osu! Data Reader
 
-        private async void osuDataReaderAsync()
+        private Task RunOsuDataReaderAsync(CancellationToken cancellationToken)
         {
-            if (!string.IsNullOrEmpty(_osuWindowTitleHint)) Text += $": {_osuWindowTitleHint}";
-
-            if (InvokeRequired)
+            if (!IsDisposed)
             {
-                Invoke((MethodInvoker)(() => Text += " " + Assembly.GetExecutingAssembly().GetName().Version.ToString()));
-            }
-            else
-            {
-                Text += " " + Assembly.GetExecutingAssembly().GetName().Version.ToString();
+                BeginInvoke((MethodInvoker)(() =>
+                {
+                    if (!string.IsNullOrEmpty(_osuWindowTitleHint))
+                    {
+                        Text += $": {_osuWindowTitleHint}";
+                    }
+
+                    Text += " " + Assembly.GetExecutingAssembly().GetName().Version;
+                }));
             }
 
-            await Task.Run(async () =>
+            return Task.Run(async () =>
             {
                 Stopwatch stopwatch;
                 double readTimeMs;
@@ -311,13 +320,13 @@ namespace osuEscape
 
                 while (true)
                 {
-                    if (_osuMemoryReaderCancellationTokenSource.IsCancellationRequested)
+                    if (cancellationToken.IsCancellationRequested)
                         return;
 
                     if (!_osuMemoryReader.CanRead)
                     {
                         //Debug.WriteLine("osuMemoryReader: Not receiving data from osu! client.");
-                        await Task.Delay(_readDelay);
+                        await Task.Delay(_readDelay, cancellationToken);
                         continue;
                     }
                     else
@@ -646,9 +655,9 @@ namespace osuEscape
                     readTimeMs = stopwatch.ElapsedTicks / (double)TimeSpan.TicksPerMillisecond;
 
                     _osuMemoryReader.ReadTimes.Clear();
-                    await Task.Delay(_readDelay);
+                    await Task.Delay(_readDelay, cancellationToken);
                 }
-            }, _osuMemoryReaderCancellationTokenSource.Token);
+            }, cancellationToken);
         }
 
         #endregion 
@@ -679,6 +688,7 @@ namespace osuEscape
         private void ToggleSystemTray(bool enabled)
         {
             ShowInTaskbar = !enabled;
+            notifyIcon_osuEscape.Visible = enabled;
         }
 
         #endregion
@@ -690,8 +700,6 @@ namespace osuEscape
 
             // Status Update
             contextMenuStrip_osu.Items[0].Text = "Status: " + (Properties.Settings.Default.isAllowConnection ? "Connecting" : "Blocked");
-
-            contextMenuStrip_osu.Items[1].Click += new EventHandler(Item_quit_Click);
 
             notifyIcon_osuEscape.Icon =
                 (Properties.Settings.Default.isAllowConnection ?
@@ -754,7 +762,7 @@ namespace osuEscape
             ToggleSystemTray(false);
         }
 
-        private async void KeyboardHook_OnKeyPressed(object sender, KeyPressedEventArgs e)
+        private void KeyboardHook_OnKeyPressed(object sender, KeyPressedEventArgs e)
         {
             ((MaterialSwitch)_mainForm.Controls["materialSwitch_osuConnection"]).Checked = !((MaterialSwitch)_mainForm.Controls["materialSwitch_osuConnection"]).Checked;
         }
@@ -763,12 +771,13 @@ namespace osuEscape
         {
             if (((MaterialSwitch)_settingsForm.Controls["materialSwitch_isSystemTray"]).Checked && !_isItemQuit)
             {
-                // Cancel form closing event
                 e.Cancel = true;
 
                 WindowState = FormWindowState.Minimized;
                 ToggleSystemTray(((MaterialSwitch)_settingsForm.Controls["materialSwitch_isSystemTray"]).Checked);
                 ContextMenuStripUpdate();
+                Properties.Settings.Default.Save();
+                return;
             }
 
             // Save the last position of the application
@@ -855,22 +864,25 @@ namespace osuEscape
             if (disposing)
             {
                 _osuMemoryReader.BaseAddresses.Clear();
+                _osuMemoryReader.Dispose();
+                KeyboardHook.KeyPressed -= KeyboardHook_OnKeyPressed;
+                quitToolStripMenuItem.Click -= Item_quit_Click;
 
                 // Cancel any ongoing operations before disposing the CancellationTokenSource
-                if (_osuMemoryReaderCancellationTokenSource != null)
+                if (!_osuMemoryReaderCancellationTokenSource.IsCancellationRequested)
                 {
                     _osuMemoryReaderCancellationTokenSource.Cancel();
-                    _osuMemoryReaderCancellationTokenSource.Dispose();
                 }
+
+                _osuMemoryReaderCancellationTokenSource.Dispose();
 
                 // Dispose of forms if they have not already been disposed
                 _mainForm?.Dispose();
                 _settingsForm?.Dispose();
                 _uploadedScoresForm?.Dispose();
 
-                // Dispose of the keyboard hook and HttpClient
+                // Dispose of the keyboard hook
                 KeyboardHook?.Dispose();
-                _httpClient?.Dispose();
             }
 
             // Call the base class Dispose method

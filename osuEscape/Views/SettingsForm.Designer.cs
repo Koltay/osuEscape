@@ -245,6 +245,7 @@
             materialSwitch_isStartup.TabStop = false;
             materialSwitch_isStartup.Text = "Run at Startup";
             materialSwitch_isStartup.UseVisualStyleBackColor = true;
+            materialSwitch_isStartup.CheckedChanged += materialSwitch_grouped_CheckedChanged;
             // 
             // materialLabel_focus
             // 

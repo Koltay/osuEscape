@@ -11,6 +11,7 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace osuEscape
@@ -22,8 +23,7 @@ namespace osuEscape
             InitializeComponent();
         }
 
-        // score upload
-        private static readonly HttpClient client = new();
+        private static HttpClient Client => Root.SharedHttpClient;
 
         // startup
         private static readonly string StartupKey = "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run";
@@ -60,6 +60,7 @@ namespace osuEscape
             materialSwitch_isSnipeMode.Enabled = Properties.Settings.Default.isAPIKeyVerified;
 
             materialTextBox_apiInput.Text = Properties.Settings.Default.userApiKey;
+            materialTextBox_userId.Text = Properties.Settings.Default.snipedUser;
             materialSlider_Accuracy.Value = Properties.Settings.Default.submitAcc;
             materialCheckbox_isCheckingFullCombo.Checked = Properties.Settings.Default.isCheckingFullCombo;
         }
@@ -76,41 +77,49 @@ namespace osuEscape
 
         private void materialButton_checkApi_Click(object sender, EventArgs e)
         {
-            Verify_APIKey_Async();
+            _ = VerifyApiKeyAsync();
         }
 
         private void materialSlider_Accuracy_onValueChanged(object sender, int newValue)
         {
             Properties.Settings.Default.submitAcc = materialSlider_Accuracy.Value;
+            Properties.Settings.Default.Save();
         }
 
-        private async void Verify_APIKey_Async()
+        private async Task VerifyApiKeyAsync()
         {
-            // Verifying API key using one of the osu! API URLs
-            var url = $"https://osu.ppy.sh/api/get_beatmaps?k={materialTextBox_apiInput.Text}&b=100&m=0";
-
-            var request = new HttpRequestMessage(HttpMethod.Get, url);
-            request.Headers.Accept.Clear();
-            request.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer");
-            request.Content = new StringContent("{...}", Encoding.UTF8, "application/json");
-
-            var response = await client.SendAsync(request, CancellationToken.None);
-
-            Properties.Settings.Default.isAPIKeyVerified = response.IsSuccessStatusCode;
-            materialSwitch_isAutoDisconnect.Enabled = response.IsSuccessStatusCode;
-            materialSwitch_isSnipeMode.Enabled = response.IsSuccessStatusCode;
-
-            if (response.IsSuccessStatusCode)
+            try
             {
-                // Save the API key if verification is successful
-                Properties.Settings.Default.userApiKey = materialTextBox_apiInput.Text;
+                var url = $"https://osu.ppy.sh/api/get_beatmaps?k={materialTextBox_apiInput.Text}&b=100&m=0";
+
+                using var request = new HttpRequestMessage(HttpMethod.Get, url);
+                request.Headers.Accept.Clear();
+                request.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+                request.Headers.Authorization = new AuthenticationHeaderValue("Bearer");
+                request.Content = new StringContent("{...}", Encoding.UTF8, "application/json");
+
+                using var response = await Client.SendAsync(request, CancellationToken.None);
+
+                Properties.Settings.Default.isAPIKeyVerified = response.IsSuccessStatusCode;
+                materialSwitch_isAutoDisconnect.Enabled = response.IsSuccessStatusCode;
+                materialSwitch_isSnipeMode.Enabled = response.IsSuccessStatusCode;
+
+                if (response.IsSuccessStatusCode)
+                {
+                    Properties.Settings.Default.userApiKey = materialTextBox_apiInput.Text;
+                }
+                else
+                {
+                    Response_InvalidInput();
+                    materialSwitch_isAutoDisconnect.Checked = false;
+                    materialSwitch_isSnipeMode.Checked = false;
+                }
+
+                Properties.Settings.Default.Save();
             }
-            else
+            catch (Exception ex)
             {
-                Response_InvalidInput();
-                materialSwitch_isAutoDisconnect.Checked = false;
-                materialSwitch_isSnipeMode.Checked = false;
+                MainFunction.ShowMessageBox(ex.Message);
             }
         }
 
@@ -159,38 +168,45 @@ namespace osuEscape
 
         private void materialButton_isSnipeMode_Click(object sender, EventArgs e)
         {
-            Verify_Username_Async();
+            _ = VerifyUsernameAsync();
         }
 
-        private async void Verify_Username_Async()
+        private async Task VerifyUsernameAsync()
         {
-            // Verifying username using osu! API
-            var url = $"https://osu.ppy.sh/api/get_user?k={materialTextBox_apiInput.Text}&u={materialTextBox_userId.Text}";
-
-            var request = new HttpRequestMessage(HttpMethod.Get, url);
-            request.Headers.Accept.Clear();
-            request.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer");
-            request.Content = new StringContent("{...}", Encoding.UTF8, "application/json");
-
-            var response = await client.SendAsync(request, CancellationToken.None);
-
-            if (response.IsSuccessStatusCode)
+            try
             {
-                var jsonString = await response.Content.ReadAsStringAsync();
-                JArray arr = (JArray)JsonConvert.DeserializeObject(jsonString);
+                var url = $"https://osu.ppy.sh/api/get_user?k={materialTextBox_apiInput.Text}&u={materialTextBox_userId.Text}";
 
-                foreach (var item in arr)
+                using var request = new HttpRequestMessage(HttpMethod.Get, url);
+                request.Headers.Accept.Clear();
+                request.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+                request.Headers.Authorization = new AuthenticationHeaderValue("Bearer");
+                request.Content = new StringContent("{...}", Encoding.UTF8, "application/json");
+
+                using var response = await Client.SendAsync(request, CancellationToken.None);
+
+                if (response.IsSuccessStatusCode)
                 {
-                    materialTextBox_userId.Text = item["username"].ToString();
-                }
+                    var jsonString = await response.Content.ReadAsStringAsync();
+                    JArray arr = (JArray)JsonConvert.DeserializeObject(jsonString);
 
-                Properties.Settings.Default.userApiKey = materialTextBox_userId.Text;
-                MainFunction.ShowMessageBox($"Sniping User: {materialTextBox_userId.Text}", "Username Verification", MessageBoxIcon.Information);
+                    foreach (var item in arr)
+                    {
+                        materialTextBox_userId.Text = item["username"]?.ToString();
+                    }
+
+                    Properties.Settings.Default.snipedUser = materialTextBox_userId.Text;
+                    Properties.Settings.Default.Save();
+                    MainFunction.ShowMessageBox($"Sniping User: {materialTextBox_userId.Text}", "Username Verification", MessageBoxIcon.Information);
+                }
+                else
+                {
+                    Response_InvalidInput();
+                }
             }
-            else
+            catch (Exception ex)
             {
-                Response_InvalidInput();
+                MainFunction.ShowMessageBox(ex.Message);
             }
         }
 
@@ -204,29 +220,32 @@ namespace osuEscape
         {
             if (sender is MaterialSwitch mswitch)
             {
-                // Handle MaterialSwitch changes
-                string switchName = mswitch.Name[15..].Replace("_CheckedChanged", "");
-                Properties.Settings.Default[switchName] = ((MaterialSwitch)Controls[$"materialSwitch_{switchName}"]).Checked;
+                string switchName = mswitch.Name["materialSwitch_".Length..];
+                Properties.Settings.Default[switchName] = mswitch.Checked;
 
-                // Special case for some properties which need instant changes
                 switch (switchName)
                 {
-                    case "isStartUp":
-                        StartupSetUp(materialSwitch_isStartup.Checked);
+                    case nameof(Properties.Settings.Default.isStartup):
+                        StartupSetUp(mswitch.Checked);
                         break;
-                    case "topMost":
-                        this.TopMost = materialSwitch_isTopMost.Checked;
+                    case nameof(Properties.Settings.Default.isTopMost):
+                        if (Application.OpenForms["Root"] is Form rootForm)
+                        {
+                            rootForm.TopMost = mswitch.Checked;
+                        }
                         break;
-                    case "isSnipeMode":
-                        materialButton_isSnipeMode.Enabled = materialSwitch_isSnipeMode.Checked;
+                    case nameof(Properties.Settings.Default.isSnipeMode):
+                        materialButton_isSnipeMode.Enabled = mswitch.Checked;
                         break;
                 }
+
+                Properties.Settings.Default.Save();
             }
             else if (sender is MaterialCheckbox checkbox)
             {
-                // Handle MaterialCheckbox changes
-                string checkBoxName = checkbox.Name[17..].Replace("_CheckedChanged", "");
-                Properties.Settings.Default[checkBoxName] = ((MaterialCheckbox)Controls[$"materialCheckBox_{checkBoxName}"]).Checked;
+                string checkBoxName = checkbox.Name["materialCheckbox_".Length..];
+                Properties.Settings.Default[checkBoxName] = checkbox.Checked;
+                Properties.Settings.Default.Save();
             }
         }
     }

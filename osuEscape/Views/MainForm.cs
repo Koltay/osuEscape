@@ -3,9 +3,10 @@ using osuEscape.Models;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows.Forms;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 
 namespace osuEscape
 {
@@ -13,72 +14,88 @@ namespace osuEscape
     {
         private bool _isEditingHotkey = false;
         private readonly Root _parent;
-        private readonly MainViewModel _viewModel;
-
-        private readonly FormManager _formManager;
         private readonly KeyboardManager _keyboardManager;
-        private readonly ScoreUploader _scoreUploader;
-        private readonly StartupManager _startupManager;
 
         public MainForm(Root parent)
         {
             InitializeComponent();
             _parent = parent;
 
-            _formManager = new FormManager();
             _keyboardManager = new KeyboardManager();
-            _scoreUploader = new ScoreUploader();
-            _startupManager = new StartupManager();
-            
-            // Bind a TextBox to a ViewModel property
-            //textBox1.DataBindings.Add("Text", _viewModel, nameof(_viewModel.SomeProperty), false, DataSourceUpdateMode.OnPropertyChanged);
         }
 
         private async void MainForm_Load(object sender, EventArgs e)
         {
-            if (!OperatingSystem.IsWindows())
+            try
             {
-                MessageBox.Show("This application is only supported on Windows.", "Unsupported OS", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                this.Close();
-                return;
+                if (!OperatingSystem.IsWindows())
+                {
+                    MessageBox.Show("This application is only supported on Windows.", "Unsupported OS", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    Close();
+                    return;
+                }
+
+                materialSwitch_osuConnection.Checked = !Properties.Settings.Default.isAllowConnection;
+                materialSlider_refreshRate.Value = Properties.Settings.Default.refreshRate;
+
+                using var osuProcess = Process.GetProcessesByName("osu!").FirstOrDefault();
+                if (osuProcess != null)
+                {
+                    Properties.Settings.Default.osuLocation = osuProcess.MainModule.FileName;
+                    Properties.Settings.Default.osuPath = Path.GetDirectoryName(osuProcess.MainModule.FileName) + Path.DirectorySeparatorChar;
+                    Properties.Settings.Default.Save();
+                }
+
+                if (string.IsNullOrEmpty(Properties.Settings.Default.osuLocation))
+                {
+                    await OpenFileDialog_FindOsuLocationAsync();
+                }
+                else
+                {
+                    materialLabel_osuPath.Text = Label_ShortenedPath();
+                    await Firewall.SetUpFirewallRulesAsync(Properties.Settings.Default.osuLocation);
+                }
+
+                TextBox_GlobalHotkey_Update();
             }
-
-            materialSwitch_osuConnection.Checked = !Properties.Settings.Default.isAllowConnection;
-            materialSlider_refreshRate.Value = Properties.Settings.Default.refreshRate;
-
-            // Get osu! directory from running process
-            var osuProcess = Process.GetProcessesByName("osu!").FirstOrDefault();
-            Properties.Settings.Default.osuLocation = osuProcess == null
-                                                    ? Properties.Settings.Default.osuLocation
-                                                    : osuProcess.MainModule.FileName;
-
-            // Let user manually find the osu directory if it's still not found
-            if (string.IsNullOrEmpty(Properties.Settings.Default.osuLocation))
+            catch (Exception ex)
             {
-                OpenFileDialog_FindOsuLocation();
+                MainFunction.ShowMessageBox(ex.Message);
             }
-            else
-            {
-                materialLabel_osuPath.Text = Label_ShortenedPath();
-                await Firewall.SetUpFirewallRulesAsync(Properties.Settings.Default.osuLocation);
-            }
-
-            TextBox_GlobalHotkey_Update();
         }
 
         public async void materialSwitch_osuConnection_CheckedChanged(object sender, EventArgs e)
         {
-            Properties.Settings.Default.isAllowConnection = !materialSwitch_osuConnection.Checked;
-            _parent.ContextMenuStripUpdate();
-            FormStyleManager.ColorSchemeUpdate(_parent);
-            FormStyleManager.Refresh();
-            await Firewall.ToggleFirewallSettingsAsync();
+            try
+            {
+                Properties.Settings.Default.isAllowConnection = !materialSwitch_osuConnection.Checked;
+                Properties.Settings.Default.Save();
+                _parent.ContextMenuStripUpdate();
+                FormStyleManager.ColorSchemeUpdate(_parent);
+                FormStyleManager.Refresh();
+                await Firewall.ToggleFirewallSettingsAsync();
+            }
+            catch (Exception ex)
+            {
+                MainFunction.ShowMessageBox(ex.Message);
+            }
         }
 
-        public void materialButton_findOsuLocation_Click(object sender, EventArgs e)
+        public async void materialButton_findOsuLocation_Click(object sender, EventArgs e)
         {
             materialButton_findOsuLocation.UseAccentColor = true;
-            OpenFileDialog_FindOsuLocation();
+            try
+            {
+                await OpenFileDialog_FindOsuLocationAsync();
+            }
+            catch (Exception ex)
+            {
+                MainFunction.ShowMessageBox(ex.Message);
+            }
+            finally
+            {
+                materialButton_findOsuLocation.UseAccentColor = false;
+            }
         }
 
         public void materialButton_changeToggleHotkey_Click(object sender, EventArgs e)
@@ -99,33 +116,35 @@ namespace osuEscape
             }
         }
 
-        public async void OpenFileDialog_FindOsuLocation()
+        private async Task OpenFileDialog_FindOsuLocationAsync()
         {
             using OpenFileDialog ofd = new()
             {
                 Filter = "osu!.exe |*.EXE",
                 InitialDirectory = ""
             };
-            DialogResult result = ofd.ShowDialog();
-            if (result == DialogResult.Cancel || result == DialogResult.Abort)
-            {
-                materialButton_findOsuLocation.UseAccentColor = false;
-                return;
-            }
-            if (result == DialogResult.OK && ofd.FileName.Contains("osu!.exe"))
-            {
-                Properties.Settings.Default.osuLocation = ofd.FileName;
-                Properties.Settings.Default.osuPath = string.Join("\\", ofd.FileName.Split('\\').Reverse().Skip(1).Reverse()) + "\\";
 
-                materialLabel_osuPath.Text = Label_ShortenedPath();
-                await Firewall.SetUpFirewallRulesAsync(Properties.Settings.Default.osuLocation);
-            }
-            else if (result == DialogResult.OK && !ofd.FileName.Contains("osu!.exe"))
+            while (true)
             {
-                // Run again until user finds osu.exe or user cancels the action
-                OpenFileDialog_FindOsuLocation();
+                DialogResult result = ofd.ShowDialog();
+                if (result == DialogResult.Cancel || result == DialogResult.Abort)
+                {
+                    return;
+                }
+
+                if (result == DialogResult.OK && string.Equals(Path.GetFileName(ofd.FileName), "osu!.exe", StringComparison.OrdinalIgnoreCase))
+                {
+                    Properties.Settings.Default.osuLocation = ofd.FileName;
+                    Properties.Settings.Default.osuPath = Path.GetDirectoryName(ofd.FileName) + Path.DirectorySeparatorChar;
+                    Properties.Settings.Default.Save();
+
+                    materialLabel_osuPath.Text = Label_ShortenedPath();
+                    await Firewall.SetUpFirewallRulesAsync(Properties.Settings.Default.osuLocation);
+                    return;
+                }
+
+                MainFunction.ShowMessageBox("Please select osu!.exe.", "Invalid File", MessageBoxIcon.Warning);
             }
-            materialButton_findOsuLocation.UseAccentColor = false;
         }
 
         public void materialLabel_SubmissionStatus_TextChanged(string statusText)
@@ -137,6 +156,7 @@ namespace osuEscape
         {
             materialSlider_refreshRate.Value = Math.Max(materialSlider_refreshRate.Value, 50);
             Properties.Settings.Default.refreshRate = materialSlider_refreshRate.Value;
+            Properties.Settings.Default.Save();
         }
 
         private void TextBox_GlobalHotkey_Update()
@@ -168,15 +188,16 @@ namespace osuEscape
                 else if (_keyboardManager.KeysToStringDictionary.ContainsKey(e.KeyCode))
                 {
                     _isEditingHotkey = false;
-                    _parent.KeyboardHook.Dispose();
 
                     // User settings
                     Properties.Settings.Default.ModifierKeys = (e.Alt ? 1 : 0) + (e.Control ? 2 : 0) + (e.Shift ? 4 : 0);
                     Properties.Settings.Default.GlobalHotKey = _keyboardManager.KeysToStringDictionary[e.KeyCode];
+                    Properties.Settings.Default.Save();
 
                     // UI
                     TextBox_GlobalHotkey_Update();
 
+                    _parent.KeyboardHook.ClearHotKeys();
                     _parent.KeyboardHook.RegisterHotKey((ModifierKeys)Properties.Settings.Default.ModifierKeys,
                                         _keyboardManager.KeysToStringDictionary.FirstOrDefault(x => x.Value == Properties.Settings.Default.GlobalHotKey).Key);
 
@@ -216,13 +237,11 @@ namespace osuEscape
 
         private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
         {
-            _keyboardManager.KeyboardHook.Dispose();
         }
         protected override void Dispose(bool disposing)
         {
             if (disposing)
             {
-                _scoreUploader?.Dispose();
                 _keyboardManager?.Dispose();
                 components?.Dispose();
             }

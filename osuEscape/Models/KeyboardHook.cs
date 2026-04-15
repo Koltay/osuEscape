@@ -67,15 +67,21 @@ namespace osuEscape
                 throw new InvalidOperationException("Couldn’t register the hot key.");
         }
 
-        public event EventHandler<KeyPressedEventArgs> KeyPressed;
-
-        public void Dispose()
+        public void ClearHotKeys()
         {
-            // Unregister all registered hotkeys
             for (int i = _currentId; i > 0; i--)
             {
                 NativeMethods.UnregisterHotKey(_window.Handle, i);
             }
+
+            _currentId = 0;
+        }
+
+        public event EventHandler<KeyPressedEventArgs> KeyPressed;
+
+        public void Dispose()
+        {
+            ClearHotKeys();
 
             // Dispose the inner native window
             _window.Dispose();

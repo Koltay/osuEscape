@@ -7,7 +7,6 @@ public static class MainFunction
 {
     public static DialogResult ShowMessageBox(string message, string caption = "Error", MessageBoxIcon icon = MessageBoxIcon.Error, MessageBoxButtons buttons = MessageBoxButtons.OK)
     {
-        // Replace the selected code block with a call to MainFunction.ToggleOsuConnectionSwitch()
         Audio.ToggleSound(Properties.Settings.Default.isToggleSound);
         return MessageBox.Show(message, caption, buttons, icon);
     }
@@ -18,10 +17,20 @@ public static class MainFunction
     {
         if (Application.OpenForms["MainForm"] is MainForm mainForm)
         {
-            mainForm.Invoke(() =>
+            if (mainForm.Controls["materialSwitch_osuConnection"] is not MaterialSwitch connectionSwitch)
             {
-                ((MaterialSwitch)mainForm.Controls["materialSwitch_osuConnection"]).Checked = !((MaterialSwitch)mainForm.Controls["materialSwitch_osuConnection"]).Checked;
-            });
+                return;
+            }
+
+            void toggle() => connectionSwitch.Checked = !connectionSwitch.Checked;
+
+            if (mainForm.InvokeRequired)
+            {
+                mainForm.BeginInvoke((MethodInvoker)toggle);
+                return;
+            }
+
+            toggle();
         }
     }
 }
